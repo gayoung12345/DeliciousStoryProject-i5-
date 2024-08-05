@@ -3,7 +3,7 @@ const freeBoard = () => {
     <main>
       <div>
         <p>자유게시판</p>
-        <p>yumi</p>
+        <p>yumi 가영~</p>
       </div>
     </main>
   );
