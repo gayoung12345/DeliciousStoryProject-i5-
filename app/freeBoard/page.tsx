@@ -12,7 +12,7 @@ const FreeBoard = () => {
     <main>
       <div style={{ padding: "20px" }}>
         <h1>자유게시판</h1>
-
+        <p>test</p>
         {/* 게시판 리스트 */}
         <div style={{ marginTop: "20px" }}>
           {posts.length > 0 ? (
@@ -42,4 +42,3 @@ const FreeBoard = () => {
 };
 
 export default FreeBoard;
-
