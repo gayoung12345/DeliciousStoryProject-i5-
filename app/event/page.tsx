@@ -4,6 +4,7 @@ const Home = () => {
       <div>
         <p>sample page</p>
         test
+        <p>event page</p>
       </div>
     </main>
   );
