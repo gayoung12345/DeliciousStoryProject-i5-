@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="en">
       <body className={inter.className}>
         <div className="flex flex-col h-screen">
           {/* app/ui/topNav.tsx */}
