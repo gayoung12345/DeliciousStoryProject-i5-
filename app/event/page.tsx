@@ -3,6 +3,7 @@ const Home = () => {
     <main>
       <div>
         <p>event page</p>
+        커밋테스트
       </div>
     </main>
   );
