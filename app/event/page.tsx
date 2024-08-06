@@ -2,7 +2,7 @@ const Home = () => {
   return (
     <main>
       <div>
-        <p>event page</p>
+        <p>sample page</p>
       </div>
     </main>
   );

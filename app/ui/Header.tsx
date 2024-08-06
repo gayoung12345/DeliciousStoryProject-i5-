@@ -7,7 +7,9 @@ const Header: React.FC = () => {
   return (
     <nav className="bg-white text-black px-24 flex items-center justify-between">
       <div>
-        <Image src={logoSrc} alt="logo" width={317} height={138} />
+        <a href="/">
+          <Image src={logoSrc} alt="logo" width={317} height={138} />
+        </a>
       </div>
       <div className="relative">
         <input
