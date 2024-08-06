@@ -17,18 +17,23 @@ const photos = [
 
 const siteRecipe = () => {
   return (
-    <div style={{}}>
-    <div className="recipe-container"  style={{margin:"20px",}}>
-      <p style={{ margin:20, fontSize: 14 }}>레시피 페이지</p>
-      <div className="photo-grid" style={{ display:"flex",flexWrap:"wrap", width:1000, }} >
-        {photos.map((photo) => (
-          <div key={photo.id} className="photo-card">
-            <Image src={photo.image} alt={photo.name} width={250} height={250} />
-            <p style={{ margin: 5, fontSize: 14 }}>{photo.name}</p>
-          </div>
-        ))}
+    <div className="recipe-container" style={{ margin: 20 }}>
+      <p style={{ margin: 20, fontSize: 14 }}>레시피 페이지</p>
+      <div className="photo-grid" style={{ display: "flex", flexWrap: "wrap", width: 1200 }}>
+        {photos.length > 0 ? (
+          photos.map((photo) => (
+            <div key={photo.id} className="photo-card" style={{ margin: 10, border: "1px solid #ddd",
+              borderRadius: "5px",
+              marginBottom: "10px",
+              padding: "10px", }}>
+              <Image src={photo.image} alt={photo.name} width={250} height={250} />
+              <p style={{ margin: 5, fontSize: 14 }}>{photo.name}</p>
+            </div>
+          ))
+        ) : (
+          <p style={{ margin: 20, fontSize: 14 }}>레시피가 없습니다.</p>
+        )}
       </div>
-    </div>
     </div>
   );
 };
