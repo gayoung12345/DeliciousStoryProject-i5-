@@ -3,6 +3,7 @@ const Home = () => {
     <main>
       <div>
         <p>sample page</p>
+        test
       </div>
     </main>
   );
