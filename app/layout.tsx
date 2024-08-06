@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import TopNav from './ui/topNav';
+import Header from './ui/Header';
+import Footer from './ui/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,9 +20,11 @@ export default function RootLayout({
         <html lang="en">
             <body className={inter.className}>
                 <div className="flex flex-col h-screen">
-                    <TopNav /> {/* Use the TopNav component here */}
+                    {/* app/ui/topNav.tsx */}
+                    <Header />
                     <div className="flex-grow p-6 md:overflow-y-auto md:p-12">{children}</div>
                 </div>
+                <Footer />
             </body>
         </html>
     );
