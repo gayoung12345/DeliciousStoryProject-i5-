@@ -6,7 +6,7 @@ const Footer: React.FC = () => {
         <footer className='bg-white-100 text-gray-600 py-6'>
             <hr></hr>
             <div className='container mx-auto px-4 flex justify-between items-start'>
-                <div>
+                <div className='flex flex-col items-start'>
                     <div className='text-center mb-4 flex flex-wrap justify-center items-center space-x-2'>
                         <Image
                             src={logoSrc}
@@ -14,51 +14,31 @@ const Footer: React.FC = () => {
                             width={317}
                             height={138}
                         />
-                        <a
-                            href='#'
-                            className='hover:underline'
-                        >
-                            회사소개
-                        </a>
-                        <span>&middot;</span>
+                        <div className='flex'>
+                            <span> Team i5 |</span>
+                        {/* <span>&middot;</span>
                         <a
                             href='#'
                             className='hover:underline'
                         >
                             광고 및 마케팅 제휴 문의
-                        </a>
-                        <span>&middot;</span>
-                        <a
-                            href='#'
-                            className='hover:underline'
-                        >
-                            이용약관
-                        </a>
-                        <span>&middot;</span>
-                        <a
-                            href='#'
-                            className='hover:underline'
-                        >
-                            개인정보취급방침
-                        </a>
-                        <span>&middot;</span>
-                        <a
-                            href='#'
-                            className='hover:underline'
-                        >
-                            고객센터
-                        </a>
+                        </a> */}
+                        <span>| 김가영 |</span>
+                        <span>| 김유미 |</span>
+                        <span>| 전보람 |</span>
+                        <span>| 추호연 |</span>
+                        <span>| 이다은 </span>
+                        </div>
                     </div>
 
                     <div className='text-left text-sm'>
                         <p>
-                            회사명 : 주식회사 맛있는이야기 (대구 중구 국채보상로
-                            582) 대표자 : 대표자
+                        대구 윤성 컴퓨터 디자인 DX아카데미 : 빅데이터 활용 SW개발 전문가 양성 과정
                         </p>
                         <p>
-                            사업자번호 : 000-00-00000 [사업자정보확인]
-                            통신판매업신고 : 제2024-국채보상로-0000 전화 :
-                            053-252-8889 팩스 : 053-252-8889
+                            {/* 사업자번호 : 000-00-00000 [사업자정보확인]
+                            통신판매업신고 : 제2024-국채보상로-0000  */}
+                            전화 : 053-252-8889 | 팩스 : 053-252-8889
                         </p>
                         <p>COPYRIGHT © 맛있는이야기 ALL RIGHT RESERVED.</p>
                     </div>
@@ -103,8 +83,7 @@ const Footer: React.FC = () => {
                     </div>
                     <div className='text-center mt-4'>
                         <p>
-                            모바일 사이트에서도 곧 이밥차를 만나보실 수
-                            있습니다.
+                        ~ Delicious Story ~
                         </p>
                         <div className='flex justify-center mt-2'>
                             <Image

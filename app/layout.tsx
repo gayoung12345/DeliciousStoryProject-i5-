@@ -17,16 +17,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <body className={inter.className}>
         <div className="flex flex-col h-screen">
-          {/* app/ui/topNav.tsx */}
+          {/* Header */}
           <Header />
-          <div className="flex-grow p-6 md:overflow-y-auto md:p-12">
+          <div className="flex-grow">
             {children}
           </div>
+          {/* Footer */}
+          <Footer />
         </div>
-        <Footer />
       </body>
     </html>
   );
