@@ -91,7 +91,7 @@ type IPrimitiveIcon = {
     as?: React.ElementType;
     className?: string;
 };
-
+// eslint-disable-next-line react/display-name
 const PrimitiveIcon = React.forwardRef<
     React.ElementRef<typeof Svg>,
     IPrimitiveIcon & React.ComponentPropsWithoutRef<typeof Svg>
