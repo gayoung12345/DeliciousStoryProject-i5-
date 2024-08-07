@@ -4,31 +4,37 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const Posting = () => {
+    // 상태를 선언하여 작성자, 제목, 내용, 비밀번호를 관리합니다.
+    const [author, setAuthor] = useState('');
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
+    const [password, setPassword] = useState(''); // 비밀번호 상태
     const router = useRouter();
 
+    // 폼 제출 핸들러
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // 새로운 게시글 데이터 생성
         const newPost = {
-            id: Date.now(),
+            id: Date.now(), // 현재 시간을 ID로 사용
             title,
-            author: '익명', // 작성자 필드 추가 (필요에 따라 수정 가능)
-            date: new Date().toISOString().split('T')[0], // 작성일을 현재 날짜로 설정
-            comments: [],
-            views: 0,
-            content, // 글 내용을 추가
+            author: author || '익명', // 작성자 필드 (입력되지 않으면 '익명'으로 설정)
+            date: new Date().toISOString().split('T')[0], // 현재 날짜
+            comments: [], // 댓글 빈 배열
+            views: 0, // 조회수 초기값 0
+            content, // 글 내용
+            password, // 비밀번호 추가
         };
 
-        // 기존에 저장된 게시글 리스트 가져오기
+        // 기존 게시글 목록 가져오기
         const existingPosts = JSON.parse(localStorage.getItem('posts')) || [];
-        const updatedPosts = [newPost, ...existingPosts]; // 새로운 글을 리스트에 추가
+        const updatedPosts = [newPost, ...existingPosts]; // 새로운 글 추가
 
-        // localStorage에 업데이트된 리스트 저장
+        // 업데이트된 게시글 목록을 localStorage에 저장
         localStorage.setItem('posts', JSON.stringify(updatedPosts));
 
-        alert('글이 작성되었습니다!');
+        alert('글이 작성되었습니다!'); // 알림 표시
         router.push('/freeBoard'); // 글 작성 후 게시판으로 이동
     };
 
@@ -36,7 +42,7 @@ const Posting = () => {
         <main>
             <div style={{ padding: '20px' }}>
                 <h1 style={{ textAlign: 'center', fontSize: '36px' }}>
-                    글쓰기
+                    글 작성하기
                 </h1>
                 <form onSubmit={handleSubmit}>
                     <div style={{ marginBottom: '20px' }}>
@@ -44,7 +50,7 @@ const Posting = () => {
                             htmlFor='title'
                             style={{ display: 'block', marginBottom: '10px' }}
                         >
-                            제목:
+                            제목
                         </label>
                         <input
                             id='title'
@@ -65,7 +71,7 @@ const Posting = () => {
                             htmlFor='content'
                             style={{ display: 'block', marginBottom: '10px' }}
                         >
-                            내용:
+                            내용
                         </label>
                         <textarea
                             id='content'
@@ -78,14 +84,15 @@ const Posting = () => {
                                 border: '1px solid #ddd',
                                 borderRadius: '4px',
                             }}
-                            required
                         />
                     </div>
+
                     <button
                         type='submit'
-                        className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
+                        className='bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600'
+                        style={{ display: 'block', margin: '0 auto' }} // 버튼을 중앙으로 정렬
                     >
-                        게시
+                        작성하기
                     </button>
                 </form>
             </div>
