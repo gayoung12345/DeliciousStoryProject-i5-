@@ -14,15 +14,9 @@ const Footer: React.FC = () => {
                             width={317}
                             height={138}
                         />
+
                         <div className='flex'>
                             <span> Team i5 |</span>
-                        {/* <span>&middot;</span>
-                        <a
-                            href='#'
-                            className='hover:underline'
-                        >
-                            광고 및 마케팅 제휴 문의
-                        </a> */}
                         <span>| 김가영 |</span>
                         <span>| 김유미 |</span>
                         <span>| 전보람 |</span>
