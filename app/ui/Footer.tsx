@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
                             height={138}
                         />
                         <a
-                            href='#'
+                            href='recipeWrite'
                             className='hover:underline'
                         >
                             회사소개
