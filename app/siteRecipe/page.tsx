@@ -1,93 +1,205 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Icon, EditIcon } from '@/components/ui/icon';
 import Image from 'next/image';
-import React from 'react';
+import xml2js from 'xml2js';
+import { useRouter } from 'next/navigation';
 
-const photos = [
-    //예시 이미지
-    { id: 1, name: '레시피 이름 1', image: '/svg/logo.svg' },
-    { id: 2, name: '레시피 이름 2', image: '/svg/logo.svg' },
-    { id: 3, name: '레시피 이름 3', image: '/svg/logo.svg' },
-    { id: 4, name: '레시피 이름 4', image: '/svg/logo.svg' },
-    { id: 5, name: '레시피 이름 5', image: '/svg/logo.svg' },
-    { id: 6, name: '레시피 이름 6', image: '/svg/logo.svg' },
-    { id: 7, name: '레시피 이름 7', image: '/svg/logo.svg' },
-    { id: 8, name: '레시피 이름 8', image: '/svg/logo.svg' },
-    { id: 9, name: '레시피 이름 9', image: '/svg/logo.svg' },
-    { id: 10, name: '레시피 이름 10', image: '/svg/logo.svg' },
-];
+// 임시 Box, Text, Grid 컴포넌트
+const Box = ({ children, style, ...props }) => (
+    <div
+        style={style}
+        {...props}
+    >
+        {children}
+    </div>
+);
 
-const siteRecipe = () => {
+const Text = ({ children, style, ...props }) => (
+    <p
+        style={style}
+        {...props}
+    >
+        {children}
+    </p>
+);
+
+const Grid = ({ children, style, ...props }) => (
+    <div
+        style={style}
+        {...props}
+    >
+        {children}
+    </div>
+);
+
+const SiteRecipe = () => {
+    const [recipes, setRecipes] = useState<any[]>([]);
+    const router = useRouter();
+
+    useEffect(() => {
+        const fetchRecipes = async () => {
+            try {
+                const response = await fetch('/data/siterecipe.xml');
+                const xmlData = await response.text();
+                const parser = new xml2js.Parser();
+                const result = await parser.parseStringPromise(xmlData);
+
+                const recipeData = result.COOKRCP01.row.map((recipe: any) => ({
+                    id: recipe.RCP_SEQ[0],
+                    name: recipe.RCP_NM[0],
+                    image: recipe.ATT_FILE_NO_MAIN[0] || '/svg/logo.svg',
+                    ingredients: recipe.RCP_PARTS_DTLS[0],
+                    manual: recipe.MANUAL01[0],
+                    calories: recipe.INFO_ENG[0],
+                }));
+
+                setRecipes(recipeData);
+            } catch (error) {
+                console.error('Error parsing XML:', error);
+            }
+        };
+
+        fetchRecipes();
+    }, []);
+
+    const handleImageClick = (id: string) => {
+        router.push(`/galleryPost?id=${id}`);
+    };
+
     return (
-        <main>
-            <div
-                className='recipe-container'
-                style={{ margin: 20 }}
+        <Box style={{ padding: '16px' }}>
+            <Text
+                style={{
+                    fontSize: '24px',
+                    textAlign: 'center',
+                    marginBottom: '16px',
+                }}
             >
-                <h1 style={{ textAlign: 'center', fontSize: '36px' }}>
-                    자유게시판
-                </h1>
+                공식 레시피
+            </Text>
 
-                <div
-                    className='container mx-auto columns-1 sm:columns-2 md:columns-3 xl:columns-4'
-                    style={{ display: 'flex', flexWrap: 'wrap' }}
-                >
-                    {photos.length > 0 ? (
-                        photos.map((photo) => (
-                            <div
-                                key={photo.id}
-                                className='photo-card'
+            <Grid
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns:
+                        'repeat(auto-fill, minmax(200px, 1fr))',
+                    gap: '16px',
+                    marginBottom: '24px',
+                }}
+            >
+                {recipes.length > 0 ? (
+                    recipes.map((recipe) => (
+                        <Box
+                            key={recipe.id}
+                            style={{
+                                position: 'relative',
+                                border: '1px solid #ddd',
+                                borderRadius: '8px',
+                                padding: '16px',
+                                backgroundColor: 'white',
+                                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => handleImageClick(recipe.id)}
+                        >
+                            <Box
                                 style={{
-                                    margin: 10,
-                                    border: '1px solid #ddd',
-                                    borderRadius: '5px',
-                                    marginBottom: '10px',
-                                    padding: '10px',
+                                    position: 'relative',
                                 }}
                             >
                                 <Image
-                                    src={photo.image}
-                                    alt={photo.name}
+                                    src={recipe.image}
+                                    alt={recipe.name}
                                     width={250}
                                     height={250}
+                                    style={{ borderRadius: '8px' }}
                                 />
-                                <p style={{ margin: 5, fontSize: 14 }}>
-                                    {photo.name}
-                                </p>
-                            </div>
-                        ))
-                    ) : (
-                        <p style={{ margin: 20, fontSize: 14 }}>
-                            레시피가 없습니다.
-                        </p>
-                    )}
-                </div>
+                                <Box
+                                    style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                                        color: 'white',
+                                        opacity: 0,
+                                        transition: 'opacity 0.3s',
+                                        borderRadius: '8px',
+                                        cursor: 'pointer',
+                                    }}
+                                    onClick={() => handleImageClick(recipe.id)}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.opacity = '1';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.opacity = '0';
+                                    }}
+                                >
+                                    <Text
+                                        style={{
+                                            fontSize: '18px',
+                                            fontWeight: 'bold',
+                                        }}
+                                    >
+                                        상세 보기
+                                    </Text>
+                                </Box>
+                            </Box>
+                            <Text
+                                style={{
+                                    fontSize: '18px',
+                                    fontWeight: 'bold',
+                                    marginTop: '8px',
+                                    textAlign: 'center',
+                                }}
+                            >
+                                {recipe.name}
+                            </Text>
+                        </Box>
+                    ))
+                ) : (
+                    <Text
+                        style={{
+                            fontSize: '14px',
+                            textAlign: 'center',
+                        }}
+                    >
+                        레시피가 없습니다.
+                    </Text>
+                )}
+            </Grid>
 
-                <Button
-                    size='md'
-                    variant='solid'
-                    action='primary'
-                    style={{
-                        color: '#ffffff',
-                        backgroundColor: '#000000',
-                        position: 'absolute',
-                        bottom: 50,
-                        right: 50,
-                        width: 80,
-                        height: 80,
-                        borderRadius: 40,
-                    }}
-                >
-                    <ButtonText>
-                        <Icon
-                            as={EditIcon}
-                            size='md'
-                        />
-                    </ButtonText>
-                </Button>
-            </div>
-        </main>
+            <Button
+                size='md'
+                variant='solid'
+                action='primary'
+                style={{
+                    color: '#ffffff',
+                    backgroundColor: '#000000',
+                    position: 'fixed',
+                    bottom: 50,
+                    right: 50,
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                }}
+            >
+                <ButtonText>
+                    <Icon
+                        as={EditIcon}
+                        size='md'
+                    />
+                </ButtonText>
+            </Button>
+        </Box>
     );
 };
 
-export default siteRecipe;
+export default SiteRecipe;
