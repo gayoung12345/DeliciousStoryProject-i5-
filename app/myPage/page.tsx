@@ -52,28 +52,28 @@ function MyPage() {
         <p className="text-2xl font-semibold mb-32 text-center">회원정보 확인/수정하기</p>
         <div className="flex items-center space-x-4">
           <label htmlFor="name" className="w-1/3 text-gray-700 text-center">이름</label>
-        <input
-          type="text"
+          <input
+            type="text"
             id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
             readOnly
             className="border border-gray-300 p-2 rounded w-2/3 bg-gray-100 cursor-not-allowed"
-        />
+          />
         </div>
         <hr />
         <div className="flex items-center space-x-4">
           <label htmlFor="username" className="w-1/3 text-gray-700 text-center">아이디</label>
-        <input
-          type="text"
+          <input
+            type="text"
             id="username"
             name="username"
             value={formData.username}
             onChange={handleChange}
             readOnly
             className="border border-gray-300 p-2 rounded w-2/3 bg-gray-100 cursor-not-allowed"
-        />
+          />
         </div>
         <hr />
         <div className="flex items-center space-x-4">
