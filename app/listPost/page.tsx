@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 const ListPost = () => {
@@ -17,7 +17,10 @@ const ListPost = () => {
             const foundPost = savedPosts.find((p) => p.id === parseInt(postId));
             if (foundPost) {
                 setPost(foundPost);
-                setComments(foundPost.comments || []);
+                // Ensure comments is an array
+                setComments(
+                    Array.isArray(foundPost.comments) ? foundPost.comments : []
+                );
             }
         }
     }, [postId]);
@@ -74,7 +77,8 @@ const ListPost = () => {
                                         borderBottom: '1px solid #ddd',
                                     }}
                                 >
-                                    {comment.text}
+                                    {comment.text}{' '}
+                                    {/* Ensure only text is rendered */}
                                 </li>
                             ))}
                         </ul>
