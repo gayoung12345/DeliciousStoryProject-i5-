@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const Posting = () => {
@@ -16,7 +16,7 @@ const Posting = () => {
             title,
             author: '익명', // 작성자 필드 추가 (필요에 따라 수정 가능)
             date: new Date().toISOString().split('T')[0], // 작성일을 현재 날짜로 설정
-            comments: 0,
+            comments: [],
             views: 0,
             content, // 글 내용을 추가
         };
@@ -38,17 +38,16 @@ const Posting = () => {
                 <h1 style={{ textAlign: 'center', fontSize: '36px' }}>
                     글쓰기
                 </h1>
-                <form
-                    onSubmit={handleSubmit}
-                    style={{ marginTop: '20px' }}
-                >
-                    <div style={{ marginBottom: '10px' }}>
+                <form onSubmit={handleSubmit}>
+                    <div style={{ marginBottom: '20px' }}>
                         <label
-                            style={{ display: 'block', marginBottom: '5px' }}
+                            htmlFor='title'
+                            style={{ display: 'block', marginBottom: '10px' }}
                         >
                             제목:
                         </label>
                         <input
+                            id='title'
                             type='text'
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
@@ -63,11 +62,13 @@ const Posting = () => {
                     </div>
                     <div style={{ marginBottom: '20px' }}>
                         <label
-                            style={{ display: 'block', marginBottom: '5px' }}
+                            htmlFor='content'
+                            style={{ display: 'block', marginBottom: '10px' }}
                         >
                             내용:
                         </label>
                         <textarea
+                            id='content'
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             style={{
@@ -83,9 +84,8 @@ const Posting = () => {
                     <button
                         type='submit'
                         className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
-                        style={{ float: 'right' }}
                     >
-                        작성 완료
+                        게시
                     </button>
                 </form>
             </div>

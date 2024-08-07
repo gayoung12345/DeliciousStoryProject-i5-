@@ -17,7 +17,7 @@ const FreeBoard = () => {
     };
 
     const handlePostClick = (id) => {
-        router.push(`/listPost?id=${id}`); // 글 상세보기 페이지로 이동
+        router.push(`/listPost?id=${id}`);
     };
 
     return (
@@ -119,7 +119,8 @@ const FreeBoard = () => {
                                                 handlePostClick(post.id)
                                             }
                                         >
-                                            {post.title}
+                                            {post.title}{' '}
+                                            {/* Ensure this is a string */}
                                         </td>
                                         <td
                                             style={{
@@ -128,7 +129,8 @@ const FreeBoard = () => {
                                                 textAlign: 'center',
                                             }}
                                         >
-                                            {post.author}
+                                            {post.author}{' '}
+                                            {/* Ensure this is a string */}
                                         </td>
                                         <td
                                             style={{
@@ -137,7 +139,8 @@ const FreeBoard = () => {
                                                 textAlign: 'center',
                                             }}
                                         >
-                                            {post.date}
+                                            {post.date}{' '}
+                                            {/* Ensure this is a string */}
                                         </td>
                                         <td
                                             style={{
@@ -146,7 +149,9 @@ const FreeBoard = () => {
                                                 textAlign: 'center',
                                             }}
                                         >
-                                            {post.comments}
+                                            {post.comments &&
+                                                post.comments.length}{' '}
+                                            {/* Ensure this is a number */}
                                         </td>
                                         <td
                                             style={{
@@ -155,7 +160,8 @@ const FreeBoard = () => {
                                                 textAlign: 'center',
                                             }}
                                         >
-                                            {post.views}
+                                            {post.views}{' '}
+                                            {/* Ensure this is a number */}
                                         </td>
                                     </tr>
                                 ))}
