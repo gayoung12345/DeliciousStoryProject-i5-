@@ -16,18 +16,19 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return (
-        <html lang='en'>
-            <body className={inter.className}>
-                <div className='flex flex-col h-screen'>
-                    {/* app/ui/topNav.tsx */}
-                    <Header />
-                    <div className='flex-grow p-6 md:overflow-y-auto md:p-12'>
-                        {children}
-                    </div>
-                </div>
-                <Footer />
-            </body>
-        </html>
-    );
+  return (
+    <html lang="ko">
+      <body className={inter.className}>
+        <div className="flex flex-col h-screen">
+          {/* Header */}
+          <Header />
+          <div className="flex-grow">
+            {children}
+          </div>
+          {/* Footer */}
+          <Footer />
+        </div>
+      </body>
+    </html>
+  );
 }
