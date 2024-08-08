@@ -82,12 +82,18 @@ const FreeBoard = () => {
                     글 작성하기
                 </button>
 
-                <div style={{ marginTop: '20px' }}>
+                <div
+                    style={{
+                        marginTop: '20px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                    }}
+                >
                     {filteredPosts.length > 0 ? (
                         <>
                             <table
                                 style={{
-                                    width: '100%',
+                                    width: '60%',
                                     borderCollapse: 'collapse',
                                 }}
                             >
@@ -218,6 +224,8 @@ const FreeBoard = () => {
                                     ))}
                                 </tbody>
                             </table>
+                            <br />
+
                             {/* 페이지 네비게이션 */}
                             <nav
                                 style={{
@@ -276,7 +284,13 @@ const FreeBoard = () => {
                     )}
                 </div>
             </div>
-            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+            <div
+                style={{
+                    marginTop: '20px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                }}
+            >
                 {/* 검색창 */}
                 <input
                     type='text'
@@ -287,13 +301,13 @@ const FreeBoard = () => {
                         padding: '8px',
                         borderRadius: '4px',
                         border: '1px solid #ddd',
-                        width: '300px',
+                        width: '400px',
                         marginRight: '10px',
                     }}
                 />
                 <button
                     type='button'
-                    className='bg-black text-white px-4 py-2 rounded hover:bg-gray-600'
+                    className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600'
                     onClick={handleSearchClick}
                 >
                     검색

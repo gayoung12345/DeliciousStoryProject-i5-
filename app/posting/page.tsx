@@ -38,6 +38,11 @@ const Posting = () => {
         router.push('/freeBoard'); // 글 작성 후 게시판으로 이동
     };
 
+    // 뒤로가기 버튼 핸들러
+    const handleGoBack = () => {
+        router.push('/freeBoard');
+    };
+
     return (
         <main>
             <div style={{ padding: '20px' }}>
@@ -45,10 +50,15 @@ const Posting = () => {
                     글 작성하기
                 </h1>
                 <form onSubmit={handleSubmit}>
-                    <div style={{ marginBottom: '20px' }}>
+                    <div style={{ marginBottom: '20px', textAlign: 'left' }}>
                         <label
                             htmlFor='title'
-                            style={{ display: 'block', marginBottom: '10px' }}
+                            style={{
+                                display: 'block',
+                                marginBottom: '10px',
+                                textAlign: 'left',
+                                marginLeft: '20%',
+                            }}
                         >
                             제목
                         </label>
@@ -58,18 +68,26 @@ const Posting = () => {
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             style={{
-                                width: '100%',
+                                width: '60%',
                                 padding: '10px',
                                 border: '1px solid #ddd',
                                 borderRadius: '4px',
+                                display: 'block',
+                                margin: '0 auto',
+                                verticalAlign: 'top', // 상단 정렬
                             }}
                             required
                         />
                     </div>
-                    <div style={{ marginBottom: '20px' }}>
+                    <div style={{ marginBottom: '20px', textAlign: 'left' }}>
                         <label
                             htmlFor='content'
-                            style={{ display: 'block', marginBottom: '10px' }}
+                            style={{
+                                display: 'block',
+                                marginBottom: '10px',
+                                textAlign: 'left',
+                                marginLeft: '20%',
+                            }}
                         >
                             내용
                         </label>
@@ -78,22 +96,33 @@ const Posting = () => {
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             style={{
-                                width: '100%',
+                                width: '60%',
                                 padding: '10px',
                                 height: '200px',
                                 border: '1px solid #ddd',
                                 borderRadius: '4px',
+                                display: 'block',
+                                margin: '0 auto',
+                                verticalAlign: 'top', // 상단 정렬
                             }}
                         />
                     </div>
-
-                    <button
-                        type='submit'
-                        className='bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600'
-                        style={{ display: 'block', margin: '0 auto' }} // 버튼을 중앙으로 정렬
-                    >
-                        작성하기
-                    </button>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <button
+                            type='button'
+                            onClick={handleGoBack}
+                            className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600'
+                            style={{ marginRight: '10px' }} // 버튼 사이 간격
+                        >
+                            뒤로가기
+                        </button>
+                        <button
+                            type='submit'
+                            className='bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600'
+                        >
+                            작성하기
+                        </button>
+                    </div>
                 </form>
             </div>
         </main>
