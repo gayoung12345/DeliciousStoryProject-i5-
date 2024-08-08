@@ -1,12 +1,15 @@
+// app/ui/Header.tsx
 'use client';
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { useAuth } from '../context/AuthContext'; // Firebase 인증 컨텍스트 가져오기
 
 const logoSrc = '/svg/logo.svg';
 
 const Header: React.FC = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const { user } = useAuth(); // 인증 상태 가져오기
 
     return (
         <nav className='bg-white text-black px-6 sm:px-24 flex items-center justify-between max-w-screen-xl mx-auto'>
@@ -68,18 +71,37 @@ const Header: React.FC = () => {
                 >
                     freeBoard
                 </a>
-                <a
-                    href='/myPage'
-                    className='hover:text-gray-400'
-                >
-                    myPage
-                </a>
-                <a
-                    href='/login'
-                    className='hover:text-gray-400'
-                >
-                    login
-                </a>
+                {user ? (
+                    <>
+                        <a
+                            href='/myPage'
+                            className='hover:text-gray-400'
+                        >
+                            myPage
+                        </a>
+                        <a
+                            href='/logout'
+                            className='hover:text-gray-400'
+                        >
+                            Logout
+                        </a>
+                    </>
+                ) : (
+                    <>
+                        <a
+                            href='/login'
+                            className='hover:text-gray-400'
+                        >
+                            Login
+                        </a>
+                        <a
+                            href='/signup'
+                            className='hover:text-gray-400'
+                        >
+                            Sign Up
+                        </a>
+                    </>
+                )}
             </div>
             <div className='xl:hidden'>
                 <button
@@ -128,18 +150,29 @@ const Header: React.FC = () => {
                     >
                         freeBoard
                     </a>
-                    <a
-                        href='/myPage'
-                        className='block hover:text-gray-400'
-                    >
-                        myPage
-                    </a>
-                    <a
-                        href='/login'
-                        className='block hover:text-gray-400'
-                    >
-                        login
-                    </a>
+                    {user ? (
+                        <>
+                            <a
+                                href='/myPage'
+                                className='block hover:text-gray-400'
+                            >
+                                myPage
+                            </a>
+                            <a
+                                href='/logout'
+                                className='block hover:text-gray-400'
+                            >
+                                Logout
+                            </a>
+                        </>
+                    ) : (
+                        <a
+                            href='/signup'
+                            className='block hover:text-gray-400'
+                        >
+                            Sign Up
+                        </a>
+                    )}
                 </div>
             )}
         </nav>
