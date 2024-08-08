@@ -1,11 +1,18 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, ButtonText } from '@/components/ui/button';
-import { Icon, EditIcon } from '@/components/ui/icon';
+import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import xml2js from 'xml2js';
 import { useRouter } from 'next/navigation';
+import { FaArrowUp } from "react-icons/fa";
+
+const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth', // 부드러운 스크롤 효과
+        });
+    };
 
 // 임시 Box, Text, Grid 컴포넌트
 const Box = ({ children, style, ...props }) => (
@@ -27,12 +34,8 @@ const Grid = ({ children, style, ...props }) => (
 );
 
 const SiteRecipe = () => {
-    const [isHovered, setIsHovered] = useState(false);
-
-
     const [recipes, setRecipes] = useState<any[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 30; // 한 페이지에 표시할 레시피 수
+    const [itemsPerPage, setItemsPerPage] = useState(24); // 기본 30개 로드
     const router = useRouter();
 
     useEffect(() => {
@@ -66,41 +69,28 @@ const SiteRecipe = () => {
     };
 
     // 현재 페이지의 레시피 계산
-    const indexOfLastRecipe = currentPage * itemsPerPage;
-    const indexOfFirstRecipe = indexOfLastRecipe - itemsPerPage;
-    const currentRecipes = recipes.slice(indexOfFirstRecipe, indexOfLastRecipe);
+    const currentRecipes = recipes.slice(0, itemsPerPage); // 현재 페이지에 대한 레시피
 
-    // 페이지 변경 핸들러
-    const handlePageChange = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
+    // 스크롤 이벤트 핸들러
+    const handleScroll = () => {
+        const scrollTop = window.scrollY; // 현재 스크롤 위치
+        const windowHeight = window.innerHeight; // 현재 뷰포트 높이
+        const documentHeight = document.documentElement.offsetHeight; // 전체 문서 높이
 
-    // 총 페이지 수 계산
-    const totalPages = Math.ceil(recipes.length / itemsPerPage);
-
-    // 페이지네이션 버튼 계산
-    const getPaginationButtons = () => {
-        const paginationButtons = [];
-        const startPage = Math.max(1, currentPage - 2);
-        const endPage = Math.min(totalPages, currentPage + 2);
-
-        for (let i = startPage; i <= endPage; i++) {
-            paginationButtons.push(
-                <Button
-                    key={i}
-                    onClick={() => handlePageChange(i)} // 페이지 변경 함수 호출
-                    style={{
-                        margin: '0 4px',
-                        backgroundColor: currentPage === i ? '#000' : '#ccc',
-                        color: currentPage === i ? '#fff' : '#000',
-                    }}
-                >
-                    {i}
-                </Button>
-            );
+        // 스크롤이 맨 아래에 도달했을 때 로드
+        if (scrollTop + windowHeight >= documentHeight - 200) { // 200px 남았을 때 로드
+            if (itemsPerPage < recipes.length) {
+                setItemsPerPage((prev) => prev + 1); // 1개씩 추가
+            }
         }
-        return paginationButtons;
     };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll); // 스크롤 이벤트 리스너 추가
+        return () => {
+            window.removeEventListener('scroll', handleScroll); // 컴포넌트 언마운트 시 리스너 제거
+        };
+    }, [itemsPerPage, recipes]); // itemsPerPage나 recipes가 변할 때마다 리스너 재설정
 
     return (
         <div>
@@ -123,7 +113,8 @@ const SiteRecipe = () => {
                         gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
                         gap: '16px',
                         marginBottom: '24px',
-                        maxWidth: '1200px',
+                        maxWidth: '1400px',
+                        width: '100%',
                     }}
                 >
                     {currentRecipes.length > 0 ? (
@@ -208,43 +199,33 @@ const SiteRecipe = () => {
                     )}
                 </Grid>
             </Box>
-
-            {/* 페이지네이션 버튼 */}
-            <Box style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', gap:'10px' }}>
-                {getPaginationButtons()}
-            </Box>
-
+            <button
+                    onClick={scrollToTop} // onClick 핸들러 수정
+                    style={{
+                        color: '#ffffff',
+                        backgroundColor: '#000000',
+                        position: 'fixed',
+                        bottom: 50,
+                        right: 50,
+                        width: 80,
+                        height: 80,
+                        borderRadius: 40,
+                        zIndex: 10,
+                        border: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                    }}
+                >
+                    <FaArrowUp
+                        size={24}
+                        color='#ffffff'
+                    />
+                </button>
+            
         </div>
     );
 };
 
 export default SiteRecipe;
-
-
-
-{/*
-    작성 버튼)
-    
-    <Button
-            size='md'
-            variant='solid'
-            action='primary'
-            style={{
-                color: '#ffffff',
-                backgroundColor: isHovered ? '#070707' : '#737373',
-                position: 'fixed',
-                bottom: 50,
-                right: 50,
-                width: 70,
-                height: 70,
-                borderRadius: 35,
-                transition: 'background-color 0.1s ease',
-            }}
-            onMouseEnter={() => setIsHovered(true)} 
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            <ButtonText>
-                <Icon as={EditIcon} size='xl' />
-            </ButtonText>
-            
-</Button> */}
