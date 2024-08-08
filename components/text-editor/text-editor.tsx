@@ -1,6 +1,6 @@
+'use client';
 import React, { useState } from 'react';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 
 const modules = {
     toolbar: [
@@ -8,7 +8,7 @@ const modules = {
         [{ size: [] }],
         ['bold', 'italic', 'underline', 'strike', 'blockquote'],
         [{ list: 'ordered' }, { list: 'bullet' }],
-        ['image'],
+
         ['clean'],
     ],
 };
@@ -24,7 +24,6 @@ const formats = [
     'blockquote',
     'list',
     'bullet',
-    'image',
 ];
 
 const TextEditor = () => {
@@ -37,15 +36,16 @@ const TextEditor = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <ReactQuill
-                value={content}
-                onChange={setContent}
-                modules={modules}
-                formats={formats}
-            />
-            <button type='submit'>Submit</button>
-        </form>
+        // <form onSubmit={handleSubmit}>
+        <ReactQuill
+            style={{ height: '400px' }}
+            value={content}
+            onChange={setContent}
+            modules={modules}
+            formats={formats}
+        />
+        // {/* <button type='submit'>Submit</button> */}
+        // </form>
     );
 };
 
