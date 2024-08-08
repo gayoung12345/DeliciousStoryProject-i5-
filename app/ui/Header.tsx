@@ -80,6 +80,12 @@ const Header: React.FC = () => {
                 >
                     login
                 </a>
+                <a
+                    href='/recipeWrite'
+                    className='hover:text-gray-400'
+                >
+                    recipeWrite
+                </a>
             </div>
             <div className='xl:hidden'>
                 <button

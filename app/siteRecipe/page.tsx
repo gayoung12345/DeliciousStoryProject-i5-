@@ -9,26 +9,34 @@ import { useRouter } from 'next/navigation';
 
 // 임시 Box, Text, Grid 컴포넌트
 const Box = ({ children, style, ...props }) => (
-    <div style={style} {...props}>
+    <div
+        style={style}
+        {...props}
+    >
         {children}
     </div>
 );
 
 const Text = ({ children, style, ...props }) => (
-    <p style={style} {...props}>
+    <p
+        style={style}
+        {...props}
+    >
         {children}
     </p>
 );
 
 const Grid = ({ children, style, ...props }) => (
-    <div style={style} {...props}>
+    <div
+        style={style}
+        {...props}
+    >
         {children}
     </div>
 );
 
 const SiteRecipe = () => {
     const [isHovered, setIsHovered] = useState(false);
-
 
     const [recipes, setRecipes] = useState<any[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -111,16 +119,23 @@ const SiteRecipe = () => {
                     marginBottom: '16px',
                     textDecoration: 'underline',
                     textUnderlineOffset: '10px',
-                }} 
+                }}
             >
                 공식 레시피
             </Text>
 
-            <Box style={{ padding: '16px', display: 'flex', justifyContent: 'center' }}>
+            <Box
+                style={{
+                    padding: '16px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                }}
+            >
                 <Grid
                     style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                        gridTemplateColumns:
+                            'repeat(auto-fill, minmax(200px, 1fr))',
                         gap: '16px',
                         marginBottom: '24px',
                         maxWidth: '1200px',
@@ -159,14 +174,17 @@ const SiteRecipe = () => {
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                                            backgroundColor:
+                                                'rgba(0, 0, 0, 0.6)',
                                             color: 'white',
                                             opacity: 0,
                                             transition: 'opacity 0.3s',
                                             borderRadius: '8px',
                                             cursor: 'pointer',
                                         }}
-                                        onClick={() => handleImageClick(recipe.id)}
+                                        onClick={() =>
+                                            handleImageClick(recipe.id)
+                                        }
                                         onMouseEnter={(e) => {
                                             e.currentTarget.style.opacity = '1';
                                         }}
@@ -210,19 +228,24 @@ const SiteRecipe = () => {
             </Box>
 
             {/* 페이지네이션 버튼 */}
-            <Box style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', gap:'10px' }}>
+            <Box
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginBottom: '16px',
+                    gap: '10px',
+                }}
+            >
                 {getPaginationButtons()}
             </Box>
-
         </div>
     );
 };
 
 export default SiteRecipe;
 
-
-
-{/*
+{
+    /*
     작성 버튼)
     
     <Button
@@ -247,4 +270,5 @@ export default SiteRecipe;
                 <Icon as={EditIcon} size='xl' />
             </ButtonText>
             
-</Button> */}
+</Button> */
+}
