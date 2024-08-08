@@ -1,70 +1,53 @@
 // app/login/page.tsx
-"use client";
+'use client'; // 클라이언트 사이드에서 실행됨
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../lib/firebaseConfig'; // Firebase 설정 파일 경로
 
-const Login = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const router = useRouter();
+export default function LoginPage() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
-  const handleLogin = async (e: any) => {
-    e.preventDefault();
-    // 여기에 로그인 로직 추가 (예: API 요청)
-    console.log("Username:", username);
-    console.log("Password:", password);
+    // useRouter 훅을 사용하여 라우터 인스턴스 생성
+    const router = useRouter();
 
-    // 예시로 로그인 성공 가정
-    if (username === "admin" && password === "password") {
-      router.push("/");
-    } else {
-      alert("로그인 실패");
-    }
-  };
+    const handleLogin = async () => {
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            console.log('로그인 성공');
+            // 로그인 성공 후 메인 페이지로 리다이렉트
+            router.push('/'); // 메인 페이지로 리다이렉트
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error('로그인 오류:', error.message);
+                setError('로그인 실패: ' + error.message); // 사용자에게 보다 구체적인 오류 메시지 제공
+            } else {
+                console.error('로그인 오류:', error);
+                setError('로그인 실패: 알 수 없는 오류');
+            }
+        }
+    };
 
-  return (
-    <main className="flex items-center justify-center h-screen p-4">
-      <div className="w-full max-w-sm">
-        <p className="text-xl font-semibold mb-4">로그인</p>
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
-          <label className="flex flex-col">
-            Username:
+    return (
+        <div>
+            <h1>로그인</h1>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className="border border-gray-300 p-2 rounded"
+                type='email'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder='이메일'
             />
-          </label>
-          <label className="flex flex-col">
-            Password:
             <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="border border-gray-300 p-2 rounded"
+                type='password'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder='비밀번호'
             />
-          </label>
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Login
-            </button>
-          </div>
-        </form>
-        <div className="mt-4 text-center">
-          <a href="/signUp" className="text-blue-500 hover:underline text-sm">
-            회원가입
-          </a>
+            <button onClick={handleLogin}>로그인</button>
+            {error && <p>{error}</p>}
         </div>
-      </div>
-    </main>
-  );
-};
-
-export default Login;
+    );
+}
