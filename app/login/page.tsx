@@ -20,7 +20,6 @@ export default function LoginPage() {
             console.log('로그인 성공');
             // 로그인 성공 후 메인 페이지로 리다이렉트
             router.push('/'); // 메인 페이지로 리다이렉트
-            // 커밋 오류 테스트
         } catch (error) {
             if (error instanceof Error) {
                 console.error('로그인 오류:', error.message);
