@@ -1,117 +1,61 @@
+// app/ListPost.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../lib/firebaseConfig';
 
 const ListPost = () => {
-    const [post, setPost] = useState(null);
-    const [comment, setComment] = useState('');
-    const [comments, setComments] = useState([]);
+    const [post, setPost] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
     const searchParams = useSearchParams();
     const postId = searchParams.get('id');
 
     useEffect(() => {
-        if (postId) {
-            const savedPosts = JSON.parse(localStorage.getItem('posts')) || [];
-            const foundPost = savedPosts.find((p) => p.id === parseInt(postId));
-            if (foundPost) {
-                setPost(foundPost);
-                // Ensure comments is an array
-                setComments(
-                    Array.isArray(foundPost.comments) ? foundPost.comments : []
-                );
-            }
-        }
-    }, [postId]);
+        const fetchPost = async () => {
+            if (postId) {
+                try {
+                    const postDoc = doc(db, 'posts', postId);
+                    const postSnapshot = await getDoc(postDoc);
 
-    const handleCommentSubmit = (e) => {
-        e.preventDefault();
-        const newComment = {
-            id: Date.now(),
-            text: comment,
+                    if (postSnapshot.exists()) {
+                        setPost(postSnapshot.data());
+                    } else {
+                        console.error('No such document!');
+                    }
+                } catch (error) {
+                    console.error('Error fetching document:', error);
+                } finally {
+                    setLoading(false);
+                }
+            }
         };
 
-        const updatedComments = [...comments, newComment];
-        setComments(updatedComments);
-        setComment('');
+        fetchPost();
+    }, [postId]);
 
-        // Update the post's comments in localStorage
-        const savedPosts = JSON.parse(localStorage.getItem('posts')) || [];
-        const updatedPosts = savedPosts.map((p) =>
-            p.id === parseInt(postId) ? { ...p, comments: updatedComments } : p
-        );
-
-        localStorage.setItem('posts', JSON.stringify(updatedPosts));
-    };
-
-    if (!post) {
+    if (loading) {
         return <p>Loading...</p>;
     }
 
-    return (
-        <main>
-            <div style={{ padding: '20px' }}>
-                <h1>{post.title}</h1>
-                <p>작성자: {post.author}</p>
-                <p>작성일: {post.date}</p>
-                <div
-                    style={{
-                        marginTop: '20px',
-                        padding: '10px',
-                        border: '1px solid #ddd',
-                    }}
-                >
-                    {post.content}
-                </div>
+    if (!post) {
+        return <p>Post not found</p>;
+    }
 
-                <section style={{ marginTop: '40px' }}>
-                    <h2>댓글</h2>
-                    {comments.length > 0 ? (
-                        <ul style={{ listStyleType: 'none', padding: 0 }}>
-                            {comments.map((comment) => (
-                                <li
-                                    key={comment.id}
-                                    style={{
-                                        padding: '10px',
-                                        borderBottom: '1px solid #ddd',
-                                    }}
-                                >
-                                    {comment.text}{' '}
-                                    {/* Ensure only text is rendered */}
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>댓글이 없습니다.</p>
-                    )}
-                    <form
-                        onSubmit={handleCommentSubmit}
-                        style={{ marginTop: '20px' }}
-                    >
-                        <textarea
-                            value={comment}
-                            onChange={(e) => setComment(e.target.value)}
-                            style={{
-                                width: '100%',
-                                padding: '10px',
-                                height: '100px',
-                                border: '1px solid #ddd',
-                                borderRadius: '4px',
-                            }}
-                            required
-                        />
-                        <button
-                            type='submit'
-                            className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
-                            style={{ marginTop: '10px' }}
-                        >
-                            댓글 작성
-                        </button>
-                    </form>
-                </section>
+    return (
+        <div>
+            <h1>{post.title}</h1>
+            <p>작성자: {post.author}</p>
+            <p>작성일: {post.date}</p>
+            <div>
+                <h2>내용</h2>
+                <p>{post.content}</p>
             </div>
-        </main>
+            <p>댓글 수: {post.comments}</p>
+            <p>조회 수: {post.views}</p>
+        </div>
     );
 };
 
