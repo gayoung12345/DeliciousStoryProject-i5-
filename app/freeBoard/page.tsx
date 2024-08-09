@@ -1,71 +1,66 @@
+// app/FreeBoard.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-// 예시 데이터 (하나의 게시글)
-const examplePosts = [
-    {
-        id: 1,
-        title: '게시물 제목 1',
-        author: '작성자 1',
-        date: '2024-08-01',
-        comments: 5,
-        views: 100,
-    },
-];
+import { useAuth } from '../context/AuthContext'; // 인증 컨텍스트 가져오기
+import { fetchPosts } from '../../lib/firestore'; // Firestore에서 게시글을 가져오는 함수
 
 const FreeBoard = () => {
-    const [posts, setPosts] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
-    const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
-    const [filteredPosts, setFilteredPosts] = useState([]); // 필터링된 게시글 상태
-    const postsPerPage = 10; // 페이지당 게시글 수
+    const [posts, setPosts] = useState<any[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredPosts, setFilteredPosts] = useState<any[]>([]);
+    const postsPerPage = 10;
     const router = useRouter();
+    const { user } = useAuth();
 
     useEffect(() => {
-        const savedPosts =
-            JSON.parse(localStorage.getItem('posts')) || examplePosts;
-        // 최신 게시글이 위로 오도록 정렬
-        savedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setPosts(savedPosts);
-        setFilteredPosts(savedPosts); // 초기 상태에서는 모든 게시글을 표시
+        const loadPosts = async () => {
+            try {
+                const postsData = await fetchPosts();
+                setPosts(postsData);
+                setFilteredPosts(postsData);
+                console.log('Posts loaded:', postsData); // 디버깅용 로그
+            } catch (error) {
+                console.error('Error loading posts:', error);
+            }
+        };
+
+        loadPosts();
     }, []);
 
     const handleWriteClick = () => {
-        router.push('/posting');
+        router.push('/posting'); // 글 작성 페이지로 이동
     };
 
-    const handlePostClick = (id) => {
-        router.push(`/listPost?id=${id}`);
+    const handlePostClick = (id: string) => {
+        router.push(`/listPost?id=${id}`); // 글 상세보기 페이지로 이동
     };
 
-    const handleSearchChange = (event) => {
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
     };
 
     const handleSearchClick = () => {
-        // 검색어로 필터링된 게시글 가져오기
         const results = posts.filter((post) =>
             post.title.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredPosts(results);
-        setCurrentPage(1); // 검색 시 첫 페이지로 돌아가기
+        setCurrentPage(1);
     };
 
     const handleResetSearch = () => {
         setSearchTerm('');
-        setFilteredPosts(posts); // 검색어 초기화 시 모든 게시글로 복원
-        setCurrentPage(1); // 초기화 시 첫 페이지로 돌아가기
+        setFilteredPosts(posts);
+        setCurrentPage(1);
     };
 
-    // 현재 페이지의 게시글 가져오기
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
 
-    // 페이지 번호 변경 핸들러
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     return (
         <main>
@@ -73,21 +68,29 @@ const FreeBoard = () => {
                 <h1 style={{ textAlign: 'center', fontSize: '36px' }}>
                     자유게시판
                 </h1>
-                <button
-                    type='button'
-                    className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
-                    style={{ float: 'right', marginBottom: '20px' }}
-                    onClick={handleWriteClick}
-                >
-                    글 작성하기
-                </button>
+                {user && (
+                    <button
+                        type='button'
+                        className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
+                        style={{ float: 'right', marginBottom: '20px' }}
+                        onClick={handleWriteClick}
+                    >
+                        글 작성하기
+                    </button>
+                )}
 
-                <div style={{ marginTop: '20px' }}>
+                <div
+                    style={{
+                        marginTop: '20px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                    }}
+                >
                     {filteredPosts.length > 0 ? (
                         <>
                             <table
                                 style={{
-                                    width: '100%',
+                                    width: '60%',
                                     borderCollapse: 'collapse',
                                 }}
                             >
@@ -218,7 +221,8 @@ const FreeBoard = () => {
                                     ))}
                                 </tbody>
                             </table>
-                            {/* 페이지 네비게이션 */}
+                            <br />
+
                             <nav
                                 style={{
                                     textAlign: 'center',
@@ -272,12 +276,17 @@ const FreeBoard = () => {
                             </nav>
                         </>
                     ) : (
-                        <p>게시물이 없습니다.</p>
+                        <p>작성된 글이 없습니다.</p>
                     )}
                 </div>
             </div>
-            <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                {/* 검색창 */}
+            <div
+                style={{
+                    marginTop: '20px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                }}
+            >
                 <input
                     type='text'
                     value={searchTerm}
@@ -287,13 +296,13 @@ const FreeBoard = () => {
                         padding: '8px',
                         borderRadius: '4px',
                         border: '1px solid #ddd',
-                        width: '300px',
+                        width: '400px',
                         marginRight: '10px',
                     }}
                 />
                 <button
                     type='button'
-                    className='bg-black text-white px-4 py-2 rounded hover:bg-gray-600'
+                    className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600'
                     onClick={handleSearchClick}
                 >
                     검색
