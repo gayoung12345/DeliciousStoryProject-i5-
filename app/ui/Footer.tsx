@@ -17,17 +17,18 @@ const Footer: React.FC = () => {
 
                         <div className='flex'>
                             <span> Team i5 |</span>
-                        <span>| 김가영 |</span>
-                        <span>| 김유미 |</span>
-                        <span>| 전보람 |</span>
-                        <span>| 추호연 |</span>
-                        <span>| 이다은 </span>
+                            <span>| 김가영 |</span>
+                            <span>| 김유미 |</span>
+                            <span>| 전보람 |</span>
+                            <span>| 추호연 |</span>
+                            <span>| 이다은 </span>
                         </div>
                     </div>
 
                     <div className='text-left text-sm'>
                         <p>
-                        대구 윤성 컴퓨터 디자인 DX아카데미 : 빅데이터 활용 SW개발 전문가 양성 과정
+                            대구 윤성 컴퓨터 디자인 DX아카데미 : 빅데이터 활용
+                            SW개발 전문가 양성 과정
                         </p>
                         <p>
                             {/* 사업자번호 : 000-00-00000 [사업자정보확인]
@@ -41,7 +42,7 @@ const Footer: React.FC = () => {
                     <div className='flex justify-center mt-4 pt-11'>
                         <div className='space-x-4'>
                             <a
-                                href='#'
+                                href='/test'
                                 className='inline-block'
                             >
                                 <Image
@@ -76,9 +77,7 @@ const Footer: React.FC = () => {
                         </div>
                     </div>
                     <div className='text-center mt-4'>
-                        <p>
-                        ~ Delicious Story ~
-                        </p>
+                        <p>~ Delicious Story ~</p>
                         <div className='flex justify-center mt-2'>
                             <Image
                                 src='/png/cs.png'
