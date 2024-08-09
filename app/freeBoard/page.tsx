@@ -61,15 +61,24 @@ const FreeBoard = () => {
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
     return (
         <main>
             <div style={{ padding: '20px' }}>
-                <h1 style={{ textAlign: 'center', fontSize: '36px' }}>
+                <h1 style={{ textAlign: 'center', fontSize: '36px', marginTop: '20px', marginBottom: '20px' }}>
                     자유게시판
                 </h1>
 
                 {/* 글 작성하기 버튼을 테이블 바로 위에 위치시키기 */}
                 {user && (
+
                     <div style={{ marginLeft: '1350px', marginBottom: '20px' }}>
                         <button
                             type='button'
@@ -92,7 +101,7 @@ const FreeBoard = () => {
                         <>
                             <table
                                 style={{
-                                    width: '60%',
+                                    width: '70%', // 테이블 너비 조정
                                     borderCollapse: 'collapse',
                                 }}
                             >
@@ -104,6 +113,7 @@ const FreeBoard = () => {
                                                 padding: '8px',
                                                 textAlign: 'center',
                                                 backgroundColor: '#f9f9f9',
+                                                width: '10%', // 번호 열 너비
                                             }}
                                         >
                                             번호
@@ -114,6 +124,7 @@ const FreeBoard = () => {
                                                 padding: '8px',
                                                 textAlign: 'center',
                                                 backgroundColor: '#f9f9f9',
+                                                width: '50%', // 글 제목 열 줄임
                                             }}
                                         >
                                             글 제목
@@ -124,6 +135,7 @@ const FreeBoard = () => {
                                                 padding: '8px',
                                                 textAlign: 'center',
                                                 backgroundColor: '#f9f9f9',
+                                                width: '15%', // 작성자 열 너비
                                             }}
                                         >
                                             작성자
@@ -134,6 +146,9 @@ const FreeBoard = () => {
                                                 padding: '8px',
                                                 textAlign: 'center',
                                                 backgroundColor: '#f9f9f9',
+
+                                                width: '15%', // 작성일 열을 작성자와 같은 너비
+
                                             }}
                                         >
                                             작성일
@@ -144,6 +159,7 @@ const FreeBoard = () => {
                                                 padding: '8px',
                                                 textAlign: 'center',
                                                 backgroundColor: '#f9f9f9',
+                                                width: '5%', // 댓글수 열 너비
                                             }}
                                         >
                                             댓글수
@@ -154,6 +170,7 @@ const FreeBoard = () => {
                                                 padding: '8px',
                                                 textAlign: 'center',
                                                 backgroundColor: '#f9f9f9',
+                                                width: '5%', // 조회수 열 너비
                                             }}
                                         >
                                             조회수
@@ -165,8 +182,7 @@ const FreeBoard = () => {
                                         <tr key={post.id}>
                                             <td
                                                 style={{
-                                                    borderBottom:
-                                                        '1px solid #ddd',
+                                                    borderBottom: '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -178,13 +194,15 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    borderBottom:
-                                                        '1px solid #ddd',
+                                                    borderBottom: '1px solid #ddd',
                                                     padding: '8px',
                                                     cursor: 'pointer',
                                                     color: 'blue',
                                                     textDecoration: 'underline',
                                                     textAlign: 'left',
+                                                    whiteSpace: 'nowrap', // 제목이 너무 길면 줄바꿈 없이 표시
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
                                                 }}
                                                 onClick={() =>
                                                     handlePostClick(post.id)
@@ -194,8 +212,7 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    borderBottom:
-                                                        '1px solid #ddd',
+                                                    borderBottom: '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -204,18 +221,17 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    borderBottom:
-                                                        '1px solid #ddd',
+                                                    borderBottom: '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
                                             >
-                                                {post.date}
+                                                {formatDate(post.date)}
                                             </td>
                                             <td
                                                 style={{
-                                                    borderBottom:
-                                                        '1px solid #ddd',
+
+                                                    borderBottom: '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -224,8 +240,7 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    borderBottom:
-                                                        '1px solid #ddd',
+                                                    borderBottom: '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -298,7 +313,8 @@ const FreeBoard = () => {
                             {[
                                 ...Array(
                                     Math.ceil(
-                                        filteredPosts.length / postsPerPage
+                                        filteredPosts.length /
+                                            postsPerPage
                                     )
                                 ).keys(),
                             ].map((number) => (
@@ -307,14 +323,20 @@ const FreeBoard = () => {
                                     style={{ margin: '0 5px' }}
                                 >
                                     <button
-                                        onClick={() => paginate(number + 1)}
+
+                                        onClick={() =>
+                                            paginate(number + 1)
+                                        }
                                         style={{
                                             background:
-                                                number + 1 === currentPage
-                                                    ? 'blue'
+                                                number + 1 ===
+                                                currentPage
+                                                    ? 'orange'
                                                     : 'white',
                                             color:
-                                                number + 1 === currentPage
+                                                number + 1 ===
+                                                currentPage
+
                                                     ? 'white'
                                                     : 'black',
                                             border: '1px solid #ddd',

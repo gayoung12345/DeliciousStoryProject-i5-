@@ -10,6 +10,8 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
     "@expo/html-elements": "^0.10.1",
     "@gluestack-ui/accordion": "^1.0.5",
     "@gluestack-ui/button": "^1.0.7",
@@ -18,6 +20,7 @@
     "@gluestack-ui/overlay": "^0.1.15",
     "@gluestack-ui/toast": "^1.0.7",
     "@gluestack/ui-next-adapter": "^2.1.12",
+    "@mui/material": "^5.16.6",
     "@types/quill": "^2.0.14",
     "autoprefixer": "^10.4.20",
     "firebase": "^10.12.5",
