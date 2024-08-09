@@ -23,11 +23,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ id, onImageSelected }) => {
                 const reader = new FileReader();
                 reader.onloadend = () => {
                     setPreview(reader.result as string);
+                    onImageSelected(id, file); // 실제 파일 객체를 전달
                 };
                 reader.readAsDataURL(file);
 
                 setError(null);
-                onImageSelected(id, file);
             } else {
                 setError('이미지 파일만 업로드할 수 있습니다.');
                 setImage(null);

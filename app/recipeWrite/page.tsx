@@ -1,12 +1,24 @@
 'use client';
 import React, { useState } from 'react';
-
 import IngredientInput from '@/components/recipe/IngredientInput';
 import RecipeStepInput from '@/components/recipe/RecipeStepInput';
 import { Button, ButtonText } from '@/components/ui/button';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
-import ImageUpload from '@/components/recipe/ImageUpload';
+
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import ImageUpload from '@/components/recipe/imageUpload';
+
+interface RecipeStep {
+    description: string;
+    image: string | null;
+}
+
+interface Ingredient {
+    name: string;
+    quantity: string;
+    unit: string;
+}
 
 const RecipeWrite: React.FC = () => {
     const [title, setTitle] = useState('');
@@ -16,12 +28,27 @@ const RecipeWrite: React.FC = () => {
     const [servings, setServings] = useState('');
     const [time, setTime] = useState('');
     const [difficulty, setDifficulty] = useState('');
-    const [images, setImages] = useState<{ [key: string]: string }>({});
+    const [images, setImages] = useState<{ [key: string]: File | null }>({});
     const [steps, setSteps] = useState<RecipeStep[]>([]);
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+    const storage = getStorage();
 
-    const handleImageUploaded = (id: string, url: string) => {
-        setImages((prev) => ({ ...prev, [id]: url }));
+    const uploadImage = async (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const storageRef = ref(storage, `images/${file.name}`);
+            uploadBytes(storageRef, file)
+                .then(() => getDownloadURL(storageRef))
+                .then((url) => resolve(url))
+                .catch((error) => reject(error));
+        });
+    };
+
+    const handleImageSelected = (id: string, file: File | null) => {
+        if (file) {
+            setImages((prev) => ({ ...prev, [id]: file }));
+        } else {
+            setImages((prev) => ({ ...prev, [id]: null }));
+        }
     };
 
     const handleStepChange = (updatedSteps: RecipeStep[]) => {
@@ -33,6 +60,24 @@ const RecipeWrite: React.FC = () => {
     };
 
     const handleSubmit = async () => {
+        // 이미지 업로드
+        const uploadedImages: { [key: string]: string } = {};
+
+        for (const [id, file] of Object.entries(images)) {
+            if (file) {
+                try {
+                    const url = await uploadImage(file);
+                    uploadedImages[id] = url;
+                } catch (error) {
+                    console.error(
+                        `Error uploading image with id ${id}:`,
+                        error
+                    );
+                }
+            }
+        }
+
+        // Firestore에 데이터 저장
         try {
             await addDoc(collection(db, 'userRecipe'), {
                 title,
@@ -46,7 +91,7 @@ const RecipeWrite: React.FC = () => {
                     time,
                     difficulty,
                 },
-                images, // 업로드된 이미지 URL
+                images: uploadedImages, // 업로드된 이미지 URL
                 steps, // 단계별 설명과 이미지 URL
                 ingredients, // 재료 목록
                 createdAt: new Date(),
@@ -165,9 +210,11 @@ const RecipeWrite: React.FC = () => {
                 <div>
                     <ImageUpload
                         id='main-image'
-                        onImageUploaded={(url) =>
-                            handleImageUploaded('main-image', url)
-                        }
+                        onImageSelected={(id, file) => {
+                            if (file) {
+                                handleImageSelected(id, file);
+                            }
+                        }}
                     />
                 </div>
             </div>
@@ -184,7 +231,13 @@ const RecipeWrite: React.FC = () => {
             </div>
 
             <div className='w-full max-w-6xl mt-8 flex justify-center items-center'>
-                <Button
+                <button
+                    className='border border-gray-300 w-[300px] h-[100px] text-center bg-white'
+                    onClick={handleSubmit}
+                >
+                    저장
+                </button>
+                {/* <Button
                     className='w-1/2 h-14'
                     size='lg'
                     variant='outline'
@@ -192,7 +245,7 @@ const RecipeWrite: React.FC = () => {
                     onClick={handleSubmit}
                 >
                     <ButtonText>저장</ButtonText>
-                </Button>
+                </Button> */}
             </div>
         </main>
     );

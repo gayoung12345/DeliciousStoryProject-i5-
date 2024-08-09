@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import ImageUpload from './ImageUpload';
+import ImageUpload from './imageUpload';
 
 interface RecipeStep {
     description: string;
@@ -23,7 +23,7 @@ const RecipeStepInput: React.FC<RecipeStepInputProps> = ({ onStepChange }) => {
         onStepChange(newSteps);
     };
 
-    const handleImageUploaded = (index: number, url: string) => {
+    const handleImageSelected = (index: number, id: string, url: string) => {
         const newSteps = [...steps];
         newSteps[index] = { ...newSteps[index], image: url };
         setSteps(newSteps);
@@ -63,17 +63,12 @@ const RecipeStepInput: React.FC<RecipeStepInputProps> = ({ onStepChange }) => {
                             className='border border-gray-300 rounded p-2 w-3/5 h-52 resize-none text-base'
                             style={{ fontSize: '16px' }}
                         />
-                        <div className='relative w-52 h-52 border border-gray-300 rounded overflow-hidden'>
+                        <div className='relative w-52 h-52 border border-gray-300 overflow-hidden'>
                             <ImageUpload
                                 id={`step-image-${index}`}
                                 onImageSelected={(id, url) =>
-                                    handleImageUploaded(index, url)
+                                    handleImageSelected(index, id, url)
                                 }
-                            />
-                            <img
-                                src={step.image || '/placeholder.png'}
-                                alt={`Step ${index + 1} preview`}
-                                className='object-cover w-full h-full'
                             />
                         </div>
                         {steps.length > 1 && (
