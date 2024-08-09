@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -78,10 +78,11 @@ const FreeBoard = () => {
 
                 {/* 글 작성하기 버튼을 테이블 바로 위에 위치시키기 */}
                 {user && (
-                    <div style={{ marginLeft: '1450px', marginBottom: '20px' }}>
+
+                    <div style={{ marginLeft: '1350px', marginBottom: '20px' }}>
                         <button
                             type='button'
-                            className='bg-orange-400 text-white px-4 py-2 rounded hover:bg-orange-500'
+                            className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
                             onClick={handleWriteClick}
                         >
                             글 작성하기
@@ -145,7 +146,9 @@ const FreeBoard = () => {
                                                 padding: '8px',
                                                 textAlign: 'center',
                                                 backgroundColor: '#f9f9f9',
+
                                                 width: '15%', // 작성일 열을 작성자와 같은 너비
+
                                             }}
                                         >
                                             작성일
@@ -227,6 +230,7 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
+
                                                     borderBottom: '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
@@ -319,6 +323,7 @@ const FreeBoard = () => {
                                     style={{ margin: '0 5px' }}
                                 >
                                     <button
+
                                         onClick={() =>
                                             paginate(number + 1)
                                         }
@@ -331,6 +336,7 @@ const FreeBoard = () => {
                                             color:
                                                 number + 1 ===
                                                 currentPage
+
                                                     ? 'white'
                                                     : 'black',
                                             border: '1px solid #ddd',

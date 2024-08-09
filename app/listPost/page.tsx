@@ -1,4 +1,3 @@
-// app/ListPost.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -79,6 +78,15 @@ const ListPost = () => {
 
     return (
         <main>
+            <h1
+                style={{
+                    textAlign: 'center',
+                    fontSize: '36px',
+                    marginBottom: '20px',
+                }}
+            >
+                게시글 상세보기
+            </h1>
             <div
                 style={{
                     padding: '20px',
@@ -91,131 +99,57 @@ const ListPost = () => {
                 <h1
                     style={{
                         textAlign: 'center',
-                        fontSize: '36px',
+                        fontSize: '24px',
                         marginBottom: '30px',
                     }}
                 >
-                    게시글 상세보기
+                    {post.title}
                 </h1>
-                <table
-                    style={{
-                        width: '100%',
-                        marginBottom: '30px',
-                        borderCollapse: 'collapse',
-                        backgroundColor: '#fff',
-                        borderRadius: '8px',
-                        overflow: 'hidden',
-                    }}
-                >
-                    <tbody>
-                        <tr>
-                            <th
-                                style={{
-                                    padding: '10px',
-                                    backgroundColor: '#f0f0f0',
-                                    fontWeight: 'bold',
-                                    width: '20%',
-                                    borderBottom: '1px solid #ddd',
-                                    textAlign: 'center',
-                                }}
-                            >
-                                제목
-                            </th>
-                            <td
-                                style={{
-                                    padding: '10px',
-                                    borderBottom: '1px solid #ddd',
-                                }}
-                            >
-                                {post.title}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th
-                                style={{
-                                    padding: '10px',
-                                    backgroundColor: '#f0f0f0',
-                                    textAlign: 'center',
-                                    fontWeight: 'bold',
-                                    width: '20%',
-                                    borderBottom: '1px solid #ddd',
-                                }}
-                            >
-                                작성자
-                            </th>
-                            <td
-                                style={{
-                                    padding: '10px',
-                                    borderBottom: '1px solid #ddd',
-                                }}
-                            >
-                                {post.author}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th
-                                style={{
-                                    padding: '10px',
-                                    backgroundColor: '#f0f0f0',
-                                    textAlign: 'center',
-                                    fontWeight: 'bold',
-                                    width: '20%',
-                                    borderBottom: '1px solid #ddd',
-                                }}
-                            >
-                                작성일
-                            </th>
-                            <td
-                                style={{
-                                    padding: '10px',
-                                    borderBottom: '1px solid #ddd',
-                                }}
-                            >
-                                {post.date}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th
-                                style={{
-                                    padding: '10px',
-                                    backgroundColor: '#f0f0f0',
-                                    textAlign: 'center',
-                                    fontWeight: 'bold',
-                                    width: '20%',
-                                    borderBottom: '1px solid #ddd',
-                                    height: '350px', // 높이 설정
-                                }}
-                            >
-                                내용
-                            </th>
-
-                            <td
-                                style={{
-                                    padding: '20px',
-                                    borderBottom: '1px solid #ddd',
-                                    lineHeight: '1.6',
-                                }}
-                            >
-                                <div
-                                    dangerouslySetInnerHTML={{
-                                        __html: post.content,
-                                    }}
-                                />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                {/* 댓글 작성 섹션 */}
                 <div
                     style={{
-                        marginTop: '50px',
+                        marginBottom: '20px',
+                        fontSize: '14px', // 작은 폰트 크기
+                        color: '#555',
+                        textAlign: 'right',
+                    }}
+                >
+                    <p>작성자: {post.author}</p>
+                    <p>작성일: {post.date}</p>
+                    <p>
+                        댓글 수 {post.comments} | 조회 수 {post.views}
+                    </p>
+                </div>
+
+                <div
+                    style={{
                         padding: '20px',
                         backgroundColor: '#f9f9f9',
                         borderRadius: '8px',
-                        border: '1px solid #ddd',
+                        marginBottom: '30px',
+                        lineHeight: '1.6',
+                        fontSize: '16px',
+                        width: '100%', // 일치시키기
+                        boxSizing: 'border-box', // 패딩과 보더를 포함한 전체 너비 조정
                     }}
                 >
-                    <h2 style={{ fontSize: '24px', marginBottom: '20px' }}>
+                    <div
+                        dangerouslySetInnerHTML={{
+                            __html: post.content,
+                        }}
+                    />
+                </div>
+                {/* 댓글 작성 섹션 */}
+                <div
+                    style={{
+                        padding: '20px',
+                        backgroundColor: '#f9f9f9',
+                        borderRadius: '8px',
+                        marginBottom: '30px',
+                        boxSizing: 'border-box', // 패딩과 보더를 포함한 전체 너비 조정
+                        width: '100%', // 일치시키기
+                    }}
+                >
+                    <h2 style={{ fontSize: '16px', marginBottom: '20px' }}>
                         댓글 작성하기
                     </h2>
                     <form onSubmit={handleCommentSubmit}>
@@ -229,30 +163,27 @@ const ListPost = () => {
                                 borderRadius: '4px',
                                 resize: 'none',
                                 height: '100px',
-                                marginBottom: '20px',
+                                marginBottom: '10px',
+                                boxSizing: 'border-box', // 패딩과 보더를 포함한 전체 너비 조정
                             }}
-                            placeholder='댓글을 작성하세요...'
+                            placeholder='좋은 말로 할 때 댓글을 작성하시겠어요?^^'
                             required
                         />
                         <button
                             type='submit'
                             className='bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600'
                         >
-                            댓글 작성
+                            등록
                         </button>
                     </form>
                 </div>
 
-                <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                    <p style={{ fontSize: '16px', color: '#888' }}>
-                        댓글 수 {post.comments} | 조회 수 {post.views}
-                    </p>
-                </div>
                 <div
                     style={{
                         display: 'flex',
                         justifyContent: 'center',
                         marginTop: '30px',
+                        marginBottom: '10px',
                     }}
                 >
                     <button
