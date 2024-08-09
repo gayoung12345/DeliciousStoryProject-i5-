@@ -27,7 +27,9 @@ const Footer: React.FC = () => {
                     </div>
                     <div className='text-left text-sm'>
                         <p>
-                            대구 윤성 컴퓨터 디자인 DX아카데미 : 빅데이터 활용 SW개발 전문가 양성 과정
+                            대구 윤성 컴퓨터 디자인 DX아카데미 : 빅데이터 활용
+                            SW개발 전문가 양성 과정
+
                         </p>
                         <p>
                             전화 : 053-252-8889 | 팩스 : 053-252-8889

@@ -5,30 +5,39 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import xml2js from 'xml2js';
 import { useRouter } from 'next/navigation';
-import { FaArrowUp } from "react-icons/fa";
+import { FaArrowUp } from 'react-icons/fa';
 
 const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth', // 부드러운 스크롤 효과
-        });
-    };
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth', // 부드러운 스크롤 효과
+    });
+};
 
 // 임시 Box, Text, Grid 컴포넌트
 const Box = ({ children, style, ...props }) => (
-    <div style={style} {...props}>
+    <div
+        style={style}
+        {...props}
+    >
         {children}
     </div>
 );
 
 const Text = ({ children, style, ...props }) => (
-    <p style={style} {...props}>
+    <p
+        style={style}
+        {...props}
+    >
         {children}
     </p>
 );
 
 const Grid = ({ children, style, ...props }) => (
-    <div style={style} {...props}>
+    <div
+        style={style}
+        {...props}
+    >
         {children}
     </div>
 );
@@ -78,7 +87,8 @@ const SiteRecipe = () => {
         const documentHeight = document.documentElement.offsetHeight; // 전체 문서 높이
 
         // 스크롤이 맨 아래에 도달했을 때 로드
-        if (scrollTop + windowHeight >= documentHeight - 200) { // 200px 남았을 때 로드
+        if (scrollTop + windowHeight >= documentHeight - 200) {
+            // 200px 남았을 때 로드
             if (itemsPerPage < recipes.length) {
                 setItemsPerPage((prev) => prev + 1); // 1개씩 추가
             }
@@ -101,16 +111,23 @@ const SiteRecipe = () => {
                     marginBottom: '16px',
                     textDecoration: 'underline',
                     textUnderlineOffset: '10px',
-                }} 
+                }}
             >
                 공식 레시피
             </Text>
 
-            <Box style={{ padding: '16px', display: 'flex', justifyContent: 'center' }}>
+            <Box
+                style={{
+                    padding: '16px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                }}
+            >
                 <Grid
                     style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                        gridTemplateColumns:
+                            'repeat(auto-fill, minmax(200px, 1fr))',
                         gap: '16px',
                         marginBottom: '24px',
                         maxWidth: '1400px',
@@ -150,14 +167,17 @@ const SiteRecipe = () => {
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                                            backgroundColor:
+                                                'rgba(0, 0, 0, 0.6)',
                                             color: 'white',
                                             opacity: 0,
                                             transition: 'opacity 0.3s',
                                             borderRadius: '8px',
                                             cursor: 'pointer',
                                         }}
-                                        onClick={() => handleImageClick(recipe.id)}
+                                        onClick={() =>
+                                            handleImageClick(recipe.id)
+                                        }
                                         onMouseEnter={(e) => {
                                             e.currentTarget.style.opacity = '1';
                                         }}
@@ -200,30 +220,29 @@ const SiteRecipe = () => {
                 </Grid>
             </Box>
             <button
-                    onClick={scrollToTop} // onClick 핸들러 수정
-                    style={{
-                        color: '#ffffff',
-                        backgroundColor: '#000000',
-                        position: 'fixed',
-                        bottom: 50,
-                        right: 50,
-                        width: 80,
-                        height: 80,
-                        borderRadius: 40,
-                        zIndex: 10,
-                        border: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                    }}
-                >
-                    <FaArrowUp
-                        size={24}
-                        color='#ffffff'
-                    />
-                </button>
-            
+                onClick={scrollToTop} // onClick 핸들러 수정
+                style={{
+                    color: '#ffffff',
+                    backgroundColor: '#000000',
+                    position: 'fixed',
+                    bottom: 50,
+                    right: 50,
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                    zIndex: 10,
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                }}
+            >
+                <FaArrowUp
+                    size={24}
+                    color='#ffffff'
+                />
+            </button>
         </div>
     );
 };
