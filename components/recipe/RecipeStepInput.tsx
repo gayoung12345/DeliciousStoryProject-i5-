@@ -1,11 +1,17 @@
-import { useState } from 'react';
+'use client';
+import React, { useState } from 'react';
+import ImageUpload from './ImageUpload';
 
 interface RecipeStep {
     description: string;
     image: string | null;
 }
 
-const RecipeStepInput: React.FC = () => {
+interface RecipeStepInputProps {
+    onStepChange: (steps: RecipeStep[]) => void;
+}
+
+const RecipeStepInput: React.FC<RecipeStepInputProps> = ({ onStepChange }) => {
     const [steps, setSteps] = useState<RecipeStep[]>([
         { description: '', image: null },
     ]);
@@ -14,39 +20,26 @@ const RecipeStepInput: React.FC = () => {
         const newSteps = [...steps];
         newSteps[index] = { ...newSteps[index], description: value };
         setSteps(newSteps);
+        onStepChange(newSteps);
     };
 
-    const handleImageChange = (
-        index: number,
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const file = event.target.files?.[0];
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                if (e.target?.result) {
-                    const newSteps = [...steps];
-                    newSteps[index] = {
-                        ...newSteps[index],
-                        image: e.target.result as string,
-                    };
-                    setSteps(newSteps);
-                }
-            };
-            reader.readAsDataURL(file);
-        } else {
-            alert('Please select a valid image file.');
-        }
+    const handleImageUploaded = (index: number, url: string) => {
+        const newSteps = [...steps];
+        newSteps[index] = { ...newSteps[index], image: url };
+        setSteps(newSteps);
+        onStepChange(newSteps);
     };
 
     const handleAddStep = () => {
         setSteps([...steps, { description: '', image: null }]);
+        onStepChange([...steps, { description: '', image: null }]);
     };
 
     const handleRemoveStep = (index: number) => {
         if (steps.length > 1) {
             const newSteps = steps.filter((_, i) => i !== index);
             setSteps(newSteps);
+            onStepChange(newSteps);
         }
     };
 
@@ -71,16 +64,16 @@ const RecipeStepInput: React.FC = () => {
                             style={{ fontSize: '16px' }}
                         />
                         <div className='relative w-52 h-52 border border-gray-300 rounded overflow-hidden'>
+                            <ImageUpload
+                                id={`step-image-${index}`}
+                                onImageSelected={(id, url) =>
+                                    handleImageUploaded(index, url)
+                                }
+                            />
                             <img
                                 src={step.image || '/placeholder.png'}
                                 alt={`Step ${index + 1} preview`}
                                 className='object-cover w-full h-full'
-                            />
-                            <input
-                                type='file'
-                                accept='image/*'
-                                onChange={(e) => handleImageChange(index, e)}
-                                className='absolute inset-0 opacity-0 cursor-pointer'
                             />
                         </div>
                         {steps.length > 1 && (
