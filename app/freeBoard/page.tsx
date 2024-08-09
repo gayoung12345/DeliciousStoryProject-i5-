@@ -1,4 +1,3 @@
-// app/FreeBoard.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -68,15 +67,18 @@ const FreeBoard = () => {
                 <h1 style={{ textAlign: 'center', fontSize: '36px' }}>
                     자유게시판
                 </h1>
+
+                {/* 글 작성하기 버튼을 테이블 바로 위에 위치시키기 */}
                 {user && (
-                    <button
-                        type='button'
-                        className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
-                        style={{ float: 'right', marginBottom: '20px' }}
-                        onClick={handleWriteClick}
-                    >
-                        글 작성하기
-                    </button>
+                    <div style={{ marginLeft: '1350px', marginBottom: '20px' }}>
+                        <button
+                            type='button'
+                            className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
+                            onClick={handleWriteClick}
+                        >
+                            글 작성하기
+                        </button>
+                    </div>
                 )}
 
                 <div
@@ -98,54 +100,60 @@ const FreeBoard = () => {
                                     <tr>
                                         <th
                                             style={{
-                                                border: '1px solid #ddd',
+                                                borderBottom: '2px solid #ddd',
                                                 padding: '8px',
-                                                width: '5%',
+                                                textAlign: 'center',
+                                                backgroundColor: '#f9f9f9',
                                             }}
                                         >
                                             번호
                                         </th>
                                         <th
                                             style={{
-                                                border: '1px solid #ddd',
+                                                borderBottom: '2px solid #ddd',
                                                 padding: '8px',
-                                                width: '50%',
+                                                textAlign: 'center',
+                                                backgroundColor: '#f9f9f9',
                                             }}
                                         >
                                             글 제목
                                         </th>
                                         <th
                                             style={{
-                                                border: '1px solid #ddd',
+                                                borderBottom: '2px solid #ddd',
                                                 padding: '8px',
-                                                width: '10%',
+                                                textAlign: 'center',
+                                                backgroundColor: '#f9f9f9',
                                             }}
                                         >
                                             작성자
                                         </th>
                                         <th
                                             style={{
-                                                border: '1px solid #ddd',
+                                                borderBottom: '2px solid #ddd',
                                                 padding: '8px',
-                                                width: '15%',
+                                                textAlign: 'center',
+                                                backgroundColor: '#f9f9f9',
                                             }}
                                         >
                                             작성일
                                         </th>
                                         <th
                                             style={{
-                                                border: '1px solid #ddd',
+                                                borderBottom: '2px solid #ddd',
                                                 padding: '8px',
-                                                width: '10%',
+                                                textAlign: 'center',
+                                                backgroundColor: '#f9f9f9',
                                             }}
                                         >
                                             댓글수
                                         </th>
                                         <th
                                             style={{
-                                                border: '1px solid #ddd',
+                                                borderBottom: '2px solid #ddd',
                                                 padding: '8px',
-                                                width: '10%',
+                                                textAlign: 'center',
+                                                backgroundColor: '#f9f9f9',
                                             }}
                                         >
                                             조회수
@@ -157,7 +165,8 @@ const FreeBoard = () => {
                                         <tr key={post.id}>
                                             <td
                                                 style={{
-                                                    border: '1px solid #ddd',
+                                                    borderBottom:
+                                                        '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -169,11 +178,13 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    border: '1px solid #ddd',
+                                                    borderBottom:
+                                                        '1px solid #ddd',
                                                     padding: '8px',
                                                     cursor: 'pointer',
                                                     color: 'blue',
                                                     textDecoration: 'underline',
+                                                    textAlign: 'left',
                                                 }}
                                                 onClick={() =>
                                                     handlePostClick(post.id)
@@ -183,7 +194,8 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    border: '1px solid #ddd',
+                                                    borderBottom:
+                                                        '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -192,7 +204,8 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    border: '1px solid #ddd',
+                                                    borderBottom:
+                                                        '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -201,7 +214,8 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    border: '1px solid #ddd',
+                                                    borderBottom:
+                                                        '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -210,7 +224,8 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    border: '1px solid #ddd',
+                                                    borderBottom:
+                                                        '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -221,92 +236,99 @@ const FreeBoard = () => {
                                     ))}
                                 </tbody>
                             </table>
-                            <br />
-
-                            <nav
-                                style={{
-                                    textAlign: 'center',
-                                    marginTop: '20px',
-                                }}
-                            >
-                                <ul
-                                    style={{
-                                        display: 'inline-flex',
-                                        listStyleType: 'none',
-                                        padding: 0,
-                                    }}
-                                >
-                                    {[
-                                        ...Array(
-                                            Math.ceil(
-                                                filteredPosts.length /
-                                                    postsPerPage
-                                            )
-                                        ).keys(),
-                                    ].map((number) => (
-                                        <li
-                                            key={number + 1}
-                                            style={{ margin: '0 5px' }}
-                                        >
-                                            <button
-                                                onClick={() =>
-                                                    paginate(number + 1)
-                                                }
-                                                style={{
-                                                    background:
-                                                        number + 1 ===
-                                                        currentPage
-                                                            ? 'blue'
-                                                            : 'white',
-                                                    color:
-                                                        number + 1 ===
-                                                        currentPage
-                                                            ? 'white'
-                                                            : 'black',
-                                                    border: '1px solid #ddd',
-                                                    padding: '5px 10px',
-                                                    borderRadius: '5px',
-                                                }}
-                                            >
-                                                {number + 1}
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </nav>
                         </>
                     ) : (
                         <p>작성된 글이 없습니다.</p>
                     )}
                 </div>
-            </div>
-            <div
-                style={{
-                    marginTop: '20px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                }}
-            >
-                <input
-                    type='text'
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    placeholder='검색어를 입력하세요...'
+
+                {/* 검색과 페이지네이션을 아래로 이동 */}
+                <div
                     style={{
-                        padding: '8px',
-                        borderRadius: '4px',
-                        border: '1px solid #ddd',
-                        width: '400px',
-                        marginRight: '10px',
+                        marginTop: '20px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
                     }}
-                />
-                <button
-                    type='button'
-                    className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600'
-                    onClick={handleSearchClick}
                 >
-                    검색
-                </button>
+                    {/* 검색어 입력과 검색 버튼을 가로로 배치 */}
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            marginBottom: '20px', // 검색 버튼과 검색어 사이 간격
+                        }}
+                    >
+                        <input
+                            type='text'
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            placeholder='검색어를 입력하세요...'
+                            style={{
+                                padding: '8px',
+                                borderRadius: '4px',
+                                border: '1px solid #ddd',
+                                width: '400px',
+                                marginRight: '10px', // 검색 버튼과의 간격 조정
+                            }}
+                        />
+                        <button
+                            type='button'
+                            className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600'
+                            onClick={handleSearchClick}
+                        >
+                            검색
+                        </button>
+                    </div>
+
+                    {/* 페이지네이션 */}
+                    <nav
+                        style={{
+                            textAlign: 'center',
+                            marginTop: '20px',
+                        }}
+                    >
+                        <ul
+                            style={{
+                                display: 'inline-flex',
+                                listStyleType: 'none',
+                                padding: 0,
+                            }}
+                        >
+                            {[
+                                ...Array(
+                                    Math.ceil(
+                                        filteredPosts.length / postsPerPage
+                                    )
+                                ).keys(),
+                            ].map((number) => (
+                                <li
+                                    key={number + 1}
+                                    style={{ margin: '0 5px' }}
+                                >
+                                    <button
+                                        onClick={() => paginate(number + 1)}
+                                        style={{
+                                            background:
+                                                number + 1 === currentPage
+                                                    ? 'blue'
+                                                    : 'white',
+                                            color:
+                                                number + 1 === currentPage
+                                                    ? 'white'
+                                                    : 'black',
+                                            border: '1px solid #ddd',
+                                            padding: '5px 10px',
+                                            borderRadius: '5px',
+                                        }}
+                                    >
+                                        {number + 1}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </main>
     );
