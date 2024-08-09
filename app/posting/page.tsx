@@ -1,46 +1,46 @@
-// app/Posting.tsx
 'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../context/AuthContext'; // 인증 컨텍스트 가져오기
+import { useAuth } from '../context/AuthContext';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../../lib/firebaseConfig';
+import TextEditor from '@/components/text-editor/text-editor';
 
 const Posting = () => {
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const router = useRouter();
-    const { user } = useAuth(); // 현재 사용자 가져오기
+    const [title, setTitle] = useState(''); // 제목을 관리하는 상태
+    const [content, setContent] = useState(''); // 내용을 관리하는 상태
+    const router = useRouter(); // 페이지 이동을 관리하는 Next.js의 라우터
+    const { user } = useAuth(); // 현재 로그인된 사용자의 정보를 가져옴
 
     const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault();
+        event.preventDefault(); // 폼 제출 시 페이지 리로드를 방지
 
         if (user) {
+            // 사용자가 로그인되어 있을 경우
             try {
                 await addDoc(collection(db, 'posts'), {
-                    title,
-                    content,
-                    author: user.email,
-                    date: new Date().toISOString(),
-                    comments: 0,
-                    views: 0,
+                    title, // 제목
+                    content, // 내용
+                    author: user.email, // 작성자 (로그인된 사용자)
+                    date: new Date().toISOString(), // 작성일 (현재 시간)
+                    comments: 0, // 댓글 수 초기값
+                    views: 0, // 조회수 초기값
                 });
 
-                alert('글이 작성되었습니다!'); // 알림 표시
-                router.push('/freeBoard'); // 리다이렉트 경로가 올바른지 확인하세요
+                alert('글이 작성되었습니다!'); // 작성 완료 알림
+                router.push('/freeBoard'); // 작성 후 게시판으로 이동
             } catch (error) {
-                console.error('Error adding document: ', error);
+                console.error('Error adding document: ', error); // 오류 발생 시 콘솔에 출력
             }
         } else {
-            alert('로그인이 필요합니다.');
+            alert('로그인이 필요합니다.'); // 로그인하지 않은 경우 알림
             router.push('/login'); // 로그인 페이지로 이동
         }
     };
 
-    // 뒤로가기 버튼 핸들러
     const handleGoBack = () => {
-        router.push('/freeBoard');
+        router.push('/freeBoard'); // 뒤로가기 버튼 클릭 시 게시판으로 이동
     };
 
     return (
@@ -91,24 +91,25 @@ const Posting = () => {
                         >
                             내용
                         </label>
-                        <textarea
-                            id='content'
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
+                        <div
                             style={{
                                 width: '60%',
-                                padding: '10px',
-                                height: '200px',
-                                border: '1px solid #ddd',
-                                borderRadius: '4px',
-                                display: 'block',
                                 margin: '0 auto',
-                                verticalAlign: 'top', // 상단 정렬
+                                marginBottom: '60px',
                             }}
-                            required
-                        />
+                        >
+                            {' '}
+                            {/* TextEditor의 아래에 더 넓은 여유 공간 추가 */}
+                            <TextEditor />
+                        </div>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            marginTop: '20px',
+                        }}
+                    >
                         <button
                             type='button'
                             onClick={handleGoBack}
