@@ -26,26 +26,25 @@ const formats = [
     'bullet',
 ];
 
-const TextEditor = () => {
-    const [content, setContent] = useState('');
-
-    const handleSubmit = (e: any) => {
-        // db 나오면 수정해야 할 부분
-        e.preventDefault();
-        console.log('Submitted Content:', content);
+const TextEditor = ({
+    content,
+    setContent,
+}: {
+    content: string;
+    setContent: React.Dispatch<React.SetStateAction<string>>;
+}) => {
+    const handleContentChange = (value: string) => {
+        setContent(value);
     };
 
     return (
-        // <form onSubmit={handleSubmit}>
         <ReactQuill
-            style={{ height: '400px' }}
+            style={{ height: '300px' }}
             value={content}
-            onChange={setContent}
+            onChange={handleContentChange}
             modules={modules}
             formats={formats}
         />
-        // {/* <button type='submit'>Submit</button> */}
-        // </form>
     );
 };
 
