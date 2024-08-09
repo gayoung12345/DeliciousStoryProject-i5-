@@ -27,6 +27,7 @@ const Posting = () => {
                     views: 0,
                 });
 
+                alert('글이 작성되었습니다!'); // 알림 표시
                 router.push('/freeBoard'); // 리다이렉트 경로가 올바른지 확인하세요
             } catch (error) {
                 console.error('Error adding document: ', error);
@@ -37,30 +38,95 @@ const Posting = () => {
         }
     };
 
+    // 뒤로가기 버튼 핸들러
+    const handleGoBack = () => {
+        router.push('/freeBoard');
+    };
+
     return (
-        <div>
-            <h1>글 작성하기</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>제목</label>
-                    <input
-                        type='text'
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>내용</label>
-                    <textarea
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type='submit'>작성하기</button>
-            </form>
-        </div>
+        <main>
+            <div style={{ padding: '20px' }}>
+                <h1 style={{ textAlign: 'center', fontSize: '36px' }}>
+                    글 작성하기
+                </h1>
+                <form onSubmit={handleSubmit}>
+                    <div style={{ marginBottom: '20px', textAlign: 'left' }}>
+                        <label
+                            htmlFor='title'
+                            style={{
+                                display: 'block',
+                                marginBottom: '10px',
+                                textAlign: 'left',
+                                marginLeft: '20%',
+                            }}
+                        >
+                            제목
+                        </label>
+                        <input
+                            id='title'
+                            type='text'
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            style={{
+                                width: '60%',
+                                padding: '10px',
+                                border: '1px solid #ddd',
+                                borderRadius: '4px',
+                                display: 'block',
+                                margin: '0 auto',
+                                verticalAlign: 'top', // 상단 정렬
+                            }}
+                            required
+                        />
+                    </div>
+                    <div style={{ marginBottom: '20px', textAlign: 'left' }}>
+                        <label
+                            htmlFor='content'
+                            style={{
+                                display: 'block',
+                                marginBottom: '10px',
+                                textAlign: 'left',
+                                marginLeft: '20%',
+                            }}
+                        >
+                            내용
+                        </label>
+                        <textarea
+                            id='content'
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            style={{
+                                width: '60%',
+                                padding: '10px',
+                                height: '200px',
+                                border: '1px solid #ddd',
+                                borderRadius: '4px',
+                                display: 'block',
+                                margin: '0 auto',
+                                verticalAlign: 'top', // 상단 정렬
+                            }}
+                            required
+                        />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <button
+                            type='button'
+                            onClick={handleGoBack}
+                            className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600'
+                            style={{ marginRight: '10px' }} // 버튼 사이 간격
+                        >
+                            뒤로가기
+                        </button>
+                        <button
+                            type='submit'
+                            className='bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600'
+                        >
+                            작성하기
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
     );
 };
 

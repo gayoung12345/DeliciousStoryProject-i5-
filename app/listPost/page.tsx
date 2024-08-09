@@ -23,10 +23,10 @@ const ListPost = () => {
                     if (postSnapshot.exists()) {
                         setPost(postSnapshot.data());
                     } else {
-                        console.error('No such document!');
+                        console.error('문서를 찾을 수 없습니다!');
                     }
                 } catch (error) {
-                    console.error('Error fetching document:', error);
+                    console.error('문서 가져오기 오류:', error);
                 } finally {
                     setLoading(false);
                 }
@@ -37,25 +37,88 @@ const ListPost = () => {
     }, [postId]);
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <p>로딩 중...</p>;
     }
 
     if (!post) {
-        return <p>Post not found</p>;
+        return <p>게시글을 찾을 수 없습니다.</p>;
     }
 
+    // 뒤로가기 버튼 핸들러
+    const handleGoBack = () => {
+        router.push('/freeBoard');
+    };
+
     return (
-        <div>
-            <h1>{post.title}</h1>
-            <p>작성자: {post.author}</p>
-            <p>작성일: {post.date}</p>
-            <div>
-                <h2>내용</h2>
-                <p>{post.content}</p>
+        <main>
+            <div style={{ padding: '20px' }}>
+                <h1
+                    style={{
+                        textAlign: 'center',
+                        fontSize: '36px',
+                        marginBottom: '30px',
+                    }}
+                >
+                    게시글 상세보기
+                </h1>
+                <div style={{ textAlign: 'left', marginBottom: '20px' }}>
+                    <h2
+                        style={{
+                            fontSize: '28px',
+                            marginBottom: '10px',
+                            textAlign: 'center',
+                        }}
+                    >
+                        {post.title}
+                    </h2>
+                    <p
+                        style={{
+                            fontSize: '16px',
+                            textAlign: 'center',
+                            color: '#555',
+                        }}
+                    >
+                        작성자: {post.author} | 작성일: {post.date}
+                    </p>
+                </div>
+                <div
+                    style={{
+                        padding: '20px',
+                        backgroundColor: '#f9f9f9',
+                        borderRadius: '8px',
+                        border: '1px solid #ddd',
+                        marginBottom: '20px',
+                    }}
+                >
+                    <h3 style={{ fontSize: '22px', marginBottom: '15px' }}>
+                        내용
+                    </h3>
+                    <p style={{ fontSize: '18px', lineHeight: '1.6' }}>
+                        {post.content}
+                    </p>
+                </div>
+                <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                    <p style={{ fontSize: '16px', color: '#888' }}>
+                        댓글 수: {post.comments} | 조회 수: {post.views}
+                    </p>
+                </div>
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        marginTop: '30px',
+                    }}
+                >
+                    <button
+                        type='button'
+                        onClick={handleGoBack}
+                        className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600'
+                    >
+                        뒤로가기
+                    </button>
+                </div>
             </div>
-            <p>댓글 수: {post.comments}</p>
-            <p>조회 수: {post.views}</p>
-        </div>
+        </main>
     );
 };
 
