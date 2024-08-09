@@ -1,18 +1,17 @@
-// app/ui/Header.tsx
 'use client';
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { useAuth } from '../context/AuthContext'; // Firebase 인증 컨텍스트 가져오기
+import { useAuth } from '../context/AuthContext';
 
 const logoSrc = '/svg/logo.svg';
 
 const Header: React.FC = () => {
     const [menuOpen, setMenuOpen] = useState(false);
-    const { user } = useAuth(); // 인증 상태 가져오기
+    const { user } = useAuth();
 
     return (
-        <nav className='bg-white text-black px-6 sm:px-24 flex items-center justify-between max-w-screen-xl mx-auto'>
+        <nav className='bg-white text-black px-6 sm:px-24 flex items-center justify-between w-full'>
             <div className='flex-shrink-0'>
                 <a href='/'>
                     <Image
@@ -26,8 +25,8 @@ const Header: React.FC = () => {
             <div className='relative flex-grow max-w-lg mx-6 sm:mx-12'>
                 <input
                     type='text'
-                    className='bg-white-700 text-black p-4 text-lg rounded-lg focus:outline-none w-full'
-                    placeholder='Search...'
+                    className='bg-gray-100 text-black p-4 text-lg rounded-lg focus:outline-none w-full'
+                    placeholder='오늘의메뉴'
                 />
                 <button className='absolute right-0 top-0 mt-2 mr-2 p-2'>
                     <svg
@@ -47,67 +46,24 @@ const Header: React.FC = () => {
                 </button>
             </div>
             <div className='flex items-center space-x-4 hidden xl:flex'>
-                <a
-                    href='/'
-                    className='hover:text-gray-400'
-                >
-                    Home
-                </a>
-                <a
-                    href='/siteRecipe'
-                    className='hover:text-gray-400'
-                >
-                    siteRecipe
-                </a>
-                <a
-                    href='/userRecipe'
-                    className='hover:text-gray-400'
-                >
-                    userRecipe
-                </a>
-                <a
-                    href='/freeBoard'
-                    className='hover:text-gray-400'
-                >
-                    freeBoard
-                </a>
+                <a href='/' className='hover:text-gray-400'>Home</a>
+                <a href='/siteRecipe' className='hover:text-gray-400'>siteRecipe</a>
+                <a href='/userRecipe' className='hover:text-gray-400'>userRecipe</a>
+                <a href='/freeBoard' className='hover:text-gray-400'>freeBoard</a>
                 {user ? (
                     <>
-                        <a
-                            href='/myPage'
-                            className='hover:text-gray-400'
-                        >
-                            myPage
-                        </a>
-                        <a
-                            href='/logout'
-                            className='hover:text-gray-400'
-                        >
-                            Logout
-                        </a>
+                        <a href='/myPage' className='hover:text-gray-400'>myPage</a>
+                        <a href='/logout' className='hover:text-gray-400'>Logout</a>
                     </>
                 ) : (
                     <>
-                        <a
-                            href='/login'
-                            className='hover:text-gray-400'
-                        >
-                            Login
-                        </a>
-                        <a
-                            href='/signup'
-                            className='hover:text-gray-400'
-                        >
-                            Sign Up
-                        </a>
+                        <a href='/login' className='hover:text-gray-400'>Login</a>
+                        <a href='/signup' className='hover:text-gray-400'>Sign Up</a>
                     </>
                 )}
             </div>
             <div className='xl:hidden'>
-                <button
-                    onClick={() => setMenuOpen(!menuOpen)}
-                    className='focus:outline-none'
-                >
+                <button onClick={() => setMenuOpen(!menuOpen)} className='focus:outline-none'>
                     <svg
                         xmlns='http://www.w3.org/2000/svg'
                         fill='none'
@@ -125,53 +81,18 @@ const Header: React.FC = () => {
                 </button>
             </div>
             {menuOpen && (
-                <div className='absolute top-16 right-0 bg-white shadow-md rounded-lg p-4 lg:hidden'>
-                    <a
-                        href='/'
-                        className='block hover:text-gray-400'
-                    >
-                        Home
-                    </a>
-                    <a
-                        href='/siteRecipe'
-                        className='block hover:text-gray-400'
-                    >
-                        siteRecipe
-                    </a>
-                    <a
-                        href='/userRecipe'
-                        className='block hover:text-gray-400'
-                    >
-                        userRecipe
-                    </a>
-                    <a
-                        href='/freeBoard'
-                        className='block hover:text-gray-400'
-                    >
-                        freeBoard
-                    </a>
+                <div className='absolute top-16 right-0 bg-white shadow-md rounded-lg p-4 lg:hidden z-50'>
+                    <a href='/' className='block hover:text-gray-400'>Home</a>
+                    <a href='/siteRecipe' className='block hover:text-gray-400'>siteRecipe</a>
+                    <a href='/userRecipe' className='block hover:text-gray-400'>userRecipe</a>
+                    <a href='/freeBoard' className='block hover:text-gray-400'>freeBoard</a>
                     {user ? (
                         <>
-                            <a
-                                href='/myPage'
-                                className='block hover:text-gray-400'
-                            >
-                                myPage
-                            </a>
-                            <a
-                                href='/logout'
-                                className='block hover:text-gray-400'
-                            >
-                                Logout
-                            </a>
+                            <a href='/myPage' className='block hover:text-gray-400'>myPage</a>
+                            <a href='/logout' className='block hover:text-gray-400'>Logout</a>
                         </>
                     ) : (
-                        <a
-                            href='/signup'
-                            className='block hover:text-gray-400'
-                        >
-                            Sign Up
-                        </a>
+                        <a href='/signup' className='block hover:text-gray-400'>Sign Up</a>
                     )}
                 </div>
             )}
