@@ -196,7 +196,11 @@ const ListPost = () => {
                                     lineHeight: '1.6',
                                 }}
                             >
-                                {post.content}
+                                <div
+                                    dangerouslySetInnerHTML={{
+                                        __html: post.content,
+                                    }}
+                                />
                             </td>
                         </tr>
                     </tbody>

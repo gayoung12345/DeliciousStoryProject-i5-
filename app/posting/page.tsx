@@ -100,7 +100,10 @@ const Posting = () => {
                         >
                             {' '}
                             {/* TextEditor의 아래에 더 넓은 여유 공간 추가 */}
-                            <TextEditor />
+                            <TextEditor
+                                content={content}
+                                setContent={setContent}
+                            />
                         </div>
                     </div>
                     <div
