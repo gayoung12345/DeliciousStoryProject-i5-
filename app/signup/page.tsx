@@ -1,16 +1,20 @@
 'use client';
 
-import TextEditor from '@/components/text-editor/text-editor';
 import React, { useState } from 'react';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../lib/firebaseConfig';  // Firebase 설정 파일 경로에 맞게 수정하세요
+import { useRouter } from 'next/navigation';  // useRouter 임포트
 
 const Signup = () => {
     const [form, setForm] = useState({
-        id: '',
         password: '',
         confirmPassword: '',
         name: '',
         email: '',
     });
+
+    const [error, setError] = useState('');
+    const router = useRouter();  // useRouter 훅 사용
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -20,9 +24,33 @@ const Signup = () => {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // form validation and submission logic here
+        setError('');
+
+        // 비밀번호 길이 확인
+        if (form.password.length < 6) {
+            setError("비밀번호는 최소 6자리 이상이어야 합니다.");
+            return;
+        }
+
+        // 비밀번호 일치 확인
+        if (form.password !== form.confirmPassword) {
+            setError("비밀번호가 일치하지 않습니다.");
+            return;
+        }
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
+            console.log("회원가입 성공:", userCredential);
+
+            // 회원가입 성공 메시지 표시 후 리다이렉트
+            alert("회원가입에 성공했습니다.");
+            router.push('/');  // 메인페이지로 리다이렉트
+        } catch (error) {
+            console.error("회원가입 오류:", error);
+            setError("회원가입에 실패했습니다. 다시 시도해주세요.");
+        }
     };
 
     return (
@@ -30,32 +58,27 @@ const Signup = () => {
             <div className='bg-white p-8 w-full max-w-screen-md'>
                 <h1 className='text-2xl font-bold mb-6'>회원가입</h1>
                 <hr className='h-px my-4 bg-gray-200 border-0 dark:bg-gray-700'></hr>
+                {error && <p className='text-red-500 text-center'>{error}</p>}
                 <form onSubmit={handleSubmit}>
+                    {/* 이메일 입력 필드 */}
                     <div className='mb-4 flex items-center'>
                         <label
-                            htmlFor='id'
+                            htmlFor='email'
                             className='block text-sm font-medium text-gray-700 w-1/5 text-right pr-4'
                         >
-                            아이디
+                            이메일
                         </label>
-                        <div className='flex w-4/5'>
-                            <input
-                                type='text'
-                                name='id'
-                                id='id'
-                                value={form.id}
-                                onChange={handleChange}
-                                className='mt-1 block flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm'
-                            />
-                            <button
-                                type='button'
-                                className='ml-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 flex w-48 justify-center'
-                            >
-                                아이디 중복체크
-                            </button>
-                        </div>
+                        <input
+                            type='email'
+                            name='email'
+                            id='email'
+                            value={form.email}
+                            onChange={handleChange}
+                            className='mt-1 block flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm'
+                        />
                     </div>
-
+                    
+                    {/* 비밀번호 입력 필드 */}
                     <div className='mb-4 flex items-center'>
                         <label
                             htmlFor='password'
@@ -73,6 +96,7 @@ const Signup = () => {
                         />
                     </div>
 
+                    {/* 비밀번호 확인 입력 필드 */}
                     <div className='mb-4 flex items-center'>
                         <label
                             htmlFor='confirmPassword'
@@ -90,6 +114,7 @@ const Signup = () => {
                         />
                     </div>
 
+                    {/* 이름 입력 필드 */}
                     <div className='mb-4 flex items-center'>
                         <label
                             htmlFor='name'
@@ -107,23 +132,8 @@ const Signup = () => {
                         />
                     </div>
 
-                    <div className='mb-4 flex items-center'>
-                        <label
-                            htmlFor='email'
-                            className='block text-sm font-medium text-gray-700 w-1/5 text-right pr-4'
-                        >
-                            이메일
-                        </label>
-                        <input
-                            type='email'
-                            name='email'
-                            id='email'
-                            value={form.email}
-                            onChange={handleChange}
-                            className='mt-1 block flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm'
-                        />
-                    </div>
                     <hr className='h-px m-4 bg-gray-200 border-0 dark:bg-gray-700'></hr>
+
                     <div className='flex justify-center'>
                         <button
                             type='button'
