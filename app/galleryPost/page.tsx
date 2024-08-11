@@ -1,12 +1,13 @@
+// galleryPost 공식레시피 상세보기 
 'use client'; // 이 줄을 추가하여 이 파일이 클라이언트 컴포넌트임을 명시합니다.
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import xml2js from 'xml2js';
-import { FaArrowLeft, FaPause, FaPlay, FaStop, FaHeart } from 'react-icons/fa';
-import { db, auth } from '../../lib/firebaseConfig'; // Firebase 설정 파일 임포트
-import { onAuthStateChanged } from 'firebase/auth';
+import React, { useEffect, useState } from 'react'; // React와 필요한 훅들을 import
+import { useRouter } from 'next/navigation'; // Next.js의 라우팅 훅을 import
+import Image from 'next/image'; // 이미지 최적화를 위한 Next.js Image 컴포넌트
+import xml2js from 'xml2js'; // XML 데이터를 파싱하기 위한 라이브러리
+import { FaArrowLeft, FaPause, FaPlay, FaStop, FaHeart } from 'react-icons/fa'; // 아이콘을 위한 라이브러리
+import { db, auth } from '../../lib/firebaseConfig'; // Firebase 설정 파일 import
+import { onAuthStateChanged } from 'firebase/auth'; // Firebase 인증 상태 변화를 감지하는 함수
 import {
     query,
     where,
@@ -14,7 +15,7 @@ import {
     addDoc,
     getDocs,
     deleteDoc,
-} from 'firebase/firestore';
+} from 'firebase/firestore'; // Firestore 관련 함수들 import
 
 // 임시 Box, Text 컴포넌트
 const Box = ({ children, style, ...props }) => (
@@ -36,34 +37,36 @@ const Text = ({ children, style, ...props }) => (
 );
 
 const GalleryPost = () => {
-    const router = useRouter();
-    const [recipe, setRecipe] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [speechRate, setSpeechRate] = useState(1);
-    const [utterance, setUtterance] = useState(null);
-    const [isSpeaking, setIsSpeaking] = useState(false);
-    const [liked, setLiked] = useState(false);
-    const [newComment, setNewComment] = useState('');
-    const [comments, setComments] = useState([]);
-    const [user, setUser] = useState(null);
+    const router = useRouter(); // 페이지 이동을 위한 라우터 객체 생성
+    const [recipe, setRecipe] = useState(null); // 레시피 데이터를 저장할 상태 변수
+    const [loading, setLoading] = useState(true); // 데이터 로딩 상태를 관리하는 변수
+    const [speechRate, setSpeechRate] = useState(1); // TTS 재생 속도를 관리하는 상태 변수
+    const [utterance, setUtterance] = useState(null); // TTS Utterance 객체를 저장할 상태 변수
+    const [isSpeaking, setIsSpeaking] = useState(false); // 현재 TTS가 재생 중인지 여부를 저장하는 상태 변수
+    const [liked, setLiked] = useState(false); // 현재 사용자가 좋아요를 눌렀는지 여부를 저장하는 상태 변수
+    const [newComment, setNewComment] = useState(''); // 새 댓글 내용을 저장할 상태 변수
+    const [comments, setComments] = useState([]); // 댓글 목록을 저장할 상태 변수
+    const [user, setUser] = useState(null); // 현재 로그인한 사용자 정보를 저장할 상태 변수
 
+    // 레시피 데이터를 가져오는 useEffect
     useEffect(() => {
         const fetchRecipe = async () => {
             try {
-                const url = new URL(window.location.href);
-                const recipeId = url.searchParams.get('id');
+                const url = new URL(window.location.href); // 현재 URL을 가져옴
+                const recipeId = url.searchParams.get('id'); // URL의 쿼리 파라미터에서 레시피 ID를 추출
 
-                const response = await fetch('/data/siterecipe.xml');
-                const xmlData = await response.text();
-                const parser = new xml2js.Parser();
-                const result = await parser.parseStringPromise(xmlData);
+                const response = await fetch('/data/siterecipe.xml'); // XML 데이터를 가져옴
+                const xmlData = await response.text(); // 텍스트 형태로 XML 데이터를 파싱
+                const parser = new xml2js.Parser(); // XML 파서를 생성
+                const result = await parser.parseStringPromise(xmlData); // XML 데이터를 파싱하여 JavaScript 객체로 변환
 
-                const recipes = result.COOKRCP01.row;
+                const recipes = result.COOKRCP01.row; // 레시피 목록을 가져옴
                 const foundRecipe = recipes.find(
                     (rec) => rec.RCP_SEQ[0] === recipeId
-                );
+                ); // URL에서 추출한 레시피 ID와 일치하는 레시피를 찾음
 
                 if (foundRecipe) {
+                    // 레시피 데이터를 구조화하여 상태 변수에 저장
                     const recipeData = {
                         id: foundRecipe.RCP_SEQ[0],
                         name: foundRecipe.RCP_NM[0],
@@ -89,26 +92,28 @@ const GalleryPost = () => {
                         fat: foundRecipe.INFO_FAT[0],
                         sodium: foundRecipe.INFO_NA[0],
                     };
-                    setRecipe(recipeData);
+                    setRecipe(recipeData); // 상태 변수에 레시피 데이터 저장
                 }
             } catch (error) {
-                console.error('Error parsing XML:', error);
+                console.error('Error parsing XML:', error); // 에러 발생 시 콘솔에 출력
             } finally {
                 setLoading(false); // 데이터 로딩이 끝난 후 상태 업데이트
             }
         };
 
-        fetchRecipe();
-    }, []);
+        fetchRecipe(); // 레시피 데이터를 가져오는 함수 호출
+    }, []); // 빈 배열을 의존성으로 하여 컴포넌트 마운트 시 한 번만 실행
 
+    // Firebase 인증 상태를 감지하여 사용자 정보를 가져오는 useEffect
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
         });
 
-        return () => unsubscribe();
+        return () => unsubscribe(); // 컴포넌트 언마운트 시 구독 해제
     }, []);
 
+    // 사용자가 이미 좋아요를 눌렀는지 확인하는 useEffect
     useEffect(() => {
         const checkIfLiked = async () => {
             if (user && recipe) {
@@ -120,64 +125,70 @@ const GalleryPost = () => {
                 );
                 const querySnapshot = await getDocs(q);
 
-                setLiked(!querySnapshot.empty);
+                setLiked(!querySnapshot.empty); // 좋아요를 이미 눌렀다면 liked 상태를 true로 설정
             }
         };
 
         checkIfLiked();
-    }, [user, recipe]);
+    }, [user, recipe]); // user와 recipe 상태가 변경될 때마다 실행
 
+    // 텍스트를 음성으로 읽어주는 함수
     const speakText = (text) => {
         if ('speechSynthesis' in window) {
-            const newUtterance = new SpeechSynthesisUtterance(text);
-            newUtterance.rate = speechRate; // Set speech rate
+            const newUtterance = new SpeechSynthesisUtterance(text); // 새 Utterance 객체 생성
+            newUtterance.rate = speechRate; // TTS 속도 설정
             setUtterance(newUtterance);
-            speechSynthesis.speak(newUtterance);
-            setIsSpeaking(true);
+            speechSynthesis.speak(newUtterance); // TTS 재생
+            setIsSpeaking(true); // TTS 재생 중 상태로 설정
         } else {
             console.warn('Speech synthesis not supported in this browser.');
         }
     };
 
+    // TTS 재생 버튼 클릭 시 호출되는 함수
     const handleTtsClick = () => {
         if (recipe) {
-            // 레시피 이름 읽어주기
+            // 레시피 이름과 메뉴얼 텍스트를 음성으로 읽어줌
             speakText(recipe.name);
-
-            // 메뉴얼 읽어주기
             recipe.manual.forEach((item) => {
                 speakText(item.text);
             });
         }
     };
 
+    // TTS 속도 변경 시 호출되는 함수
     const handleRateChange = (event) => {
-        setSpeechRate(parseFloat(event.target.value));
+        setSpeechRate(parseFloat(event.target.value)); // 선택된 속도로 업데이트
     };
 
+    // TTS 일시정지 버튼 클릭 시 호출되는 함수
     const handlePauseClick = () => {
         if ('speechSynthesis' in window && isSpeaking) {
-            speechSynthesis.pause();
+            speechSynthesis.pause(); // TTS 일시정지
         }
     };
 
+    // TTS 재개 버튼 클릭 시 호출되는 함수
     const handleResumeClick = () => {
         if ('speechSynthesis' in window && isSpeaking) {
-            speechSynthesis.resume();
+            speechSynthesis.resume(); // TTS 재개
         }
     };
 
+    // TTS 중지 버튼 클릭 시 호출되는 함수
     const handleStopClick = () => {
         if ('speechSynthesis' in window) {
-            speechSynthesis.cancel();
-            setIsSpeaking(false);
+            speechSynthesis.cancel(); // TTS 중지
+            setIsSpeaking(false); // TTS 재생 상태 해제
         }
     };
 
+    // 뒤로가기 버튼 클릭 시 호출되는 함수
     const handleBackClick = () => {
-        router.back();
+        router.back(); // 이전 페이지로 이동
     };
 
+    // 좋아요 버튼 클릭 시 호출되는 함수
     const handleLikeToggle = async () => {
         if (user) {
             const likesRef = collection(db, 'likes');
@@ -217,6 +228,7 @@ const GalleryPost = () => {
         }
     };
 
+    // 새 댓글을 추가하는 함수
     const handleAddComment = async () => {
         if (user) {
             if (newComment.trim()) {
@@ -224,14 +236,15 @@ const GalleryPost = () => {
                     await addDoc(collection(db, 'comments'), {
                         recipeId: recipe.id,
                         userId: user.uid,
+                        userEmail: user.email, // 이메일 주소 추가
                         text: newComment,
                         timestamp: new Date(),
                     });
                     setComments([
                         ...comments,
-                        { userId: user.uid, text: newComment },
+                        { userId: user.uid, userEmail: user.email, text: newComment },
                     ]);
-                    setNewComment('');
+                    setNewComment(''); // 댓글 입력 필드 초기화
                 } catch (error) {
                     console.error('Error adding comment:', error);
                 }
@@ -242,15 +255,16 @@ const GalleryPost = () => {
             router.push('/login'); // 로그인 페이지로 리다이렉트
         }
     };
+    
 
+
+    // Firestore에서 댓글 데이터를 가져오는 useEffect
     useEffect(() => {
         const fetchComments = async () => {
             try {
                 const querySnapshot = await getDocs(collection(db, 'comments'));
-                const commentsList = querySnapshot.docs.map((doc) =>
-                    doc.data()
-                );
-
+                const commentsList = querySnapshot.docs.map((doc) => doc.data());
+    
                 // 댓글 목록에서 recipeId가 일치하는 댓글만 필터링
                 setComments(
                     commentsList.filter(
@@ -261,17 +275,18 @@ const GalleryPost = () => {
                 console.error('Error fetching comments:', error);
             }
         };
-
+    
         if (recipe) {
-            fetchComments();
+            fetchComments(); // 레시피가 로드된 후 댓글 데이터 가져오기
         }
     }, [recipe]);
+    
 
     return (
         <main style={{ marginTop: '80px' }}>
             <Box style={{ padding: '16px' }}>
                 <button
-                    onClick={handleBackClick}
+                    onClick={handleBackClick} // 뒤로가기 버튼 클릭 시 handleBackClick 호출
                     style={{
                         color: '#ffffff',
                         backgroundColor: '#383838', // 기본 주황색
@@ -405,7 +420,7 @@ const GalleryPost = () => {
                                     </Text>
                                 </div>
                             ))}
-                            {/* TTS Reproduction Button */}
+                            {/* TTS 재생 버튼 */}
                             <div
                                 style={{
                                     display: 'flex',
@@ -417,7 +432,7 @@ const GalleryPost = () => {
                                 }}
                             >
                                 <button
-                                    onClick={handleTtsClick}
+                                    onClick={handleTtsClick} // TTS 재생 클릭 시 handleTtsClick 호출
                                     style={{
                                         color: '#ffffff',
                                         backgroundColor: '#FF8C00', // 기본 주황색
@@ -436,7 +451,7 @@ const GalleryPost = () => {
                                     }}
                                     onMouseDown={(e) => {
                                         e.currentTarget.style.backgroundColor =
-                                            '#FF7F00'; // 클릭 시 색상
+                                            '#FF7F00'; // 클릭 시 색상 변경
                                         e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
                                     }}
                                     onMouseUp={(e) => {
@@ -449,7 +464,7 @@ const GalleryPost = () => {
                                 </button>
                                 <select
                                     value={speechRate}
-                                    onChange={handleRateChange}
+                                    onChange={handleRateChange} // 속도 변경 시 handleRateChange 호출
                                     style={{
                                         width: 100,
                                         height: 40,
@@ -468,7 +483,7 @@ const GalleryPost = () => {
                                     <option value={2}>2배속</option>
                                 </select>
                                 <button
-                                    onClick={handlePauseClick}
+                                    onClick={handlePauseClick} // TTS 일시정지 클릭 시 handlePauseClick 호출
                                     style={{
                                         color: '#ffffff',
                                         backgroundColor: '#FF8C00', // 기본 주황색
@@ -499,7 +514,7 @@ const GalleryPost = () => {
                                     <FaPause size={15} />
                                 </button>
                                 <button
-                                    onClick={handleResumeClick}
+                                    onClick={handleResumeClick} // TTS 재개 클릭 시 handleResumeClick 호출
                                     style={{
                                         color: '#ffffff',
                                         backgroundColor: '#FF8C00', // 기본 주황색
@@ -530,7 +545,7 @@ const GalleryPost = () => {
                                     <FaPlay size={15} />
                                 </button>
                                 <button
-                                    onClick={handleStopClick}
+                                    onClick={handleStopClick} // TTS 정지 클릭 시 handleStopClick 호출
                                     style={{
                                         color: '#ffffff',
                                         backgroundColor: '#FF8C00', // 기본 주황색
@@ -574,7 +589,7 @@ const GalleryPost = () => {
                                         borderRadius: '4px',
                                     }}
                                 >
-                                    <p>작성자: {comment.userId}</p>
+                                    <p>작성자: {comment.userEmail}</p>
                                     <p>{comment.text}</p>
                                 </div>
                             ))}
@@ -588,9 +603,9 @@ const GalleryPost = () => {
                                 }}
                             >
                                 <textarea
-                                    value={newComment}
+                                    value={newComment} // 댓글 입력 필드
                                     onChange={(e) =>
-                                        setNewComment(e.target.value)
+                                        setNewComment(e.target.value) // 입력된 댓글을 상태로 저장
                                     }
                                     rows={3}
                                     placeholder='댓글을 작성하세요...'
@@ -604,7 +619,7 @@ const GalleryPost = () => {
                                     }}
                                 />
                                 <button
-                                    onClick={handleAddComment}
+                                    onClick={handleAddComment} // 댓글 작성 버튼 클릭 시 handleAddComment 호출
                                     style={{
                                         color: '#ffffff',
                                         backgroundColor: '#FF8C00', // 기본 주황색
@@ -635,7 +650,7 @@ const GalleryPost = () => {
                                     댓글 작성
                                 </button>
                                 <div style={{ display: 'flex', gap: '16px' }}>
-                                    <button onClick={handleLikeToggle}>
+                                    <button onClick={handleLikeToggle}> {/* 좋아요 버튼 */}
                                         <FaHeart
                                             color={liked ? 'red' : 'gray'}
                                         />
@@ -680,4 +695,4 @@ const GalleryPost = () => {
     );
 };
 
-export default GalleryPost;
+export default GalleryPost; // 컴포넌트를 기본으로 내보내기

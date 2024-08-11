@@ -1,3 +1,4 @@
+// listPost 자유게시판 상세보기 
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -16,67 +17,74 @@ import { db } from '../../lib/firebaseConfig';
 import { useAuth } from '../context/AuthContext';
 
 const ListPost = () => {
-    const [post, setPost] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [comment, setComment] = useState('');
-    const [comments, setComments] = useState<any[]>([]);
-    const { user } = useAuth();
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const postId = searchParams.get('id');
+    // 상태 변수 정의
+    const [post, setPost] = useState<any>(null); // 게시글 데이터 상태
+    const [loading, setLoading] = useState(true); // 로딩 상태
+    const [comment, setComment] = useState(''); // 댓글 입력 상태
+    const [comments, setComments] = useState<any[]>([]); // 댓글 목록 상태
+    const { user } = useAuth(); // 인증된 사용자 정보
+    const router = useRouter(); // 라우터 객체
+    const searchParams = useSearchParams(); // URL 쿼리 파라미터
+    const postId = searchParams.get('id'); // URL에서 게시글 ID 추출
 
     useEffect(() => {
+        // 게시글 데이터를 가져오는 함수
         const fetchPost = async () => {
             if (postId) {
                 try {
+                    // Firebase에서 게시글 문서 참조 생성
                     const postDoc = doc(db, 'posts', postId);
                     const postSnapshot = await getDoc(postDoc);
 
                     if (postSnapshot.exists()) {
                         const postData = postSnapshot.data();
-                        setPost(postData);
+                        setPost(postData); // 게시글 데이터 상태 업데이트
 
-                        // 조회 수 업데이트
+                        // 게시글 조회 수 업데이트
                         await updateDoc(postDoc, {
                             views: (postData.views || 0) + 1,
                         });
                     } else {
-                        console.error('문서를 찾을 수 없습니다!');
+                        console.error('문서를 찾을 수 없습니다!'); // 문서가 존재하지 않을 때 에러 로그
                     }
                 } catch (error) {
-                    console.error('문서 가져오기 오류:', error);
+                    console.error('문서 가져오기 오류:', error); // 문서 가져오기 오류 로그
                 } finally {
-                    setLoading(false);
+                    setLoading(false); // 로딩 상태 해제
                 }
             }
         };
 
-        fetchPost();
-    }, [postId]);
+        fetchPost(); // 게시글 데이터 가져오기
+    }, [postId]); // postId가 변경될 때마다 실행
 
     useEffect(() => {
+        // 댓글 데이터를 가져오는 함수
         const fetchComments = async () => {
             if (postId) {
                 try {
+                    // Firebase에서 댓글 컬렉션 참조 생성
                     const commentsRef = collection(db, 'comments');
                     const q = query(commentsRef, where('postId', '==', postId));
                     const querySnapshot = await getDocs(q);
 
+                    // 댓글 데이터 목록 추출
                     const fetchedComments = querySnapshot.docs.map((doc) =>
                         doc.data()
                     );
-                    setComments(fetchedComments);
+                    setComments(fetchedComments); // 댓글 목록 상태 업데이트
                 } catch (error) {
-                    console.error('댓글 가져오기 오류:', error);
+                    console.error('댓글 가져오기 오류:', error); // 댓글 가져오기 오류 로그
                 }
             }
         };
 
-        fetchComments();
-    }, [postId]);
+        fetchComments(); // 댓글 데이터 가져오기
+    }, [postId]); // postId가 변경될 때마다 실행
 
+    // 댓글 제출 처리 함수
     const handleCommentSubmit = async (event: React.FormEvent) => {
-        event.preventDefault();
+        event.preventDefault(); // 폼 제출 기본 동작 방지
 
         if (user) {
             try {
@@ -88,7 +96,7 @@ const ListPost = () => {
                     date: new Date().toISOString(),
                 });
 
-                // 댓글 수 업데이트
+                // 게시글 문서 참조 생성 및 댓글 수 업데이트
                 const postDoc = doc(db, 'posts', postId);
                 const postSnapshot = await getDoc(postDoc);
                 const postData = postSnapshot.data();
@@ -112,25 +120,28 @@ const ListPost = () => {
                     comments: newCommentCount,
                 }));
 
-                alert('댓글이 작성되었습니다!');
-                setComment(''); // 댓글 작성 후 초기화
+                alert('댓글이 작성되었습니다!'); // 댓글 작성 성공 메시지
+                setComment(''); // 댓글 입력 초기화
             } catch (error) {
-                console.error('댓글 작성 오류:', error);
+                console.error('댓글 작성 오류:', error); // 댓글 작성 오류 로그
             }
         } else {
-            alert('로그인이 필요합니다.');
-            router.push('/login');
+            alert('로그인이 필요합니다.'); // 로그인 필요 경고
+            router.push('/login'); // 로그인 페이지로 이동
         }
     };
 
+    // 뒤로가기 버튼 클릭 시 처리 함수
     const handleGoBack = () => {
-        router.push('/freeBoard');
+        router.push('/freeBoard'); // 게시글 목록 페이지로 이동
     };
 
+    // 로딩 중일 때 표시
     if (loading) {
         return <p>로딩 중...</p>;
     }
 
+    // 게시글이 없는 경우 표시
     if (!post) {
         return <p>게시글을 찾을 수 없습니다.</p>;
     }
@@ -182,6 +193,7 @@ const ListPost = () => {
                         boxSizing: 'border-box',
                     }}
                 >
+                    {/* 게시글 내용 표시 (HTML을 직접 렌더링) */}
                     <div
                         dangerouslySetInnerHTML={{
                             __html: post.content,
@@ -241,9 +253,11 @@ const ListPost = () => {
                     <h2 style={{ fontSize: '16px', marginBottom: '20px' }}>
                         댓글 목록
                     </h2>
+                    {/* 댓글이 없는 경우 메시지 표시 */}
                     {comments.length === 0 ? (
                         <p>댓글이 없습니다.</p>
                     ) : (
+                        // 댓글 목록 표시
                         <ul style={{ listStyleType: 'none', padding: '0' }}>
                             {comments.map((comment, index) => (
                                 <li
