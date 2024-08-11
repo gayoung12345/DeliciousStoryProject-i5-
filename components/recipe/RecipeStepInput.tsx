@@ -9,9 +9,11 @@ interface RecipeStep {
 
 interface RecipeStepInputProps {
     onStepChange: (steps: RecipeStep[]) => void;
+    uploadImage: (file: File) => Promise<string>; // uploadImage prop 추가
 }
 
-const RecipeStepInput: React.FC<RecipeStepInputProps> = ({ onStepChange }) => {
+
+const RecipeStepInput: React.FC<RecipeStepInputProps> = ({ onStepChange, uploadImage }) => {
     const [steps, setSteps] = useState<RecipeStep[]>([
         { description: '', image: null },
     ]);
@@ -23,11 +25,18 @@ const RecipeStepInput: React.FC<RecipeStepInputProps> = ({ onStepChange }) => {
         onStepChange(newSteps);
     };
 
-    const handleImageSelected = (index: number, id: string, url: string) => {
-        const newSteps = [...steps];
-        newSteps[index] = { ...newSteps[index], image: url };
-        setSteps(newSteps);
-        onStepChange(newSteps);
+    const handleImageSelected = async (index: number, id: string, file: File | null) => {
+        if (file) {
+            try {
+                const url = await uploadImage(file);
+                const newSteps = [...steps];
+                newSteps[index] = { ...newSteps[index], image: url };
+                setSteps(newSteps);
+                onStepChange(newSteps);
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        }
     };
 
     const handleAddStep = () => {

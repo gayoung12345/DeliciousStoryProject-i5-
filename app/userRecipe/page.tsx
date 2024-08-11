@@ -1,133 +1,79 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebaseConfig';
 import { useRouter } from 'next/navigation';
 
-const UserRecipe = () => {
-    const [posts, setPosts] = useState<any[]>([]); // 수정: any[] 타입으로 변경
+interface Recipe {
+    id: string;
+    title: string;
+    images: {
+        'main-image': string;
+    };
+}
+
+const GalleryPage = () => {
+    const [recipes, setRecipes] = useState<Recipe[]>([]);
     const router = useRouter();
 
     useEffect(() => {
-        const storedPosts = JSON.parse(localStorage.getItem('posts')) || [];
-        setPosts(storedPosts);
+        const fetchRecipes = async () => {
+            const querySnapshot = await getDocs(collection(db, 'userRecipe'));
+            const fetchedRecipes: Recipe[] = [];
+            querySnapshot.forEach((doc) => {
+                fetchedRecipes.push({ id: doc.id, ...doc.data() } as Recipe);
+            });
+            setRecipes(fetchedRecipes);
+        };
+
+        fetchRecipes();
     }, []);
 
-    const handleWriteClick = () => {
-        router.push('/userRecipeWrite');
+    const handleRecipeClick = (id: string) => {
+        router.push(`/userRecipe/${id}`);
+    };
+
+    const handleWriteRecipeClick = () => {
+        router.push('/recipeWrite');
     };
 
     return (
-        <main
-            style={{
-                padding: '20px',
-                textAlign: 'center',
-                width: '60%', // 화면의 60% 너비 사용
-                margin: '0 auto', // 중앙 정렬
-            }}
-        >
-            <div
-                style={{
-                    marginBottom: '20px',
-                }}
-            >
-                <h1
-                    style={{
-                        fontSize: '24px',
-                        margin: '0',
-                        textDecoration: 'underline',
-                        textUnderlineOffset: '10px',
-                    }}
-                >
-                    유저 레시피
-                </h1>
-            </div>
-            <div
-                style={{
-                    marginBottom: '20px', // 한 줄 띄우기
-                }}
-            ></div>
-            <button
-                className='bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600'
-                style={{
-                    marginBottom: '20px', // 한 줄 띄우기
-                }}
-                onClick={handleWriteClick}
-            >
-                레시피 공유하기
-            </button>
-            <div
-                style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '20px',
-                    justifyContent: 'center',
-                }}
-            >
-                {posts.map((post) => (
+        <main className='relative max-w-6xl mx-auto p-4'>
+            <h1 className='text-4xl font-bold text-center mb-8'>레시피 갤러리</h1>
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'>
+                {recipes.map((recipe) => (
                     <div
-                        key={post.id}
-                        style={{
-                            border: '1px solid #ddd',
-                            borderRadius: '8px',
-                            padding: '10px',
-                            width: '18%', // 카드의 너비를 설정
-                            minHeight: '350px', // 높이를 고정
-                            textAlign: 'left',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                            display: 'flex',
-                            flexDirection: 'column', // 세로 방향으로 레이아웃
-                        }}
+                        key={recipe.id}
+                        className='cursor-pointer hover:shadow-lg transition-shadow duration-300'
+                        onClick={() => handleRecipeClick(recipe.id)}
                     >
-                        {post.image && (
+                        <div className='w-full h-40 sm:h-48 md:h-56 lg:h-64 bg-gray-200 overflow-hidden rounded-lg'>
                             <img
-                                src={post.image}
-                                alt='게시글 이미지'
-                                style={{
-                                    width: '100%',
-                                    height: '150px',
-                                    objectFit: 'cover', // 이미지 비율 유지
-                                    borderRadius: '4px',
-                                    marginBottom: '10px',
-                                }}
+                                src={recipe.images['main-image']}
+                                alt={recipe.title}
+                                className='w-full h-full object-cover'
                             />
-                        )}
-                        {!post.image && (
-                            <div
-                                style={{
-                                    width: '100%',
-                                    height: '150px',
-                                    borderRadius: '4px',
-                                    backgroundColor: '#f4f4f4', // 이미지가 없을 때의 배경색
-                                    marginBottom: '10px',
-                                }}
-                            />
-                        )}
-                        <h2 style={{ fontSize: '18px', margin: '0 0 10px' }}>
-                            {post.title}
+                        </div>
+                        <h2 className='mt-2 text-lg font-semibold text-center'>
+                            {recipe.title}
                         </h2>
-                        <p
-                            style={{
-                                fontSize: '12px',
-                                color: '#666',
-                                marginBottom: '8px',
-                                flexGrow: 1, // 내용이 없더라도 카드 크기를 유지
-                            }}
-                        >
-                            {post.content.length > 100
-                                ? post.content.substring(0, 100) + '...'
-                                : post.content}
-                        </p>
-                        <p style={{ fontSize: '12px', color: '#aaa' }}>
-                            작성자: {post.author}
-                        </p>
-                        <p style={{ fontSize: '12px', color: '#aaa' }}>
-                            날짜: {post.date}
-                        </p>
                     </div>
                 ))}
+            </div>
+
+            {/* 플로팅 액션 버튼 */}
+            <div className='fixed right-8 bottom-80 md:right-12 md:bottom-80 z-10'>
+                <button
+                    onClick={handleWriteRecipeClick}
+                    className='w-32 h-32 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center'
+                    aria-label='레시피 작성'
+                >
+                    <span className='text-sm font-semibold text-center'>레시피<br/>작성</span>
+                </button>
             </div>
         </main>
     );
 };
 
-export default UserRecipe;
+export default GalleryPage;

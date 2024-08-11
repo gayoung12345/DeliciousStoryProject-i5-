@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';  // Next.js의 라우터 사용
 import IngredientInput from '@/components/recipe/IngredientInput';
 import RecipeStepInput from '@/components/recipe/RecipeStepInput';
 import { Button, ButtonText } from '@/components/ui/button';
@@ -21,6 +22,8 @@ interface Ingredient {
 }
 
 const RecipeWrite: React.FC = () => {
+    const router = useRouter();  // 라우터 초기화
+    const [isSubmitting, setIsSubmitting] = useState(false);  // 제출 상태 추가
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [categoryMethod, setCategoryMethod] = useState('');
@@ -60,6 +63,7 @@ const RecipeWrite: React.FC = () => {
     };
 
     const handleSubmit = async () => {
+        setIsSubmitting(true);  // 제출 시작
         // 이미지 업로드
         const uploadedImages: { [key: string]: string } = {};
 
@@ -98,8 +102,11 @@ const RecipeWrite: React.FC = () => {
             });
 
             alert('레시피가 성공적으로 저장되었습니다!');
+            router.push('/userRecipe');  // 성공 시 리다이렉트
         } catch (error) {
             console.error('Error saving recipe:', error);
+        }finally {
+            setIsSubmitting(false);  // 제출 완료
         }
     };
 
@@ -202,7 +209,8 @@ const RecipeWrite: React.FC = () => {
             </div>
 
             <div className='w-full max-w-6xl p-4 border border-gray-300 mt-4'>
-                <RecipeStepInput onStepChange={handleStepChange} />
+                <RecipeStepInput onStepChange={handleStepChange}
+                uploadImage={uploadImage} />
             </div>
 
             <div className='w-full max-w-6xl p-4 border border-gray-300 mt-4'>
@@ -232,20 +240,14 @@ const RecipeWrite: React.FC = () => {
 
             <div className='w-full max-w-6xl mt-8 flex justify-center items-center'>
                 <button
-                    className='border border-gray-300 w-[300px] h-[100px] text-center bg-white'
+                    className={`border border-gray-300 w-[300px] h-[100px] text-center ${
+                        isSubmitting ? 'bg-gray-200 text-gray-500' : 'bg-white'
+                    }`}
                     onClick={handleSubmit}
+                    disabled={isSubmitting}  // 제출 중이면 버튼 비활성화
                 >
-                    저장
+                    {isSubmitting ? '저장중...' : '저장'}
                 </button>
-                {/* <Button
-                    className='w-1/2 h-14'
-                    size='lg'
-                    variant='outline'
-                    action='primary'
-                    onClick={handleSubmit}
-                >
-                    <ButtonText>저장</ButtonText>
-                </Button> */}
             </div>
         </main>
     );
