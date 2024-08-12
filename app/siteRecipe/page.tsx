@@ -119,9 +119,11 @@ const SiteRecipe = () => {
             {/* 페이지 상단 제목 */}
             <Text
                 style={{
-                    fontSize: '24px',
+                    fontSize: '26px',
+                    fontWeight: '700',
                     textAlign: 'center',
-                    marginBottom: '16px',
+                    marginTop: '35px',
+                    marginBottom: '35px',
                     textDecoration: 'underline',
                     textUnderlineOffset: '10px',
                 }}
@@ -202,7 +204,7 @@ const SiteRecipe = () => {
                                     >
                                         <Text
                                             style={{
-                                                fontSize: '18px',
+                                                fontSize: '16px',
                                                 fontWeight: 'bold',
                                             }}
                                         >
@@ -212,9 +214,9 @@ const SiteRecipe = () => {
                                 </Box>
                                 <Text
                                     style={{
-                                        fontSize: '18px',
-                                        fontWeight: 'bold',
-                                        marginTop: '8px',
+                                        fontSize: '16px',
+                                        fontWeight: '600',
+                                        marginTop: '10px',
                                         textAlign: 'center',
                                     }}
                                 >
