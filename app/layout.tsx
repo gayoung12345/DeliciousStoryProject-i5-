@@ -1,5 +1,4 @@
 // app/layout.tsx
-import 'react-quill/dist/quill.snow.css';
 import { AuthProvider } from './context/AuthContext'; // 인증 컨텍스트 가져오기
 import Header from './ui/Header';
 import Footer from './ui/Footer';

@@ -55,3 +55,4 @@ export const addPost = async (
         throw error;
     }
 };
+

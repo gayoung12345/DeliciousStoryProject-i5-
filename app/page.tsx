@@ -7,6 +7,7 @@ const slides = [
   { id: 1, image: '/png/mainA.png' },
   { id: 2, image: '/png/mainB.png' },
   { id: 3, image: '/png/mainC.png' },
+  { id: 4, image: '/png/mainD.png' }, // 수정: id가 중복되지 않도록 변경
 ];
 
 export default function Home() {
@@ -21,6 +22,11 @@ export default function Home() {
       prevSlide === 0 ? slides.length - 1 : prevSlide - 1
     );
   };
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
+
 
   return (
     <main>
