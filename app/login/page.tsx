@@ -61,9 +61,15 @@ export default function LoginPage() {
                     backgroundColor: 'white', // 배경색
                 }}
             >
-                <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>
+                <h1
+                className='text-2xl font-bold mb-6'
+                style={{
+                    textAlign: 'center',
+                    marginBottom: '16px',
+                }}>
                     로그인
                 </h1>
+                
                 <div style={{ width: '100%', marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px' }}>
                         아이디
