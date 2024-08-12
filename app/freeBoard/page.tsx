@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'; // React와 필요한 훅들
 import { useRouter } from 'next/navigation'; // Next.js의 라우터 훅을 import
 import { useAuth } from '../context/AuthContext'; // 인증 컨텍스트에서 현재 사용자 정보를 가져오는 훅을 import
 import { fetchPosts } from '../../lib/firestore'; // Firestore에서 게시글을 가져오는 함수 import
+import { EditIcon, Icon } from '@/components/ui/icon';
 
 const FreeBoard = () => {
     // 게시글을 저장할 상태 변수와 현재 페이지, 검색어, 필터된 게시글을 위한 상태 변수를 정의
@@ -83,19 +84,27 @@ const FreeBoard = () => {
     return (
         <main>
             <div style={{ padding: '20px' }}>
-                <h1 style={{ textAlign: 'center', fontSize: '36px', marginTop: '20px', marginBottom: '20px' }}>
+                <h1
+                className='text-2xl font-bold mb-6'
+                style={{
+                    textAlign: 'center',
+                    marginBottom: '16px',
+                    // textDecoration: 'underline',
+                    // textUnderlineOffset: '10px',
+                }}>
                     자유게시판
                 </h1>
+                <hr className='h-px my-4 bg-gray-300 border-0 dark:bg-gray-700'></hr>
 
                 {/* 글 작성하기 버튼을 테이블 바로 위에 위치시키기 */}
                 {user && ( // 사용자가 로그인되어 있을 때만 글 작성하기 버튼을 표시
                     <div style={{ marginLeft: '1350px', marginBottom: '20px' }}>
                         <button
                             type='button'
-                            className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
+                            className='w-16 h-16 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center'
                             onClick={handleWriteClick}
                         >
-                            글 작성하기
+                        <span className='text-sm font-semibold text-center'><Icon as={EditIcon} size='xl' /></span>
                         </button>
                     </div>
                 )}

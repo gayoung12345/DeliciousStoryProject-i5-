@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useAuth } from '../context/AuthContext';
+import { Icon } from '@/components/ui/icon';
+import { BiCamera } from 'react-icons/bi';
 
 const logoSrc = '/svg/logo.svg';
 
@@ -25,7 +27,7 @@ const Header: React.FC = () => {
             <div className='relative flex-grow max-w-lg mx-6 sm:mx-12'>
                 <input
                     type='text'
-                    className='bg-gray-100 text-black p-4 text-lg rounded-lg focus:outline-none w-full'
+                    className='bg-gray-200 text-black p-4 text-lg rounded-lg focus:outline-none w-full'
                     placeholder='오늘의메뉴'
                 />
                 <button className='absolute right-0 top-0 mt-2 mr-2 p-2'>
