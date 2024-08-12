@@ -175,10 +175,10 @@ module.exports = {
         },
       },
       fontFamily: {
-        heading: undefined,
-        body: undefined,
-        mono: undefined,
-        roboto: ["Roboto", "sans-serif"],
+        heading: ['Noto Sans KR', 'Inter', 'sans-serif'],
+        body: ['Noto Sans KR', 'Inter', 'sans-serif'],
+        mono: ['Roboto Mono', 'sans-serif'],
+        roboto: ['Roboto', 'sans-serif'],
       },
       fontWeight: {
         extrablack: "950",
