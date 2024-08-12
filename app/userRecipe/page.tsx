@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import { useRouter } from 'next/navigation';
+import { FaArrowLeft } from 'react-icons/fa';
 
 interface Recipe {
     id: string;
@@ -13,7 +14,7 @@ interface Recipe {
     };
 }
 
-const GalleryPage = () => {
+const UserRecipe = () => {
     const [recipes, setRecipes] = useState<Recipe[]>([]);
     const router = useRouter();
 
@@ -39,23 +40,83 @@ const GalleryPage = () => {
     };
 
     return (
-        <main className='relative max-w-6xl mx-auto p-4'>
-            <h1 className='text-4xl font-bold text-center mb-8'>레시피 갤러리</h1>
-            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'>
+        <main
+            style={{
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                maxWidth: '1400px',
+                margin: '0 auto',
+            }}
+        >
+            <h1
+                style={{
+                    fontSize: '24px',
+                    textAlign: 'center',
+                    marginBottom: '16px',
+                    textDecoration: 'underline',
+                    textUnderlineOffset: '10px',
+                }}
+            >
+                레시피 갤러리
+            </h1>
+
+            <div
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns:
+                        'repeat(auto-fill, minmax(200px, 1fr))',
+                    gap: '16px',
+                    marginBottom: '24px',
+                    width: '100%',
+                }}
+            >
                 {recipes.map((recipe) => (
                     <div
                         key={recipe.id}
-                        className='cursor-pointer hover:shadow-lg transition-shadow duration-300'
+                        style={{
+                            position: 'relative',
+                            border: '1px solid #ddd',
+                            borderRadius: '8px',
+                            padding: '16px',
+                            backgroundColor: 'white',
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                            cursor: 'pointer',
+                            transition: 'transform 0.3s, box-shadow 0.3s',
+                        }}
                         onClick={() => handleRecipeClick(recipe.id)}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                            e.currentTarget.style.boxShadow =
+                                '0 8px 16px rgba(0,0,0,0.2)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.boxShadow =
+                                '0 4px 8px rgba(0,0,0,0.1)';
+                        }}
                     >
-                        <div className='w-full h-40 sm:h-48 md:h-56 lg:h-64 bg-gray-200 overflow-hidden rounded-lg'>
+                        <div style={{ position: 'relative' }}>
                             <img
                                 src={recipe.images['main-image']}
                                 alt={recipe.title}
-                                className='w-full h-full object-cover'
+                                style={{
+                                    width: '100%',
+                                    height: '200px',
+                                    objectFit: 'cover',
+                                    borderRadius: '8px',
+                                }}
                             />
                         </div>
-                        <h2 className='mt-2 text-lg font-semibold text-center'>
+                        <h2
+                            style={{
+                                fontSize: '18px',
+                                fontWeight: 'bold',
+                                marginTop: '8px',
+                                textAlign: 'center',
+                            }}
+                        >
                             {recipe.title}
                         </h2>
                     </div>
@@ -63,17 +124,47 @@ const GalleryPage = () => {
             </div>
 
             {/* 플로팅 액션 버튼 */}
-            <div className='fixed right-8 bottom-80 md:right-12 md:bottom-80 z-10'>
-                <button
-                    onClick={handleWriteRecipeClick}
-                    className='w-32 h-32 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center'
-                    aria-label='레시피 작성'
+            <button
+                onClick={handleWriteRecipeClick}
+                style={{
+                    position: 'fixed',
+                    bottom: 50,
+                    right: 50,
+                    width: 80,
+                    height: 80,
+                    backgroundColor: '#000000',
+                    color: '#ffffff',
+                    borderRadius: '40px',
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    zIndex: 10,
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                    transition: 'background-color 0.3s',
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#333333';
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#000000';
+                }}
+            >
+                <span
+                    style={{
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        textAlign: 'center',
+                    }}
                 >
-                    <span className='text-sm font-semibold text-center'>레시피<br/>작성</span>
-                </button>
-            </div>
+                    레시피
+                    <br />
+                    작성
+                </span>
+            </button>
         </main>
     );
 };
 
-export default GalleryPage;
+export default UserRecipe;

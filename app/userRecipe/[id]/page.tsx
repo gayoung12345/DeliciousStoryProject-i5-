@@ -2,8 +2,21 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
+import { db, auth } from '@/lib/firebaseConfig';
+
+import { FaArrowLeft, FaHeart, FaPause, FaPlay, FaStop } from 'react-icons/fa';
+import TextToSpeechDiv from '@/components/tts/textToSpeech';
+import {
+    doc,
+    query,
+    where,
+    collection,
+    addDoc,
+    getDoc,
+    getDocs,
+    deleteDoc,
+} from 'firebase/firestore';
 
 interface Recipe {
     title: string;
@@ -32,9 +45,179 @@ interface Recipe {
 }
 
 const RecipeDetail = ({ params }: { params: { id: string } }) => {
+    const [liked, setLiked] = useState(false);
     const router = useRouter();
     const [recipe, setRecipe] = useState<Recipe | null>(null);
     const { id } = params;
+    const [speechRate, setSpeechRate] = useState(1);
+    const [utterance, setUtterance] = useState(null);
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [user, setUser] = useState(null);
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setUser(user);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        const checkIfLiked = async () => {
+            if (user && recipe) {
+                const likesRef = collection(db, 'likes');
+                const q = query(
+                    likesRef,
+                    where('recipeId', '==', id),
+                    where('userId', '==', user.uid)
+                );
+                const querySnapshot = await getDocs(q);
+
+                setLiked(!querySnapshot.empty);
+            }
+        };
+
+        checkIfLiked();
+    }, [user, recipe]);
+
+    const speakText = (text: any) => {
+        if ('speechSynthesis' in window) {
+            const newUtterance = new SpeechSynthesisUtterance(text);
+            newUtterance.rate = speechRate; // Set speech rate
+            setUtterance(newUtterance);
+            speechSynthesis.speak(newUtterance);
+            setIsSpeaking(true);
+        } else {
+            console.warn('Speech synthesis not supported in this browser.');
+        }
+    };
+
+    const handleTtsClick = () => {
+        if (recipe) {
+            // 레시피 이름 읽어주기
+            speakText(recipe.title);
+
+            // 메뉴얼 읽어주기
+            recipe.steps.forEach((item) => {
+                speakText(item.description);
+            });
+        }
+    };
+
+    const handleRateChange = (event: any) => {
+        setSpeechRate(parseFloat(event.target.value));
+    };
+
+    const handlePauseClick = () => {
+        if ('speechSynthesis' in window && isSpeaking) {
+            speechSynthesis.pause();
+        }
+    };
+
+    const handleResumeClick = () => {
+        if ('speechSynthesis' in window && isSpeaking) {
+            speechSynthesis.resume();
+        }
+    };
+
+    const handleStopClick = () => {
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            setIsSpeaking(false);
+        }
+    };
+
+    const handleBackClick = () => {
+        router.back();
+    };
+
+    const handleLikeToggle = async () => {
+        if (user) {
+            const likesRef = collection(db, 'likes');
+            const q = query(
+                likesRef,
+                where('recipeId', '==', id),
+                where('userId', '==', user.uid)
+            );
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                // 좋아요가 없는 경우, 좋아요 추가
+                try {
+                    await addDoc(likesRef, {
+                        recipeId: id,
+                        userId: user.uid,
+                    });
+                    setLiked(true);
+                } catch (error) {
+                    console.error('Error adding like:', error);
+                }
+            } else {
+                // 좋아요가 있는 경우, 좋아요 제거
+                try {
+                    querySnapshot.forEach(async (doc) => {
+                        await deleteDoc(doc.ref);
+                    });
+                    setLiked(false);
+                } catch (error) {
+                    console.error('Error removing like:', error);
+                }
+            }
+        } else {
+            // 로그인하지 않은 경우 알림과 리다이렉트
+            alert('좋아요를 클릭하려면 로그인해야 합니다.');
+            router.push('/login'); // 로그인 페이지로 리다이렉트
+        }
+    };
+
+    const handleAddComment = async () => {
+        if (user) {
+            if (newComment.trim()) {
+                try {
+                    await addDoc(collection(db, 'comments'), {
+                        recipeId: id,
+                        userId: user.uid,
+                        text: newComment,
+                        timestamp: new Date(),
+                    });
+                    setComments([
+                        ...comments,
+                        { userId: user.uid, text: newComment },
+                    ]);
+                    setNewComment('');
+                } catch (error) {
+                    console.error('Error adding comment:', error);
+                }
+            }
+        } else {
+            // 로그인하지 않은 경우 알림과 리다이렉트
+            alert('댓글을 작성하려면 로그인해야 합니다.');
+            router.push('/login'); // 로그인 페이지로 리다이렉트
+        }
+    };
+
+    useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'comments'));
+                const commentsList = querySnapshot.docs.map((doc) =>
+                    doc.data()
+                );
+
+                // 댓글 목록에서 recipeId가 일치하는 댓글만 필터링
+                setComments(
+                    commentsList.filter((comment) => comment.recipeId === id)
+                );
+            } catch (error) {
+                console.error('Error fetching comments:', error);
+            }
+        };
+
+        if (recipe) {
+            fetchComments();
+        }
+    }, [recipe]);
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -60,47 +243,354 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
 
     return (
         <main className='max-w-4xl mx-auto p-4'>
-            <h1 className='text-3xl font-bold mb-4'>{recipe.title}</h1>
+            <button
+                onClick={router.back}
+                style={{
+                    color: '#ffffff',
+                    backgroundColor: '#383838',
+                    position: 'fixed',
+                    top: 150,
+                    left: 50,
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                    zIndex: 10,
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                }}
+            >
+                <FaArrowLeft
+                    size={24}
+                    color='#ffffff'
+                />
+            </button>
             <img
                 src={recipe.images['main-image']}
                 alt={recipe.title}
                 className='w-full object-cover mb-4'
             />
-            <p className='mb-4'>{recipe.description}</p>
-            <div className='mb-4'>
-                <h2 className='text-2xl font-bold mb-2'>요리 정보</h2>
-                <ul>
-                    <li>인원: {recipe.info.servings}</li>
-                    <li>시간: {recipe.info.time}</li>
-                    <li>난이도: {recipe.info.difficulty}</li>
-                    <li>방법: {recipe.category.method}</li>
-                    <li>재료: {recipe.category.ingredient}</li>
-                </ul>
+
+            {/* 회색 박스 */}
+            <div
+                style={{
+                    backgroundColor: '#f0f0f0',
+                    padding: '20px',
+                    borderRadius: '8px',
+                }}
+            >
+                {/* 제목 */}
+                <TextToSpeechDiv>
+                    <h1
+                        style={{
+                            fontSize: '32px',
+                            fontWeight: 'bold',
+                            textAlign: 'center',
+                            marginBottom: '16px',
+                        }}
+                    >
+                        {recipe.title}
+                    </h1>
+                </TextToSpeechDiv>
+                <TextToSpeechDiv>
+                    <p>{recipe.description}</p>
+                </TextToSpeechDiv>
+                <br />
+
+                {/* 재료 */}
+                <TextToSpeechDiv>
+                    <h2
+                        style={{
+                            fontSize: '24px',
+                            fontWeight: 'bold',
+                            textAlign: 'left',
+                            marginBottom: '8px',
+                        }}
+                    >
+                        재료
+                    </h2>
+                    <div
+                        style={{
+                            fontSize: '18px',
+                            textAlign: 'left',
+                            marginBottom: '24px',
+                        }}
+                    >
+                        {recipe.ingredients.map((ingredient, index) => (
+                            <div key={index}>
+                                {ingredient.name} {ingredient.quantity}
+                                {ingredient.unit}
+                            </div>
+                        ))}
+                    </div>
+                </TextToSpeechDiv>
+                {/* 조리법 */}
+                <TextToSpeechDiv>
+                    <h2
+                        style={{
+                            fontSize: '24px',
+                            fontWeight: 'bold',
+                            textAlign: 'left',
+                            marginBottom: '8px',
+                        }}
+                    >
+                        조리법
+                    </h2>
+                    <div>
+                        {recipe.steps.map((step, index) => (
+                            <div
+                                key={index}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    marginBottom: '16px',
+                                }}
+                            >
+                                {step.image && (
+                                    <img
+                                        src={step.image}
+                                        alt={`Step ${index + 1}`}
+                                        style={{
+                                            width: '150px',
+                                            height: '150px',
+                                            objectFit: 'cover',
+                                            marginRight: '16px',
+                                            borderRadius: '8px',
+                                        }}
+                                    />
+                                )}
+                                <p style={{ fontSize: '18px' }}>
+                                    {index + 1}. {step.description}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </TextToSpeechDiv>
+                {/* TTS Reproduction Button */}
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        gap: '16px',
+                        marginTop: '56px',
+                        marginBottom: '16px',
+                    }}
+                >
+                    <button
+                        onClick={handleTtsClick}
+                        style={{
+                            color: '#ffffff',
+                            backgroundColor: '#FF8C00', // 기본 주황색
+                            width: 100,
+                            height: 40,
+                            borderRadius: 20,
+                            border: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: '16px',
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                            transition:
+                                'background-color 0.3s, box-shadow 0.3s, color 0.3s',
+                        }}
+                        onMouseDown={(e) => {
+                            e.currentTarget.style.backgroundColor = '#FF7F00'; // 클릭 시 색상
+                            e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
+                        }}
+                        onMouseUp={(e) => {
+                            e.currentTarget.style.backgroundColor = '#FF8C00'; // 기본 색상으로 복구
+                            e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
+                        }}
+                    >
+                        TTS 재생
+                    </button>
+                    <select
+                        value={speechRate}
+                        onChange={handleRateChange}
+                        style={{
+                            width: 100,
+                            height: 40,
+                            borderRadius: 20,
+                            border: '1px solid #ddd',
+                            padding: '0 10px',
+                            fontSize: '16px',
+                            cursor: 'pointer',
+                            textAlign: 'center',
+                            boxSizing: 'border-box',
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                        }}
+                    >
+                        <option value={0.5}>0.5배속</option>
+                        <option value={1}>1배속</option>
+                        <option value={2}>2배속</option>
+                    </select>
+                    <button
+                        onClick={handlePauseClick}
+                        style={{
+                            color: '#ffffff',
+                            backgroundColor: '#FF8C00', // 기본 주황색
+                            width: 80,
+                            height: 40,
+                            borderRadius: 20,
+                            border: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: '16px',
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                            transition:
+                                'background-color 0.3s, box-shadow 0.3s, color 0.3s',
+                        }}
+                        onMouseDown={(e) => {
+                            e.currentTarget.style.backgroundColor = '#FF7F00'; // 클릭 시 색상
+                            e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
+                        }}
+                        onMouseUp={(e) => {
+                            e.currentTarget.style.backgroundColor = '#FF8C00'; // 기본 색상으로 복구
+                            e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
+                        }}
+                    >
+                        <FaPause size={15} />
+                    </button>
+                    <button
+                        onClick={handleResumeClick}
+                        style={{
+                            color: '#ffffff',
+                            backgroundColor: '#FF8C00', // 기본 주황색
+                            width: 80,
+                            height: 40,
+                            borderRadius: 20,
+                            border: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: '16px',
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                            transition:
+                                'background-color 0.3s, box-shadow 0.3s, color 0.3s',
+                        }}
+                        onMouseDown={(e) => {
+                            e.currentTarget.style.backgroundColor = '#FF7F00'; // 클릭 시 색상
+                            e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
+                        }}
+                        onMouseUp={(e) => {
+                            e.currentTarget.style.backgroundColor = '#FF8C00'; // 기본 색상으로 복구
+                            e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
+                        }}
+                    >
+                        <FaPlay size={15} />
+                    </button>
+                    <button
+                        onClick={handleStopClick}
+                        style={{
+                            color: '#ffffff',
+                            backgroundColor: '#FF8C00', // 기본 주황색
+                            width: 80,
+                            height: 40,
+                            borderRadius: 20,
+                            border: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: '16px',
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                            transition:
+                                'background-color 0.3s, box-shadow 0.3s, color 0.3s',
+                        }}
+                        onMouseDown={(e) => {
+                            e.currentTarget.style.backgroundColor = '#FF7F00'; // 클릭 시 색상
+                            e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
+                        }}
+                        onMouseUp={(e) => {
+                            e.currentTarget.style.backgroundColor = '#FF8C00'; // 기본 색상으로 복구
+                            e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
+                        }}
+                    >
+                        <FaStop size={15} />
+                    </button>
+                </div>
             </div>
-            <div className='mb-4'>
-                <h2 className='text-2xl font-bold mb-2'>재료</h2>
-                <ul>
-                    {recipe.ingredients.map((ingredient, index) => (
-                        <li key={index}>
-                            {ingredient.name} - {ingredient.quantity} {ingredient.unit}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <div className='mb-4'>
-                <h2 className='text-2xl font-bold mb-2'>조리 단계</h2>
-                {recipe.steps.map((step, index) => (
-                    <div key={index} className='mb-4'>
-                        <p>{step.description}</p>
-                        {step.image && (
-                            <img
-                                src={step.image}
-                                alt={`Step ${index + 1}`}
-                                className='w-full h-64 object-cover mt-2'
-                            />
-                        )}
+            <div style={{ marginTop: '16px' }}>
+                <h3>댓글</h3>
+                {comments.map((comment, index) => (
+                    <div
+                        key={index}
+                        style={{
+                            border: '1px solid #ddd',
+                            padding: '8px',
+                            marginBottom: '8px',
+                            borderRadius: '4px',
+                        }}
+                    >
+                        <p>작성자: {comment.userId}</p>
+                        <p>{comment.text}</p>
                     </div>
                 ))}
+
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px',
+                        marginTop: '16px',
+                    }}
+                >
+                    <textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        rows={3}
+                        placeholder='댓글을 작성하세요...'
+                        style={{
+                            width: '100%',
+                            padding: '8px',
+                            borderRadius: '4px',
+                            border: '1px solid #ddd',
+                            fontSize: '16px',
+                            boxSizing: 'border-box',
+                        }}
+                    />
+                    <button
+                        onClick={handleAddComment}
+                        style={{
+                            color: '#ffffff',
+                            backgroundColor: '#FF8C00', // 기본 주황색
+                            width: '100%',
+                            height: 40,
+                            borderRadius: 20,
+                            border: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: '16px',
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                            transition:
+                                'background-color 0.3s, box-shadow 0.3s, color 0.3s',
+                        }}
+                        onMouseDown={(e) => {
+                            e.currentTarget.style.backgroundColor = '#FF7F00'; // 클릭 시 색상
+                            e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
+                        }}
+                        onMouseUp={(e) => {
+                            e.currentTarget.style.backgroundColor = '#FF8C00'; // 기본 색상으로 복구
+                            e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
+                        }}
+                    >
+                        댓글 작성
+                    </button>
+                    <div style={{ display: 'flex', gap: '16px' }}>
+                        <button onClick={handleLikeToggle}>
+                            <FaHeart color={liked ? 'red' : 'gray'} />
+                        </button>
+                    </div>
+                </div>
             </div>
         </main>
     );
