@@ -1,46 +1,46 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../context/AuthContext';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../../lib/firebaseConfig';
+import TextEditor from '@/components/text-editor/text-editor';
 
 const Posting = () => {
-    // 상태를 선언하여 작성자, 제목, 내용, 비밀번호를 관리합니다.
-    const [author, setAuthor] = useState('');
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [password, setPassword] = useState(''); // 비밀번호 상태
-    const router = useRouter();
+    const [title, setTitle] = useState(''); // 제목을 관리하는 상태
+    const [content, setContent] = useState(''); // 내용을 관리하는 상태
+    const router = useRouter(); // 페이지 이동을 관리하는 Next.js의 라우터
+    const { user } = useAuth(); // 현재 로그인된 사용자의 정보를 가져옴
 
-    // 폼 제출 핸들러
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault(); // 폼 제출 시 페이지 리로드를 방지
 
-        // 새로운 게시글 데이터 생성
-        const newPost = {
-            id: Date.now(), // 현재 시간을 ID로 사용
-            title,
-            author: author || '익명', // 작성자 필드 (입력되지 않으면 '익명'으로 설정)
-            date: new Date().toISOString().split('T')[0], // 현재 날짜
-            comments: [], // 댓글 빈 배열
-            views: 0, // 조회수 초기값 0
-            content, // 글 내용
-            password, // 비밀번호 추가
-        };
+        if (user) {
+            // 사용자가 로그인되어 있을 경우
+            try {
+                await addDoc(collection(db, 'posts'), {
+                    title, // 제목
+                    content, // 내용
+                    author: user.email, // 작성자 (로그인된 사용자)
+                    date: new Date().toISOString(), // 작성일 (현재 시간)
+                    comments: 0, // 댓글 수 초기값
+                    views: 0, // 조회수 초기값
+                });
 
-        // 기존 게시글 목록 가져오기
-        const existingPosts = JSON.parse(localStorage.getItem('posts')) || [];
-        const updatedPosts = [newPost, ...existingPosts]; // 새로운 글 추가
-
-        // 업데이트된 게시글 목록을 localStorage에 저장
-        localStorage.setItem('posts', JSON.stringify(updatedPosts));
-
-        alert('글이 작성되었습니다!'); // 알림 표시
-        router.push('/freeBoard'); // 글 작성 후 게시판으로 이동
+                alert('글이 작성되었습니다!'); // 작성 완료 알림
+                router.push('/freeBoard'); // 작성 후 게시판으로 이동
+            } catch (error) {
+                console.error('Error adding document: ', error); // 오류 발생 시 콘솔에 출력
+            }
+        } else {
+            alert('로그인이 필요합니다.'); // 로그인하지 않은 경우 알림
+            router.push('/login'); // 로그인 페이지로 이동
+        }
     };
 
-    // 뒤로가기 버튼 핸들러
     const handleGoBack = () => {
-        router.push('/freeBoard');
+        router.push('/freeBoard'); // 뒤로가기 버튼 클릭 시 게시판으로 이동
     };
 
     return (
@@ -91,23 +91,28 @@ const Posting = () => {
                         >
                             내용
                         </label>
-                        <textarea
-                            id='content'
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
+                        <div
                             style={{
                                 width: '60%',
-                                padding: '10px',
-                                height: '200px',
-                                border: '1px solid #ddd',
-                                borderRadius: '4px',
-                                display: 'block',
                                 margin: '0 auto',
-                                verticalAlign: 'top', // 상단 정렬
+                                marginBottom: '60px',
                             }}
-                        />
+                        >
+                            {' '}
+                            {/* TextEditor의 아래에 더 넓은 여유 공간 추가 */}
+                            <TextEditor
+                                content={content}
+                                setContent={setContent}
+                            />
+                        </div>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            marginTop: '20px',
+                        }}
+                    >
                         <button
                             type='button'
                             onClick={handleGoBack}

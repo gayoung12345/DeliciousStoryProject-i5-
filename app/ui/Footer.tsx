@@ -23,6 +23,11 @@ const Footer: React.FC = () => {
                             <span>| 전보람 |</span>
                             <span>| 추호연 |</span>
                             <span>| 이다은 </span>
+                            <span>| 김가영 |</span>
+                            <span>| 김유미 |</span>
+                            <span>| 전보람 |</span>
+                            <span>| 추호연 |</span>
+                            <span>| 이다은 </span>
                         </div>
                     </div>
                     <div className='text-left text-sm'>
@@ -65,6 +70,7 @@ const Footer: React.FC = () => {
                         </div>
                     </div>
                     <div className='text-center mt-4'>
+                        <p>~ Delicious Story ~</p>
                         <p>~ Delicious Story ~</p>
                         <div className='flex justify-center mt-2'>
                             <Image
