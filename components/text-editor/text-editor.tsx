@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import ReactQuill from 'react-quill';
-
+import 'react-quill/dist/quill.snow.css';
 const modules = {
     toolbar: [
         [{ header: '1' }, { header: '2' }, { font: [] }],
