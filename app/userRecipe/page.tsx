@@ -51,30 +51,25 @@ const UserRecipe = () => {
                 레시피 갤러리
             </h1>
             <hr className='h-px my-4 bg-gray-300 border-0 dark:bg-gray-700'></hr>
-            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'>
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
                 {recipes.map((recipe) => (
                     <div
                         key={recipe.id}
                         style={{
                             position: 'relative',
-                            border: '1px solid #ddd',
-                            borderRadius: '8px',
                             padding: '16px',
                             backgroundColor: 'white',
-                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                             cursor: 'pointer',
-                            transition: 'transform 0.3s, box-shadow 0.3s',
+                            transition: 'transform 0.3s',
+
+                            borderRadius: '8px',
                         }}
                         onClick={() => handleRecipeClick(recipe.id)}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.transform = 'scale(1.05)';
-                            e.currentTarget.style.boxShadow =
-                                '0 8px 16px rgba(0,0,0,0.2)';
                         }}
                         onMouseLeave={(e) => {
                             e.currentTarget.style.transform = 'scale(1)';
-                            e.currentTarget.style.boxShadow =
-                                '0 4px 8px rgba(0,0,0,0.1)';
                         }}
                     >
                         <div style={{ position: 'relative' }}>
@@ -88,10 +83,44 @@ const UserRecipe = () => {
                                     borderRadius: '8px',
                                 }}
                             />
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                                    color: 'white',
+                                    opacity: 0,
+                                    transition: 'opacity 0.3s',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => handleRecipeClick(recipe.id)}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.opacity = '1';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.opacity = '0';
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        fontSize: '18px',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    상세 보기
+                                </span>
+                            </div>
                         </div>
                         <h2
                             style={{
-                                fontSize: '18px',
+                                fontSize: '14px',
                                 fontWeight: 'bold',
                                 marginTop: '8px',
                                 textAlign: 'center',
@@ -107,7 +136,7 @@ const UserRecipe = () => {
             <div className='fixed right-8 bottom-80 md:right-12 md:bottom-80 z-10'>
                 <button
                     onClick={handleWriteRecipeClick}
-                    className='w-16 h-16 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center'
+                    className='w-16 h-16 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center'
                     aria-label='레시피 작성'
                 >
                     <span className='text-sm font-semibold text-center'>
