@@ -48,8 +48,8 @@ const Grid = ({ children, style, ...props }) => (
 const SiteRecipe = () => {
     // 레시피 데이터를 저장하는 상태
     const [recipes, setRecipes] = useState<any[]>([]);
-    // 페이지당 아이템 수 상태, 기본값은 24
-    const [itemsPerPage, setItemsPerPage] = useState(24);
+    // 페이지당 아이템 수 상태, 기본값은 8
+    const [itemsPerPage, setItemsPerPage] = useState(8);
     // 페이지 이동을 위한 useRouter 훅
     const router = useRouter();
 
@@ -115,9 +115,10 @@ const SiteRecipe = () => {
     }, [itemsPerPage, recipes]);
 
     return (
-        <div>
+        <div style={{ padding: '20px' }}>
             {/* 페이지 상단 제목 */}
             <Text
+            className='text-2xl font-bold mb-6'
                 style={{
                     fontSize: '26px',
                     fontWeight: '700',
@@ -126,11 +127,13 @@ const SiteRecipe = () => {
                     marginBottom: '35px',
                     textDecoration: 'underline',
                     textUnderlineOffset: '10px',
+
                 }}
             >
                 공식 레시피
             </Text>
-
+            
+            <hr className='h-px my-4 bg-gray-300 border-0 dark:bg-gray-700'></hr>
             {/* 레시피 그리드 컨테이너 */}
             <Box
                 style={{
@@ -139,14 +142,15 @@ const SiteRecipe = () => {
                     justifyContent: 'center',
                 }}
             >
+                
                 <Grid
                     style={{
                         display: 'grid',
                         gridTemplateColumns:
                             'repeat(auto-fill, minmax(200px, 1fr))',
-                        gap: '16px',
+                        gap: '14px',
                         marginBottom: '24px',
-                        maxWidth: '1400px',
+                        maxWidth: '1000px',
                         width: '100%',
                     }}
                 >
@@ -157,11 +161,11 @@ const SiteRecipe = () => {
                                 key={recipe.id}
                                 style={{
                                     position: 'relative',
-                                    border: '1px solid #ddd',
-                                    borderRadius: '8px',
+                                    // border: '1px solid #ddd',
+                                    // borderRadius: '8px',
                                     padding: '16px',
                                     backgroundColor: 'white',
-                                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                                    // boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                                     cursor: 'pointer',
                                 }}
                                 onClick={() => handleImageClick(recipe.id)}
@@ -172,7 +176,7 @@ const SiteRecipe = () => {
                                         alt={recipe.name}
                                         width={250}
                                         height={250}
-                                        style={{ borderRadius: '8px' }}
+                                        style={{ borderRadius: '4px' }}
                                     />
                                     <Box
                                         style={{
@@ -214,6 +218,7 @@ const SiteRecipe = () => {
                                 </Box>
                                 <Text
                                     style={{
+
                                         fontSize: '16px',
                                         fontWeight: '600',
                                         marginTop: '10px',
@@ -227,7 +232,7 @@ const SiteRecipe = () => {
                     ) : (
                         <Text
                             style={{
-                                fontSize: '14px',
+                                fontSize: '16px',
                                 textAlign: 'center',
                             }}
                         >

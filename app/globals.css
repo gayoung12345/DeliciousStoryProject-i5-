@@ -11,22 +11,37 @@
   --font-third: 'Roboto Mono', monospace;
 }
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-} */
-
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-end-rgb));
   font-family: 'Noto Sans KR', Inter, 'Roboto Mono', sans-serif;
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
 }
 
+@media (prefers-color-scheme: dark) {
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 0, 0, 0;
+        --background-end-rgb: 0, 0, 0;
+    }
+}
+
+
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+    .text-balance {
+        text-wrap: balance;
+    }
+}
+.dropdown-menu {
+    max-height: 300px; /* 드롭다운 메뉴의 최대 높이 설정 */
+    overflow-y: auto; /* 수직 스크롤을 추가 */
+    position: absolute; /* 드롭다운 메뉴의 위치 설정 */
+    top: 100%; /* 상위 요소 바로 아래에 위치하도록 설정 */
+    right: 0; /* 오른쪽에 정렬 */
+    width: 100%; /* 상위 요소의 너비에 맞추기 */
+    background-color: white; /* 배경색 설정 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+    z-index: 50; /* 레이어 가장 최상단에 위치하도록 설정 */
 }

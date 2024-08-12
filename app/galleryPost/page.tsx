@@ -1,4 +1,4 @@
-// galleryPost 공식레시피 상세보기 
+// galleryPost 공식레시피 상세보기
 'use client'; // 이 줄을 추가하여 이 파일이 클라이언트 컴포넌트임을 명시합니다.
 
 import React, { useEffect, useState } from 'react'; // React와 필요한 훅들을 import
@@ -47,6 +47,7 @@ const GalleryPost = () => {
     const [newComment, setNewComment] = useState(''); // 새 댓글 내용을 저장할 상태 변수
     const [comments, setComments] = useState([]); // 댓글 목록을 저장할 상태 변수
     const [user, setUser] = useState(null); // 현재 로그인한 사용자 정보를 저장할 상태 변수
+    const [searchTerm, setSearchTerm] = useState(''); // 검색어를 저장할 상태 변수
 
     // 레시피 데이터를 가져오는 useEffect
     useEffect(() => {
@@ -242,7 +243,11 @@ const GalleryPost = () => {
                     });
                     setComments([
                         ...comments,
-                        { userId: user.uid, userEmail: user.email, text: newComment },
+                        {
+                            userId: user.uid,
+                            userEmail: user.email,
+                            text: newComment,
+                        },
                     ]);
                     setNewComment(''); // 댓글 입력 필드 초기화
                 } catch (error) {
@@ -255,16 +260,16 @@ const GalleryPost = () => {
             router.push('/login'); // 로그인 페이지로 리다이렉트
         }
     };
-    
-
 
     // Firestore에서 댓글 데이터를 가져오는 useEffect
     useEffect(() => {
         const fetchComments = async () => {
             try {
                 const querySnapshot = await getDocs(collection(db, 'comments'));
-                const commentsList = querySnapshot.docs.map((doc) => doc.data());
-    
+                const commentsList = querySnapshot.docs.map((doc) =>
+                    doc.data()
+                );
+
                 // 댓글 목록에서 recipeId가 일치하는 댓글만 필터링
                 setComments(
                     commentsList.filter(
@@ -275,12 +280,18 @@ const GalleryPost = () => {
                 console.error('Error fetching comments:', error);
             }
         };
-    
+
         if (recipe) {
             fetchComments(); // 레시피가 로드된 후 댓글 데이터 가져오기
         }
     }, [recipe]);
-    
+
+    const handleSearch = () => {
+        const filteredRecipes = recipes.filter((recipe) =>
+            recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredRecipes(filteredRecipes); // 필터링된 레시피를 상태로 설정
+    };
 
     return (
         <main style={{ marginTop: '80px' }}>
@@ -609,8 +620,8 @@ const GalleryPost = () => {
                             >
                                 <textarea
                                     value={newComment} // 댓글 입력 필드
-                                    onChange={(e) =>
-                                        setNewComment(e.target.value) // 입력된 댓글을 상태로 저장
+                                    onChange={
+                                        (e) => setNewComment(e.target.value) // 입력된 댓글을 상태로 저장
                                     }
                                     rows={3}
                                     placeholder='댓글을 작성하세요...'
@@ -655,7 +666,9 @@ const GalleryPost = () => {
                                     댓글 작성
                                 </button>
                                 <div style={{ display: 'flex', gap: '16px' }}>
-                                    <button onClick={handleLikeToggle}> {/* 좋아요 버튼 */}
+                                    <button onClick={handleLikeToggle}>
+                                        {' '}
+                                        {/* 좋아요 버튼 */}
                                         <FaHeart
                                             color={liked ? 'red' : 'gray'}
                                         />
