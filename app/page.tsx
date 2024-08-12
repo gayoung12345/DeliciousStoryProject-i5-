@@ -1,14 +1,29 @@
 'use client';
 
-import Image from "next/image";
-import { useState } from "react";
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import xml2js from 'xml2js';
+import { Box } from '@/components/ui/box';
+import { Text } from '@/components/ui/text';
+import { useRouter } from 'next/navigation';
+import { RouteMatcher } from 'next/dist/server/future/route-matchers/route-matcher';
 
-
+// 이미지 예시 데이터
 const slides = [
   { id: 1, image: '/png/mainA.png' },
   { id: 2, image: '/png/mainB.png' },
   { id: 3, image: '/png/mainC.png' },
   { id: 4, image: '/png/mainD.png' }, // 수정: id가 중복되지 않도록 변경
+];
+
+// 최신글 예시 데이터 (실제 데이터로 교체 필요)
+const latestPosts = [
+  { id: 1, title: '최신 글 제목 1', summary: '최신 글의 간단한 내용 1' },
+  { id: 2, title: '최신 글 제목 2', summary: '최신 글의 간단한 내용 2' },
+  { id: 3, title: '최신 글 제목 3', summary: '최신 글의 간단한 내용 3' },
+  { id: 4, title: '최신 글 제목 4', summary: '최신 글의 간단한 내용 4' },
+  { id: 5, title: '최신 글 제목 5', summary: '최신 글의 간단한 내용 5' },
+  { id: 6, title: '최신 글 제목 6', summary: '최신 글의 간단한 내용 6' },
 ];
 
 export default function Home() {
@@ -27,7 +42,64 @@ export default function Home() {
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
   };
+// 슬라이더 끝
 
+
+ // 레시피 데이터를 저장하는 상태
+ const [recipes, setRecipes] = useState<any[]>([]);
+ // 페이지당 아이템 수 상태, 기본값은 4
+ const itemsPerPage = 4;
+// useRouter 훅
+ const router = useRouter();
+
+ // 컴포넌트가 마운트될 때 XML 데이터를 가져오는 효과
+ useEffect(() => {
+   const fetchRecipes = async () => {
+     try {
+       // XML 파일을 비동기적으로 가져옴
+       const response = await fetch('/data/siterecipe.xml');
+       const xmlData = await response.text();
+       const parser = new xml2js.Parser();
+       // XML 데이터를 JavaScript 객체로 변환
+       const result = await parser.parseStringPromise(xmlData);
+
+       // 레시피 데이터를 정리하여 상태에 저장
+       const recipeData = result.COOKRCP01.row.map((recipe: any) => ({
+         id: recipe.RCP_SEQ[0],
+         name: recipe.RCP_NM[0],
+         image: recipe.ATT_FILE_NO_MAIN[0] || '/svg/logo.svg', // 기본 이미지 경로 설정
+         ingredients: recipe.RCP_PARTS_DTLS[0],
+         manual: recipe.MANUAL01[0],
+         calories: recipe.INFO_ENG[0],
+       }));
+
+       setRecipes(recipeData);
+     } catch (error) {
+       console.error('Error parsing XML:', error);
+     }
+   };
+
+   fetchRecipes();
+ }, []);
+
+ // 이미지 클릭 시 상세 페이지로 이동하는 함수
+ const handleImageClick = (id: string) => {
+  router.push(`/galleryPost?id=${id}`);
+};
+
+
+const handleMoreClick = () => {
+  router.push('/siteRecipe'); // "/siteRecipe" 페이지로 이동
+};
+
+
+const handlejoinClick = () => {
+  router.push('/signup');
+}
+
+const handlefreeClick = () => {
+  router.push('/freeboard'); 
+};
   
   return (
     <main>
@@ -136,35 +208,97 @@ export default function Home() {
       <div>
         {/* 레시피1 */}
         <div style={{ width: '100%', backgroundColor: 'white', padding: '20px 0' }}>
-          <div style={{ maxWidth: '1400px', height: 'max-content', margin: '0 auto' }}>
-            <h1 style={{ textAlign: 'center', margin: '50px', fontSize: '30px', fontWeight: 'bold',textDecoration: 'underline',textUnderlineOffset: '10px', }}>
-              레시피1
-            </h1>
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-              {['A', 'B', 'C', 'D'].map((letter, index) => (
-                <div key={index} style={{ textAlign: 'center', margin: '10px' }}>
-                  <div style={{ position: 'relative', width: '250px', height: '250px', overflow: 'hidden' }}>
-                    <Image
-                      src={`/png/main${letter}.png`} // 이미지 경로
-                      alt={`Image ${letter}`}
-                      layout="fill"
-                      objectFit="cover"
-                      style={{borderRadius:'10px'}}
-                    />
-                  </div>
-                  <p>Image {letter}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        <h1 className='hover:text-gray-400' style={{ textAlign: 'center', margin: '30px', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer',}} onClick={handleMoreClick}>
+          공식 레시피
+        </h1>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {recipes.slice(0, itemsPerPage).map((recipe) => (
+            <Box
+              key={recipe.id}
+              style={{
+                position: 'relative',
+                padding: '16px',
+                backgroundColor: 'white',
+                margin: '10px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                cursor: 'pointer',
+                width: '250px', // width를 명시적으로 설정
+              }}
+              onClick={() => handleImageClick(recipe.id)}
+            >
+              <Box style={{ position: 'relative' }}>
+                <Image
+                  src={recipe.image}
+                  alt={recipe.name}
+                  width={250}
+                  height={250}
+                  style={{ borderRadius: '4px' }}
+                />
+                <Box
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                    color: 'white',
+                    opacity: 0,
+                    transition: 'opacity 0.3s',
+                    borderRadius: '8px',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '1';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '0';
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: '18px',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    상세 보기
+                  </Text>
+                </Box>
+              </Box>
+              <Text
+                style={{
+                  fontSize: '12px',
+                  marginTop: '8px',
+                  color: '#8C8C8C',
+                }}
+              >
+                {recipe.calories} kcal
+              </Text>
+              <Text
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  marginTop: '2px',
+                }}
+              >
+                {recipe.name}
+              </Text>
+            </Box>
+          ))}
         </div>
+      </div>
+    </div>
 
         {/* 레시피2 */}
         <div style={{ width: '100%', backgroundColor: '#BDBDBD', padding: '20px 0' }}>
           <div style={{ maxWidth: '1400px', height: 'max-content', margin: '0 auto' }}>
-            <h1 style={{ textAlign: 'center', margin: '50px', fontSize: '30px', fontWeight: 'bold',textDecoration: 'underline',textUnderlineOffset: '10px', }}>
-              레시피2
-            </h1>
+          <h1 className='hover:text-gray-400' style={{ textAlign: 'center', margin: '30px', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer',}}>
+          유저레시피1
+        </h1>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
               {['A', 'B', 'C', 'D'].map((letter, index) => (
                 <div key={index} style={{ textAlign: 'center', margin: '10px' }}>
@@ -186,32 +320,36 @@ export default function Home() {
 
         {/* 텍스트 및 버튼 영역 */}
         <div style={{ position: 'relative', zIndex: 1, padding: '20px 0', textAlign: 'center', color: 'black', marginTop: '50px', marginBottom:'50px' }}>
-          <h1 style={{ fontSize: '40px', fontWeight: 'bold' }}>텍스트텍스트텍스트</h1>
+          <h1 style={{ fontSize: '40px', fontWeight: 'bold' }}>눈으로 보고 귀로 듣는 요리</h1>
           <br />
-          <p style={{ fontSize: '20px' }}>레시피 관련한 문구나 간단한 이미지 같은 거</p>
-          <br />
+          <p style={{ fontSize: '18px' }}>
+            <i>TTS로 들으면서 편하게 요리해요</i>
+          </p>
+          <br /><br />
           <button style={{
             border: '1px solid gray',
             borderRadius: '5px',
-            backgroundColor: 'white', 
+            backgroundColor: 'rgba(255,255,255,0.3)', 
             color: 'black',
             padding: '10px 20px',
             fontSize: '16px',
             cursor: 'pointer',
             transition: 'background-color 0.1s',
           }}
-          onMouseEnter={e => e.target.style.backgroundColor = '#e0e0e0'} 
-          onMouseLeave={e => e.target.style.backgroundColor = 'white'}>
-            자세히 보기
+          onMouseEnter={e => e.target.style.backgroundColor = 'rgba(170,170,170,0.3)'} 
+          onMouseLeave={e => e.target.style.backgroundColor = 'rgba(255,255,255,0.3)'}
+          onClick={handlejoinClick}
+          >
+            Join Us
           </button>
         </div>
 
         {/* 레시피3 */}
         <div style={{ width: '100%', backgroundColor: '#BDBDBD', padding: '20px 0' }}>
           <div style={{ maxWidth: '1400px', height: 'max-content', margin: '0 auto' }}>
-            <h1 style={{ textAlign: 'center', margin: '50px', fontSize: '30px', fontWeight: 'bold',textDecoration: 'underline',textUnderlineOffset: '10px', }}>
-              레시피3
-            </h1>
+          <h1 className='hover:text-gray-400' style={{ textAlign: 'center', margin: '30px', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer',}}>
+          유저 레시피2
+        </h1>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
               {['A', 'B', 'C', 'D'].map((letter, index) => (
                 <div key={index} style={{ textAlign: 'center', margin: '10px' }}>
@@ -231,56 +369,30 @@ export default function Home() {
           </div>
         </div>
 
-{/* 자유게시판 인기글 영역 */}
-<div style={{ backgroundColor: 'white', padding: '1.5rem', textAlign: 'center' }}>
-    <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem',textDecoration: 'underline',textUnderlineOffset: '10px', }}>자유게시판 인기글</h1>
-    <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
-        {/* Post Card 1 */}
-        <div style={{ border: '1px solid #BDBDBD', borderRadius: '0.5rem', padding: '0.8rem', display: 'flex', flexDirection: 'column' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.3rem', textAlign: 'left', borderBottom: '2px solid #BDBDBD', paddingBottom: '3px' }}>글 제목 1</h3>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <p style={{ color: '#4A5568', marginBottom: '0.8rem', flex: '1', textAlign: 'left', fontSize: '0.9rem' }}>글 내용</p>
-                <a href='#' style={{ color: '#3182CE', textDecoration: 'underline', marginLeft: '0.5rem', fontSize: '0.9rem' }}>자세히 보기</a>
-            </div>
+{/* 자유게시판 최신글 영역 */}
+<div style={{ backgroundColor: 'white', padding: '1.5rem', textAlign: 'center', justifyContent:'center' }}>
+
+<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', padding: '20px', width: '1000px', margin:'0 auto' }}>
+      {latestPosts.map((post) => (
+        <div 
+          key={post.id}
+          onClick={handlefreeClick} 
+          style={{
+            cursor: 'pointer',
+            padding: '10px', // 패딩 조정
+            margin: '10px',
+            backgroundColor: '#f9f9f9',
+            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+            width: 'calc(50% - 20px)', // 2열로 배치
+          }}
+        >
+          <h2 style={{ margin: '0', fontSize: '16px', textAlign: 'left' }}>{post.title}</h2>
+          <p style={{ fontSize: '12px', color: '#555', textAlign: 'left' }}>{post.summary}</p>
         </div>
-        {/* Post Card 2 */}
-        <div style={{ border: '1px solid #BDBDBD', borderRadius: '0.5rem', padding: '0.8rem', display: 'flex', flexDirection: 'column' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.3rem', textAlign: 'left', borderBottom: '2px solid #BDBDBD', paddingBottom: '3px' }}>글 제목 2</h3>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <p style={{ color: '#4A5568', marginBottom: '0.8rem', flex: '1', textAlign: 'left', fontSize: '0.9rem' }}>글 내용</p>
-                <a href='#' style={{ color: '#3182CE', textDecoration: 'underline', marginLeft: '0.5rem', fontSize: '0.9rem' }}>자세히 보기</a>
-            </div>
-        </div>
+      ))}
     </div>
 
-    {/* 제목만 보이는 영역 */}
-    <div style={{ marginTop: '1.5rem', textAlign: 'left', padding: '1rem', maxWidth: '1200px', margin: '1rem auto', border: '1px solid #BDBDBD', borderRadius: '0.5rem' }}>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'center',textDecoration: 'underline',textUnderlineOffset: '10px', }}>인기글 목록</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
-            <div>
-                <h3 style={{ fontSize: '1rem', color: '#4A5568', marginBottom: '0.5rem' }}>글 제목 3</h3>
-                <hr style={{ border: '1px solid #A0AEC0', margin: '0.5rem 0' }} /> {/* 얇고 글씨 색상과 동일한 줄 */}
-                <h3 style={{ fontSize: '1rem', color: '#4A5568', marginBottom: '0.5rem' }}>글 제목 4</h3>
-                <hr style={{ border: '1px solid #A0AEC0', margin: '0.5rem 0' }} />
-                <h3 style={{ fontSize: '1rem', color: '#4A5568', marginBottom: '0.5rem' }}>글 제목 5</h3>
-                <hr style={{ border: '1px solid #A0AEC0', margin: '0.5rem 0' }} />
-                <h3 style={{ fontSize: '1rem', color: '#4A5568', marginBottom: '0.5rem' }}>글 제목 6</h3>
-                <hr style={{ border: '1px solid #A0AEC0', margin: '0.5rem 0' }} />
-                <h3 style={{ fontSize: '1rem', color: '#4A5568', marginBottom: '0.5rem' }}>글 제목 7</h3>
-            </div>
-            <div>
-                <h3 style={{ fontSize: '1rem', color: '#4A5568', marginBottom: '0.5rem' }}>글 제목 8</h3>
-                <hr style={{ border: '1px solid #A0AEC0', margin: '0.5rem 0' }} />
-                <h3 style={{ fontSize: '1rem', color: '#4A5568', marginBottom: '0.5rem' }}>글 제목 9</h3>
-                <hr style={{ border: '1px solid #A0AEC0', margin: '0.5rem 0' }} />
-                <h3 style={{ fontSize: '1rem', color: '#4A5568', marginBottom: '0.5rem' }}>글 제목 10</h3>
-                <hr style={{ border: '1px solid #A0AEC0', margin: '0.5rem 0' }} />
-                <h3 style={{ fontSize: '1rem', color: '#4A5568', marginBottom: '0.5rem' }}>글 제목 11</h3>
-                <hr style={{ border: '1px solid #A0AEC0', margin: '0.5rem 0' }} />
-                <h3 style={{ fontSize: '1rem', color: '#4A5568', marginBottom: '0.5rem' }}>글 제목 12</h3>
-            </div>
-        </div>
-    </div>
+
 </div>
 
 
@@ -303,8 +415,8 @@ export default function Home() {
 
   {/* 오른쪽 텍스트 및 버튼 영역 */}
   <div style={{ textAlign: 'left', color: 'black', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
-    <h1 style={{ fontSize: '40px', fontWeight: 'bold' }}>텍스트텍스트텍스트</h1><br />
-    <p style={{ fontSize: '20px' }}>레시피 관련한 문구나 간단한 이미지 같은 거</p><br />
+    <h1 style={{ fontSize: '40px', fontWeight: 'bold' }}>오늘의 추천 요리는?</h1><br />
+    <p style={{ fontSize: '20px' }}>텍스트 설명</p><br />
     <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
       <button style={{
         border: '1px solid black',
