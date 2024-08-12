@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 interface Ingredient {
     name: string;
@@ -6,7 +6,13 @@ interface Ingredient {
     unit: string;
 }
 
-const IngredientInput: React.FC = () => {
+interface IngredientInputProps {
+    onIngredientsChange: (ingredients: Ingredient[]) => void;
+}
+
+const IngredientInput: React.FC<IngredientInputProps> = ({
+    onIngredientsChange,
+}) => {
     const [ingredients, setIngredients] = useState<Ingredient[]>([
         { name: '', quantity: '', unit: '' },
     ]);
@@ -19,6 +25,7 @@ const IngredientInput: React.FC = () => {
         const newIngredients = [...ingredients];
         newIngredients[index] = { ...newIngredients[index], [field]: value };
         setIngredients(newIngredients);
+        onIngredientsChange(newIngredients); // 부모 컴포넌트에 재료 정보 전달
     };
 
     const handleAddField = () => {
@@ -29,6 +36,7 @@ const IngredientInput: React.FC = () => {
         if (ingredients.length > 1) {
             const newIngredients = ingredients.filter((_, i) => i !== index);
             setIngredients(newIngredients);
+            onIngredientsChange(newIngredients); // 부모 컴포넌트에 재료 정보 전달
         }
     };
 
