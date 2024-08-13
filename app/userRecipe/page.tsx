@@ -6,6 +6,7 @@ import { db } from '@/lib/firebaseConfig';
 import { useRouter } from 'next/navigation';
 import { EditIcon, Icon } from '@/components/ui/icon';
 import { useAuth } from '../context/AuthContext';
+import Image from 'next/image';
 
 interface Recipe {
     id: string;
@@ -98,10 +99,10 @@ const UserRecipe = () => {
                         }}
                     >
                         <div style={{ position: 'relative' }}>
-                            <img
+                            <Image
                                 src={
-                                    recipe.images?.['main-image'] ||
-                                    recipe['main-image']
+                                    (recipe.images?.['main-image'] as string) ||
+                                    (recipe['main-image'] as string)
                                 } // userRecipe와 testRecipe의 구조에 맞게 처리
                                 alt={recipe.title}
                                 style={{
@@ -110,6 +111,8 @@ const UserRecipe = () => {
                                     objectFit: 'cover',
                                     borderRadius: '8px',
                                 }}
+                                width={400}
+                                height={200}
                             />
                             <div
                                 style={{

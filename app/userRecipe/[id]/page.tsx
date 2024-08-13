@@ -24,6 +24,7 @@ import {
     deleteDoc,
 } from 'firebase/firestore';
 import { useAuth } from '@/app/context/AuthContext';
+import Image from 'next/image';
 
 interface Recipe {
     title: string;
@@ -324,7 +325,9 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                     color='#ffffff'
                 />
             </button>
-            <img
+            <Image
+                width={400}
+                height={200}
                 src={recipe.images['main-image']}
                 alt={recipe.title}
                 className='w-full object-cover mb-4'
@@ -417,7 +420,9 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                                 }}
                             >
                                 {step.image && (
-                                    <img
+                                    <Image
+                                        width={150}
+                                        height={150}
                                         src={step.image}
                                         alt={`Step ${index + 1}`}
                                         style={{
