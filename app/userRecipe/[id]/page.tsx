@@ -4,8 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '@/lib/firebaseConfig';
-
-import { FaArrowLeft, FaHeart, FaPause, FaPlay, FaStop } from 'react-icons/fa';
+import {
+    FaArrowLeft,
+    FaHeart,
+    FaPause,
+    FaPlay,
+    FaStop,
+    FaTrash,
+} from 'react-icons/fa';
 import TextToSpeechDiv from '@/components/tts/textToSpeech';
 import {
     doc,
@@ -17,6 +23,7 @@ import {
     getDocs,
     deleteDoc,
 } from 'firebase/firestore';
+import { useAuth } from '@/app/context/AuthContext';
 
 interface Recipe {
     title: string;
@@ -42,8 +49,8 @@ interface Recipe {
         quantity: string;
         unit: string;
     }[];
+    user: string;
 }
-
 const RecipeDetail = ({ params }: { params: { id: string } }) => {
     const [liked, setLiked] = useState(false);
     const router = useRouter();
@@ -55,6 +62,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
     const [user, setUser] = useState<any | null>(null);
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
@@ -236,6 +244,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                         const testRecipeData = docSnap.data();
                         // Adjust data to match the structure of Recipe interface
                         const adjustedRecipe: Recipe = {
+                            user: '',
                             title: testRecipeData.title || '',
                             description: testRecipeData.description || '',
                             category: {
@@ -271,6 +280,19 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
 
         fetchRecipe();
     }, [id]);
+
+    const handleDeleteRecipe = async () => {
+        if (confirm('정말로 이 레시피를 삭제하시겠습니까?')) {
+            try {
+                // 레시피 삭제
+                await deleteDoc(doc(db, 'userRecipe', id));
+                alert('레시피가 삭제되었습니다.');
+                router.push('/'); // 홈으로 리다이렉트
+            } catch (error) {
+                console.error('Error deleting recipe:', error);
+            }
+        }
+    };
 
     if (!recipe) {
         return <div>Loading...</div>;
@@ -638,6 +660,18 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                         </button>
                     </div>
                 </div>
+                {user && user.email === recipe.user && (
+                    <button
+                        onClick={handleDeleteRecipe}
+                        className='flex items-center p-2 border rounded bg-red-500 text-white'
+                    >
+                        <FaTrash
+                            size={24}
+                            className='mr-2'
+                        />
+                        Delete Recipe
+                    </button>
+                )}
             </div>
         </main>
     );
