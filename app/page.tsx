@@ -8,12 +8,14 @@ import { Text } from '@/components/ui/text';
 import { useRouter } from 'next/navigation';
 import { RouteMatcher } from 'next/dist/server/future/route-matchers/route-matcher';
 
+
 // 이미지 예시 데이터
 const slides = [
-  { id: 1, image: '/png/mainA.png' },
-  { id: 2, image: '/png/mainB.png' },
-  { id: 3, image: '/png/mainC.png' },
-  { id: 4, image: '/png/mainD.png' }, // 수정: id가 중복되지 않도록 변경
+  { id: 1, image: '/png/mainD.png' },
+  { id: 2, image: '/png/mainA.png' },
+  { id: 3, image: '/png/mainB.png' }, 
+  { id: 4, image: '/png/mainC.png' },
+  { id: 5, image: '/png/mainE.png' }, 
 ];
 
 // 최신글 예시 데이터 (실제 데이터로 교체 필요)
@@ -207,9 +209,9 @@ const handlefreeClick = () => {
       {/* 나중에 수정 */}
       <div>
         {/* 레시피1 */}
-        <div style={{ width: '100%', backgroundColor: 'white', padding: '20px 0' }}>
+        <div style={{ width: '100%', backgroundColor: 'white', padding: '40px 0' }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        <h1 className='hover:text-gray-400' style={{ textAlign: 'center', margin: '30px', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer',}} onClick={handleMoreClick}>
+        <h1 className='hover:text-red-600' style={{ textAlign: 'center', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer', width:'max-content', margin: '30px auto', }} onClick={handleMoreClick}>
           공식 레시피
         </h1>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -294,9 +296,9 @@ const handlefreeClick = () => {
     </div>
 
         {/* 레시피2 */}
-        <div style={{ width: '100%', backgroundColor: '#BDBDBD', padding: '20px 0' }}>
+        <div style={{ width: '100%', backgroundColor: '#D8D8D8', padding: '40px 0' }}>
           <div style={{ maxWidth: '1400px', height: 'max-content', margin: '0 auto' }}>
-          <h1 className='hover:text-gray-400' style={{ textAlign: 'center', margin: '30px', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer',}}>
+          <h1 className='hover:text-red-600' style={{ textAlign: 'center', margin: '30px', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer',}}>
           유저레시피1
         </h1>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -321,9 +323,9 @@ const handlefreeClick = () => {
         {/* 텍스트 및 버튼 영역 */}
         <div style={{ position: 'relative', zIndex: 1, padding: '20px 0', textAlign: 'center', color: 'black', marginTop: '50px', marginBottom:'50px' }}>
           <h1 style={{ fontSize: '40px', fontWeight: 'bold' }}>눈으로 보고 귀로 듣는 요리</h1>
-          <br />
           <p style={{ fontSize: '18px' }}>
-            <i>TTS로 들으면서 편하게 요리해요</i>
+            <i style={{ fontSize: '14px' }}>TTS로 들으면서 편하게</i> <br /><br />
+            다른 사람들과 함께 맛있는 이야기를 나눠요
           </p>
           <br /><br />
           <button style={{
@@ -344,10 +346,10 @@ const handlefreeClick = () => {
           </button>
         </div>
 
-        {/* 레시피3 */}
-        <div style={{ width: '100%', backgroundColor: '#BDBDBD', padding: '20px 0' }}>
+        {/* 레시피2 */}
+        <div style={{ width: '100%', backgroundColor: '#D8D8D8', padding: '40px 0' }}>
           <div style={{ maxWidth: '1400px', height: 'max-content', margin: '0 auto' }}>
-          <h1 className='hover:text-gray-400' style={{ textAlign: 'center', margin: '30px', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer',}}>
+          <h1 className='hover:text-red-600' style={{ textAlign: 'center', margin: '30px', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer',}}>
           유저 레시피2
         </h1>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -396,16 +398,40 @@ const handlefreeClick = () => {
 </div>
 
 
+        {/* 레시피3 */}
+        <div style={{ width: '100%', backgroundColor: '#D8D8D8', padding: '40px 0' }}>
+          <div style={{ maxWidth: '1400px', height: 'max-content', margin: '0 auto' }}>
+          <h1 className='hover:text-red-600' style={{ textAlign: 'center', margin: '30px', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer',}}>
+          유저 레시피3
+        </h1>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {['A', 'B', 'C', 'D'].map((letter, index) => (
+                <div key={index} style={{ textAlign: 'center', margin: '10px' }}>
+                  <div style={{ position: 'relative', width: '250px', height: '250px', overflow: 'hidden' }}>
+                    <Image
+                      src={`/png/main${letter}.png`} // 이미지 경로
+                      alt={`Image ${letter}`}
+                      layout="fill"
+                      objectFit="cover"
+                      style={{borderRadius:'10px'}}
+                    />
+                  </div>
+                  <p>Image {letter}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
 
 
 
-<div style={{ width: '100%', backgroundColor: '#BDBDBD', padding: '20px 0' }}>
+<div style={{ width: '100%', backgroundColor: 'white', padding: '20px 0' }}>
 {/* 텍스트 및 버튼 영역2 */}
 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, marginTop: '50px', marginBottom: '50px' }}>
   {/* 왼쪽 이미지 */}
   <div style={{ width: '300px', height: '300px', marginRight: '70px', position: 'relative' }}>
     <Image
-      src="/png/mainA.png" // 이미지 경로
+      src="/png/mainB.png" // 이미지 경로
       alt="Description"
       layout="fill"
       objectFit="cover"
@@ -415,21 +441,21 @@ const handlefreeClick = () => {
 
   {/* 오른쪽 텍스트 및 버튼 영역 */}
   <div style={{ textAlign: 'left', color: 'black', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
-    <h1 style={{ fontSize: '40px', fontWeight: 'bold' }}>오늘의 추천 요리는?</h1><br />
-    <p style={{ fontSize: '20px' }}>텍스트 설명</p><br />
+    <h1 style={{ fontSize: '40px', fontWeight: 'bold' }}>당신의 주방을 특별하게</h1><br />
+    <p style={{ fontSize: '20px' }}>계절별 신선한 재료로 만든 레시피를 들어보세요!</p><br />
     <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
       <button style={{
         border: '1px solid black',
         borderRadius: '5px',
-        backgroundColor: '#BDBDBD', 
+        backgroundColor: 'white', 
         color: 'black',
         padding: '10px 20px',
         fontSize: '16px',
         cursor: 'pointer',
         transition: 'background-color 0.1s',
       }}
-      onMouseEnter={e => e.target.style.backgroundColor = 'white'} 
-      onMouseLeave={e => e.target.style.backgroundColor = '#BDBDBD'}>
+      onMouseEnter={e => e.target.style.backgroundColor = '#D8D8D8'} 
+      onMouseLeave={e => e.target.style.backgroundColor = 'white'}>
         자세히 보기
       </button>
     </div>
@@ -437,6 +463,20 @@ const handlefreeClick = () => {
 </div>
 </div>
 
+
+<div style={{backgroundColor:'white', width:'100%', height:'20px'}}></div>
+
+<div 
+      style={{
+        width: '100%',
+        height: '200px',
+        backgroundImage: 'url(/png/mainA.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    ></div>
+
+<div style={{backgroundColor:'white', width:'100%', height:'50px'}}></div>
 
 
 
