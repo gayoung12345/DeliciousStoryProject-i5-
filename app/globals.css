@@ -3,6 +3,18 @@
 @tailwind utilities;
 
 :root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --font-primary: 'Noto Sans KR', sans-serif;
+  --font-secondary: 'Inter', sans-serif;
+  --font-third: 'Roboto Mono', monospace;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-end-rgb));
+  font-family: 'Noto Sans KR', Inter, 'Roboto Mono', sans-serif;
     --foreground-rgb: 0, 0, 0;
     --background-start-rgb: 214, 219, 220;
     --background-end-rgb: 255, 255, 255;
@@ -16,10 +28,6 @@
     }
 }
 
-body {
-    color: rgb(var(--foreground-rgb));
-    background: 'rgb(255,255,255)';
-}
 
 @layer utilities {
     .text-balance {

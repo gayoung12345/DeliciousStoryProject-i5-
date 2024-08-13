@@ -358,11 +358,12 @@ const GalleryPost = () => {
                         >
                             <h1
                                 style={{
-                                    fontSize: '36px',
+                                    fontSize: '34px',
                                     textAlign: 'center',
                                     marginTop: '10px',
-                                    marginBottom: '26px',
-                                    fontWeight: '600',
+                                    marginBottom: '30px',
+                                    fontWeight: '800',
+                                    color: '#383838',
                                 }}
                             >
                                 {recipe.name}
@@ -382,8 +383,10 @@ const GalleryPost = () => {
                             <h2
                                 style={{
                                     fontSize: '24px',
-                                    marginTop: '26px',
+                                    fontWeight: '800',
+                                    marginTop: '45px',
                                     marginBottom: '8px',
+                                    color: '#383838',
                                 }}
                             >
                                 재료
@@ -399,8 +402,10 @@ const GalleryPost = () => {
                             <h2
                                 style={{
                                     fontSize: '24px',
-                                    marginTop: '26px',
+                                    fontWeight: '800',
+                                    marginTop: '45px',
                                     marginBottom: '8px',
+                                    color: '#383838',
                                 }}
                             >
                                 조리법
