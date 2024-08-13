@@ -2,16 +2,17 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const UserRecipeWrite = () => {
     const [author, setAuthor] = useState('');
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [password, setPassword] = useState('');
-    const [image, setImage] = useState<string | ArrayBuffer | null>(null); // 이미지 상태 추가
+    const [image, setImage] = (useState < string) | ArrayBuffer | (null > null); // 이미지 상태 추가
     const router = useRouter();
 
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = (event) => {
         const file = event.target.files?.[0];
         if (file) {
             const reader = new FileReader();
@@ -22,7 +23,7 @@ const UserRecipeWrite = () => {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
 
         const newPost = {
@@ -132,7 +133,7 @@ const UserRecipeWrite = () => {
                         style={{ display: 'block', margin: '0 auto' }}
                     />
                     {image && (
-                        <img
+                        <Image
                             src={typeof image === 'string' ? image : ''}
                             alt='미리보기'
                             style={{

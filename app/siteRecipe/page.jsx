@@ -1,7 +1,6 @@
-// siteRecipe 공식레시피 리스트
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import xml2js from 'xml2js';
 import { useRouter } from 'next/navigation';
@@ -47,7 +46,7 @@ const Grid = ({ children, style, ...props }) => (
 
 const SiteRecipe = () => {
     // 레시피 데이터를 저장하는 상태
-    const [recipes, setRecipes] = useState<any[]>([]);
+    const [recipes, setRecipes] = useState([]);
     // 페이지당 아이템 수 상태, 기본값은 8
     const [itemsPerPage, setItemsPerPage] = useState(8);
     // 페이지 이동을 위한 useRouter 훅
@@ -65,7 +64,7 @@ const SiteRecipe = () => {
                 const result = await parser.parseStringPromise(xmlData);
 
                 // 레시피 데이터를 정리하여 상태에 저장
-                const recipeData = result.COOKRCP01.row.map((recipe: any) => ({
+                const recipeData = result.COOKRCP01.row.map((recipe) => ({
                     id: recipe.RCP_SEQ[0],
                     name: recipe.RCP_NM[0],
                     image: recipe.ATT_FILE_NO_MAIN[0] || '/svg/logo.svg', // 기본 이미지 경로 설정
@@ -84,7 +83,7 @@ const SiteRecipe = () => {
     }, []);
 
     // 이미지 클릭 시 상세 페이지로 이동하는 함수
-    const handleImageClick = (id: string) => {
+    const handleImageClick = (id) => {
         router.push(`/galleryPost?id=${id}`);
     };
 
@@ -92,7 +91,7 @@ const SiteRecipe = () => {
     const currentRecipes = recipes.slice(0, itemsPerPage);
 
     // 스크롤 이벤트 핸들러
-    const handleScroll = () => {
+    const handleScroll = useCallback(() => {
         const scrollTop = window.scrollY; // 현재 스크롤 위치
         const windowHeight = window.innerHeight; // 현재 뷰포트 높이
         const documentHeight = document.documentElement.offsetHeight; // 전체 문서 높이
@@ -104,7 +103,7 @@ const SiteRecipe = () => {
                 setItemsPerPage((prev) => prev + 1); // 아이템 수 1개씩 증가
             }
         }
-    };
+    }, [itemsPerPage, recipes.length]);
 
     // 스크롤 이벤트 리스너 추가 및 제거
     useEffect(() => {
@@ -112,13 +111,13 @@ const SiteRecipe = () => {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, [itemsPerPage, recipes]);
+    }, [handleScroll]);
 
     return (
         <div style={{ padding: '20px' }}>
             {/* 페이지 상단 제목 */}
             <Text
-            className='text-2xl font-bold mb-6'
+                className='text-2xl font-bold mb-6'
                 style={{
                     fontSize: '26px',
                     fontWeight: '700',
@@ -127,12 +126,11 @@ const SiteRecipe = () => {
                     marginBottom: '35px',
                     textDecoration: 'underline',
                     textUnderlineOffset: '10px',
-
                 }}
             >
                 공식 레시피
             </Text>
-            
+
             <hr className='h-px my-4 bg-gray-300 border-0 dark:bg-gray-700'></hr>
             {/* 레시피 그리드 컨테이너 */}
             <Box
@@ -142,7 +140,6 @@ const SiteRecipe = () => {
                     justifyContent: 'center',
                 }}
             >
-                
                 <Grid
                     style={{
                         display: 'grid',
@@ -161,11 +158,8 @@ const SiteRecipe = () => {
                                 key={recipe.id}
                                 style={{
                                     position: 'relative',
-                                    // border: '1px solid #ddd',
-                                    // borderRadius: '8px',
                                     padding: '16px',
                                     backgroundColor: 'white',
-                                    // boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                                     cursor: 'pointer',
                                 }}
                                 onClick={() => handleImageClick(recipe.id)}
@@ -218,7 +212,6 @@ const SiteRecipe = () => {
                                 </Box>
                                 <Text
                                     style={{
-
                                         fontSize: '16px',
                                         fontWeight: '600',
                                         marginTop: '10px',

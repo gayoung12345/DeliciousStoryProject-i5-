@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebaseConfig';
 import xml2js from 'xml2js'; // XML 데이터를 파싱하기 위한 라이브러리
+import Image from 'next/image';
 
 const MyLikes = () => {
     const { user } = useAuth();
@@ -84,7 +85,7 @@ const MyLikes = () => {
                 <ul>
                     {searchResults.map((recipe) => (
                         <li key={recipe.id}>
-                            <img src={recipe.image} alt={recipe.name} width="100" />
+                            <Image src={recipe.image} alt={recipe.name} width="100" />
                             <div>
                                 <h2>{recipe.name}</h2>
                                 <p>{recipe.ingredients}</p>

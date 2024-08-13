@@ -18,7 +18,11 @@ import {
 } from 'firebase/firestore'; // Firestore 관련 함수들 import
 
 // 임시 Box, Text 컴포넌트
-const Box = ({ children, style, ...props }) => (
+const Box = ({
+    children,
+    style,
+    ...props
+}) => (
     <div
         style={style}
         {...props}
@@ -27,7 +31,11 @@ const Box = ({ children, style, ...props }) => (
     </div>
 );
 
-const Text = ({ children, style, ...props }) => (
+const Text = ({
+    children,
+    style,
+    ...props
+}) => (
     <p
         style={style}
         {...props}

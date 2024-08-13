@@ -1,4 +1,3 @@
-// freeBoard 자유게시판 리스트
 'use client'; // Next.js에서 이 파일이 클라이언트에서 실행된다는 것을 알림
 
 import React, { useEffect, useState } from 'react'; // React와 필요한 훅들을 import
@@ -69,6 +68,13 @@ const FreeBoard = () => {
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
 
+    // 페이지 번호 생성
+    const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+    const pageNumbers = Array.from(
+        { length: totalPages },
+        (_, index) => index + 1
+    );
+
     // 페이지 번호를 클릭하면 해당 페이지로 이동
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -85,13 +91,14 @@ const FreeBoard = () => {
         <main>
             <div style={{ padding: '20px' }}>
                 <h1
-                className='text-2xl font-bold mb-6'
-                style={{
-                    textAlign: 'center',
-                    marginBottom: '16px',
-                    // textDecoration: 'underline',
-                    // textUnderlineOffset: '10px',
-                }}>
+                    className='text-2xl font-bold mb-6'
+                    style={{
+                        textAlign: 'center',
+                        marginBottom: '16px',
+                        // textDecoration: 'underline',
+                        // textUnderlineOffset: '10px',
+                    }}
+                >
                     자유게시판
                 </h1>
                 <hr className='h-px my-4 bg-gray-300 border-0 dark:bg-gray-700'></hr>
@@ -104,7 +111,12 @@ const FreeBoard = () => {
                             className='w-16 h-16 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center'
                             onClick={handleWriteClick}
                         >
-                        <span className='text-sm font-semibold text-center'><Icon as={EditIcon} size='xl' /></span>
+                            <span className='text-sm font-semibold text-center'>
+                                <Icon
+                                    as={EditIcon}
+                                    size='xl'
+                                />
+                            </span>
                         </button>
                     </div>
                 )}
@@ -199,7 +211,8 @@ const FreeBoard = () => {
                                         <tr key={post.id}>
                                             <td
                                                 style={{
-                                                    borderBottom: '1px solid #ddd',
+                                                    borderBottom:
+                                                        '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -211,7 +224,8 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    borderBottom: '1px solid #ddd',
+                                                    borderBottom:
+                                                        '1px solid #ddd',
                                                     padding: '8px',
                                                     cursor: 'pointer',
                                                     color: 'blue',
@@ -229,7 +243,8 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    borderBottom: '1px solid #ddd',
+                                                    borderBottom:
+                                                        '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -238,7 +253,8 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    borderBottom: '1px solid #ddd',
+                                                    borderBottom:
+                                                        '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -247,8 +263,8 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-
-                                                    borderBottom: '1px solid #ddd',
+                                                    borderBottom:
+                                                        '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -257,7 +273,8 @@ const FreeBoard = () => {
                                             </td>
                                             <td
                                                 style={{
-                                                    borderBottom: '1px solid #ddd',
+                                                    borderBottom:
+                                                        '1px solid #ddd',
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                 }}
@@ -327,32 +344,20 @@ const FreeBoard = () => {
                                 padding: 0,
                             }}
                         >
-                            {[
-                                ...Array(
-                                    Math.ceil(
-                                        filteredPosts.length /
-                                            postsPerPage
-                                    )
-                                ).keys(), // 페이지 번호 생성
-                            ].map((number) => (
+                            {pageNumbers.map((number) => (
                                 <li
-                                    key={number + 1}
+                                    key={number}
                                     style={{ margin: '0 5px' }}
                                 >
                                     <button
-                                        onClick={() =>
-                                            paginate(number + 1) // 페이지 번호 클릭 시 해당 페이지로 이동
-                                        }
+                                        onClick={() => paginate(number)} // 페이지 번호 클릭 시 해당 페이지로 이동
                                         style={{
                                             background:
-                                                number + 1 ===
-                                                currentPage
-                                                    ? 'orange' // 현재 페이지일 경우 배경색 변경
+                                                number === currentPage
+                                                    ? 'orange'
                                                     : 'white',
                                             color:
-                                                number + 1 ===
-                                                currentPage
-
+                                                number === currentPage
                                                     ? 'white'
                                                     : 'black',
                                             border: '1px solid #ddd',
@@ -360,7 +365,7 @@ const FreeBoard = () => {
                                             borderRadius: '5px',
                                         }}
                                     >
-                                        {number + 1}
+                                        {number}
                                     </button>
                                 </li>
                             ))}

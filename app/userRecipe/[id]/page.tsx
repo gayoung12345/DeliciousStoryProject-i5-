@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
+import Image from 'next/image';
 
 interface Recipe {
     title: string;
@@ -36,23 +37,25 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
     const [recipe, setRecipe] = useState<Recipe | null>(null);
     const { id } = params;
 
-    useEffect(() => {
-        const fetchRecipe = async () => {
-            if (id) {
-                const docRef = doc(db, 'userRecipe', id);
-                const docSnap = await getDoc(docRef);
+    // 데이터 패칭 함수 정의
+    const fetchRecipe = useCallback(async () => {
+        if (id) {
+            const docRef = doc(db, 'userRecipe', id);
+            const docSnap = await getDoc(docRef);
 
-                if (docSnap.exists()) {
-                    setRecipe(docSnap.data() as Recipe);
-                } else {
-                    console.error('No such document!');
-                    router.push('/404');
-                }
+            if (docSnap.exists()) {
+                setRecipe(docSnap.data() as Recipe);
+            } else {
+                console.error('No such document!');
+                router.push('/404');
             }
-        };
+        }
+    }, [id, router]);
 
+    // 데이터 패칭 useEffect
+    useEffect(() => {
         fetchRecipe();
-    }, [id]);
+    }, [fetchRecipe]);
 
     if (!recipe) {
         return <div>Loading...</div>;
@@ -61,9 +64,11 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
     return (
         <main className='max-w-4xl mx-auto p-4'>
             <h1 className='text-3xl font-bold mb-4'>{recipe.title}</h1>
-            <img
+            <Image
                 src={recipe.images['main-image']}
                 alt={recipe.title}
+                width={800} // 적절한 width 설정
+                height={400} // 적절한 height 설정
                 className='w-full object-cover mb-4'
             />
             <p className='mb-4'>{recipe.description}</p>
@@ -82,7 +87,8 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                 <ul>
                     {recipe.ingredients.map((ingredient, index) => (
                         <li key={index}>
-                            {ingredient.name} - {ingredient.quantity} {ingredient.unit}
+                            {ingredient.name} - {ingredient.quantity}{' '}
+                            {ingredient.unit}
                         </li>
                     ))}
                 </ul>
@@ -90,12 +96,17 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
             <div className='mb-4'>
                 <h2 className='text-2xl font-bold mb-2'>조리 단계</h2>
                 {recipe.steps.map((step, index) => (
-                    <div key={index} className='mb-4'>
+                    <div
+                        key={index}
+                        className='mb-4'
+                    >
                         <p>{step.description}</p>
                         {step.image && (
-                            <img
+                            <Image
                                 src={step.image}
                                 alt={`Step ${index + 1}`}
+                                width={800} // 적절한 width 설정
+                                height={400} // 적절한 height 설정
                                 className='w-full h-64 object-cover mt-2'
                             />
                         )}
