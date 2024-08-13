@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext'; // 경로를 상황에 맞게 수정
 import { addDoc, collection } from 'firebase/firestore';
-import { db } from '../../lib/firebaseConfig';
-import TextEditor from '@/components/text-editor/text-editor';
+import { db } from '../../lib/firebaseConfig'; // 경로를 상황에 맞게 수정
+import TextEditor from '@/components/text-editor/text-editor'; // 경로를 상황에 맞게 수정
 
 const Posting = () => {
     const [title, setTitle] = useState(''); // 제목을 관리하는 상태

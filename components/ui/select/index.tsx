@@ -325,7 +325,7 @@ const SelectContent = UISelect.Content;
 const SelectDragIndicator = UISelect.DragIndicator;
 const SelectDragIndicatorWrapper = UISelect.DragIndicatorWrapper;
 const SelectItem = UISelect.Item;
-const SelectItemText = UISelect.ItemText;
+// const SelectItemText = UISelect.ItemText;
 const SelectScrollView = UISelect.ScrollView;
 const SelectVirtualizedList = UISelect.VirtualizedList;
 const SelectFlatList = UISelect.FlatList;
@@ -343,7 +343,7 @@ export {
     SelectDragIndicator,
     SelectDragIndicatorWrapper,
     SelectItem,
-    SelectItemText,
+    // SelectItemText,
     SelectScrollView,
     SelectVirtualizedList,
     SelectFlatList,

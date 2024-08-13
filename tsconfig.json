@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "typeRoots": ["./@types", "./node_modules/@types"],
         "lib": ["dom", "dom.iterable", "esnext"],
         "allowJs": true,
         "skipLibCheck": true,
@@ -30,7 +29,7 @@
         ".next/types/**/*.ts",
         "out/types/**/*.ts",
         "app/galleryPost/page.jsx",
-        "app/listPost/page.jsx",
+        "app/listPost/[id]/page.jsx",
         "app/myLikes/page.jsx",
         "app/myPage/page.jsx",
         "app/page.jsx",
