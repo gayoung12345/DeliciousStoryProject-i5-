@@ -25,11 +25,11 @@ interface Recipe {
         method: string;
         ingredient: string;
     };
-    info: {
-        servings: string;
-        time: string;
-        difficulty: string;
-    };
+    // info: {
+    //     servings: string;
+    //     time: string;
+    //     difficulty: string;
+    // };
     images: {
         'main-image': string;
     };
@@ -49,10 +49,10 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
     const router = useRouter();
     const [recipe, setRecipe] = useState<Recipe | null>(null);
     const { id } = params;
-    const [speechRate, setSpeechRate] = useState(1);
-    const [utterance, setUtterance] = useState(null);
+    const [speechRate, setSpeechRate] = useState<any>(1);
+    const [utterance, setUtterance] = useState<any>(null);
     const [isSpeaking, setIsSpeaking] = useState(false);
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<any | null>(null);
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     useEffect(() => {
@@ -222,14 +222,49 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
     useEffect(() => {
         const fetchRecipe = async () => {
             if (id) {
-                const docRef = doc(db, 'userRecipe', id);
-                const docSnap = await getDoc(docRef);
+                let docRef = doc(db, 'userRecipe', id);
+                let docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
                     setRecipe(docSnap.data() as Recipe);
                 } else {
-                    console.error('No such document!');
-                    router.push('/404');
+                    // If the recipe is not in 'userRecipe', check 'testRecipe'
+                    docRef = doc(db, 'testRecipe', id);
+                    docSnap = await getDoc(docRef);
+
+                    if (docSnap.exists()) {
+                        const testRecipeData = docSnap.data();
+                        // Adjust data to match the structure of Recipe interface
+                        const adjustedRecipe: Recipe = {
+                            title: testRecipeData.title || '',
+                            description: testRecipeData.description || '',
+                            category: {
+                                method: testRecipeData.category?.method || '',
+                                ingredient:
+                                    testRecipeData.category?.ingredient || '',
+                            },
+
+                            images: {
+                                'main-image': testRecipeData['main-image']
+                                    ? testRecipeData['main-image']
+                                    : '',
+                            },
+                            steps: testRecipeData.steps || [],
+                            ingredients: testRecipeData.ingredients
+                                ? testRecipeData.ingredients.map(
+                                      (ingredient: string) => {
+                                          const [name, quantity, unit] =
+                                              ingredient.split(' ');
+                                          return { name, quantity, unit };
+                                      }
+                                  )
+                                : [],
+                        };
+                        setRecipe(adjustedRecipe);
+                    } else {
+                        console.error('No such document!');
+                        router.push('/404');
+                    }
                 }
             }
         };
@@ -295,7 +330,18 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                     </h1>
                 </TextToSpeechDiv>
                 <TextToSpeechDiv>
-                    <p>{recipe.description}</p>
+                    <div
+                        style={{
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            padding: '20px',
+                            maxWidth: '60%',
+                            margin: '0 auto',
+                            wordBreak: 'keep-all',
+                        }}
+                    >
+                        <p>{recipe.description}</p>
+                    </div>
                 </TextToSpeechDiv>
                 <br />
 
@@ -361,6 +407,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                                         }}
                                     />
                                 )}
+
                                 <p style={{ fontSize: '18px' }}>
                                     {index + 1}. {step.description}
                                 </p>

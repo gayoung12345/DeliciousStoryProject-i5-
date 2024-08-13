@@ -5,26 +5,47 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import { useRouter } from 'next/navigation';
 import { EditIcon, Icon } from '@/components/ui/icon';
+import { useAuth } from '../context/AuthContext';
 
 interface Recipe {
     id: string;
     title: string;
-    images: {
-        'main-image': string;
+    images?: {
+        'main-image'?: string;
     };
+    'main-image'?: string; // testRecipe의 필드
 }
 
 const UserRecipe = () => {
+    const { user } = useAuth(); // 현재 로그인된 사용자의 정보를 가져옴
     const [recipes, setRecipes] = useState<Recipe[]>([]);
     const router = useRouter();
 
     useEffect(() => {
         const fetchRecipes = async () => {
-            const querySnapshot = await getDocs(collection(db, 'userRecipe'));
+            const userRecipeSnapshot = await getDocs(
+                collection(db, 'userRecipe')
+            );
+            const testRecipeSnapshot = await getDocs(
+                collection(db, 'testRecipe')
+            );
             const fetchedRecipes: Recipe[] = [];
-            querySnapshot.forEach((doc) => {
+
+            // userRecipe 컬렉션의 데이터 처리
+            userRecipeSnapshot.forEach((doc) => {
                 fetchedRecipes.push({ id: doc.id, ...doc.data() } as Recipe);
             });
+
+            // testRecipe 컬렉션의 데이터 처리
+            testRecipeSnapshot.forEach((doc) => {
+                const data = doc.data();
+                fetchedRecipes.push({
+                    id: doc.id,
+                    title: data.title,
+                    'main-image': data['main-image'],
+                } as Recipe);
+            });
+
             setRecipes(fetchedRecipes);
         };
 
@@ -36,7 +57,12 @@ const UserRecipe = () => {
     };
 
     const handleWriteRecipeClick = () => {
-        router.push('/recipeWrite');
+        if (user) {
+            router.push('/recipeWrite');
+        } else {
+            alert('로그인 해주세요.');
+            router.push('/login');
+        }
     };
 
     return (
@@ -61,7 +87,6 @@ const UserRecipe = () => {
                             backgroundColor: 'white',
                             cursor: 'pointer',
                             transition: 'transform 0.3s',
-
                             borderRadius: '8px',
                         }}
                         onClick={() => handleRecipeClick(recipe.id)}
@@ -74,7 +99,10 @@ const UserRecipe = () => {
                     >
                         <div style={{ position: 'relative' }}>
                             <img
-                                src={recipe.images['main-image']}
+                                src={
+                                    recipe.images?.['main-image'] ||
+                                    recipe['main-image']
+                                } // userRecipe와 testRecipe의 구조에 맞게 처리
                                 alt={recipe.title}
                                 style={{
                                     width: '100%',
