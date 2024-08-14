@@ -171,6 +171,7 @@ const SiteRecipe = () => {
                                         width={250}
                                         height={250}
                                         style={{ borderRadius: '4px' }}
+                                        unoptimized
                                     />
                                     <Box
                                         style={{

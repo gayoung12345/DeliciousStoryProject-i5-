@@ -59,6 +59,7 @@ export default function Home() {
                                 alt={`Slide ${slide.id}`}
                                 layout='fill' // 전체 공간을 채우도록 설정
                                 objectFit='cover' // 이미지 비율 유지
+                                unoptimized
                             />
                         </div>
                     ))}
@@ -201,6 +202,7 @@ export default function Home() {
                                             layout='fill'
                                             objectFit='cover'
                                             style={{ borderRadius: '10px' }}
+                                            unoptimized
                                         />
                                     </div>
                                     <p>Image {letter}</p>
@@ -266,6 +268,7 @@ export default function Home() {
                                             layout='fill'
                                             objectFit='cover'
                                             style={{ borderRadius: '10px' }}
+                                            unoptimized
                                         />
                                     </div>
                                     <p>Image {letter}</p>
@@ -373,6 +376,7 @@ export default function Home() {
                                             layout='fill'
                                             objectFit='cover'
                                             style={{ borderRadius: '10px' }}
+                                            unoptimized
                                         />
                                     </div>
                                     <p>Image {letter}</p>
@@ -729,6 +733,7 @@ export default function Home() {
                                 layout='fill'
                                 objectFit='cover'
                                 style={{ borderRadius: '10px' }}
+                                unoptimized
                             />
                         </div>
 
@@ -813,6 +818,7 @@ export default function Home() {
                         alt='Background'
                         layout='fill'
                         objectFit='cover'
+                        unoptimized
                     />
                 </div>
             </div>

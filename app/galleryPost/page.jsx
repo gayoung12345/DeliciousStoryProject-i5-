@@ -18,11 +18,7 @@ import {
 } from 'firebase/firestore'; // Firestore 관련 함수들 import
 
 // 임시 Box, Text 컴포넌트
-const Box = ({
-    children,
-    style,
-    ...props
-}) => (
+const Box = ({ children, style, ...props }) => (
     <div
         style={style}
         {...props}
@@ -31,11 +27,7 @@ const Box = ({
     </div>
 );
 
-const Text = ({
-    children,
-    style,
-    ...props
-}) => (
+const Text = ({ children, style, ...props }) => (
     <p
         style={style}
         {...props}
@@ -348,6 +340,7 @@ const GalleryPost = () => {
                             </h1>
                         </header>
                         <Image
+                            unoptimized
                             src={recipe.image}
                             alt={recipe.name}
                             width={800}
@@ -429,6 +422,7 @@ const GalleryPost = () => {
                                 >
                                     {item.image && (
                                         <Image
+                                            unoptimized
                                             src={item.image}
                                             alt={`메뉴얼 이미지 ${index + 1}`}
                                             width={200}
