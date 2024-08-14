@@ -120,14 +120,11 @@ const SiteRecipe = () => {
             <Text
             className='text-2xl font-bold mb-6'
                 style={{
-                    fontSize: '26px',
-                    fontWeight: '700',
+                    fontSize: '24px',
                     textAlign: 'center',
-                    marginTop: '35px',
-                    marginBottom: '35px',
-                    textDecoration: 'underline',
-                    textUnderlineOffset: '10px',
-
+                    marginBottom: '16px',
+                    // textDecoration: 'underline',
+                    // textUnderlineOffset: '10px',
                 }}
             >
                 공식 레시피
@@ -208,7 +205,7 @@ const SiteRecipe = () => {
                                     >
                                         <Text
                                             style={{
-                                                fontSize: '16px',
+                                                fontSize: '18px',
                                                 fontWeight: 'bold',
                                             }}
                                         >
@@ -218,11 +215,19 @@ const SiteRecipe = () => {
                                 </Box>
                                 <Text
                                     style={{
-
-                                        fontSize: '16px',
-                                        fontWeight: '600',
-                                        marginTop: '10px',
-                                        textAlign: 'center',
+                                        fontSize: '12px',
+                                        marginTop: '8px',
+                                        color:'#8C8C8C',
+                                    }}
+                                >
+                                    {recipe.calories} kcal
+                                </Text>
+                                <Text
+                                    style={{
+                                        fontSize: '14px',
+                                        fontWeight: 'bold',
+                                        marginTop: '2px',
+                                        // textAlign: 'center',
                                     }}
                                 >
                                     {recipe.name}

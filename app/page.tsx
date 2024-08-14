@@ -11,21 +11,16 @@ import { RouteMatcher } from 'next/dist/server/future/route-matchers/route-match
 
 // 이미지 예시 데이터
 const slides = [
-  { id: 1, image: '/png/mainD.png' },
-  { id: 2, image: '/png/mainA.png' },
-  { id: 3, image: '/png/mainB.png' }, 
-  { id: 4, image: '/png/mainC.png' },
-  { id: 5, image: '/png/mainE.png' }, 
+  { id: 1, image: '/png/img3.png' },
+  { id: 2, image: '/png/img2.png' },
+  { id: 3, image: '/png/img1.png' }, 
 ];
 
-// 최신글 예시 데이터 (실제 데이터로 교체 필요)
-const latestPosts = [
-  { id: 1, title: '최신 글 제목 1', summary: '최신 글의 간단한 내용 1' },
-  { id: 2, title: '최신 글 제목 2', summary: '최신 글의 간단한 내용 2' },
-  { id: 3, title: '최신 글 제목 3', summary: '최신 글의 간단한 내용 3' },
-  { id: 4, title: '최신 글 제목 4', summary: '최신 글의 간단한 내용 4' },
-  { id: 5, title: '최신 글 제목 5', summary: '최신 글의 간단한 내용 5' },
-  { id: 6, title: '최신 글 제목 6', summary: '최신 글의 간단한 내용 6' },
+const recipeImg1 = [
+  { id: "연어구이", name:"작성자1", image: '/png/recipeImg1-1.png' },
+  { id: "새우볶음밥", name:"작성자2", image: '/png/recipeImg1-2.png' },
+  { id: "라자냐", name:"작성자3", image: '/png/recipeImg1-3.png' }, 
+  { id: "스테이크", name:"작성자4", image: '/png/recipeImg1-4.png' }
 ];
 
 export default function Home() {
@@ -224,7 +219,7 @@ const handlefreeClick = () => {
                 backgroundColor: 'white',
                 margin: '10px',
                 borderRadius: '8px',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
                 cursor: 'pointer',
                 width: '250px', // width를 명시적으로 설정
               }}
@@ -295,30 +290,6 @@ const handlefreeClick = () => {
       </div>
     </div>
 
-        {/* 레시피2 */}
-        <div style={{ width: '100%', backgroundColor: '#D8D8D8', padding: '40px 0' }}>
-          <div style={{ maxWidth: '1400px', height: 'max-content', margin: '0 auto' }}>
-          <h1 className='hover:text-red-600' style={{ textAlign: 'center', margin: '30px', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer',}}>
-          유저레시피1
-        </h1>
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-              {['A', 'B', 'C', 'D'].map((letter, index) => (
-                <div key={index} style={{ textAlign: 'center', margin: '10px' }}>
-                  <div style={{ position: 'relative', width: '250px', height: '250px', overflow: 'hidden' }}>
-                    <Image
-                      src={`/png/main${letter}.png`} // 이미지 경로
-                      alt={`Image ${letter}`}
-                      layout="fill"
-                      objectFit="cover"
-                      style={{borderRadius:'10px'}}
-                    />
-                  </div>
-                  <p>Image {letter}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
 
         {/* 텍스트 및 버튼 영역 */}
         <div style={{ position: 'relative', zIndex: 1, padding: '20px 0', textAlign: 'center', color: 'black', marginTop: '50px', marginBottom:'50px' }}>
@@ -346,122 +317,74 @@ const handlefreeClick = () => {
           </button>
         </div>
 
-        {/* 레시피2 */}
-        <div style={{ width: '100%', backgroundColor: '#D8D8D8', padding: '40px 0' }}>
-          <div style={{ maxWidth: '1400px', height: 'max-content', margin: '0 auto' }}>
-          <h1 className='hover:text-red-600' style={{ textAlign: 'center', margin: '30px', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer',}}>
-          유저 레시피2
-        </h1>
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-              {['A', 'B', 'C', 'D'].map((letter, index) => (
-                <div key={index} style={{ textAlign: 'center', margin: '10px' }}>
-                  <div style={{ position: 'relative', width: '250px', height: '250px', overflow: 'hidden' }}>
-                    <Image
-                      src={`/png/main${letter}.png`} // 이미지 경로
-                      alt={`Image ${letter}`}
-                      layout="fill"
-                      objectFit="cover"
-                      style={{borderRadius:'10px'}}
-                    />
-                  </div>
-                  <p>Image {letter}</p>
-                </div>
-              ))}
+{/* 레시피2 */}
+<div style={{ width: '100%', backgroundColor: 'white', padding: '40px 0' }}>
+  <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+    <h1
+      className='hover:text-red-600'
+      style={{
+        textAlign: 'center',
+        margin: '30px auto',
+        fontSize: '22px',
+        textDecoration: 'underline',
+        textUnderlineOffset: '10px',
+        cursor: 'pointer',
+      }}
+    >
+      인기 레시피
+    </h1>
+    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+      {recipeImg1.map((photo) => (
+        <div key={photo.id} style={{ textAlign: 'center', margin: '10px' }}>
+          <div
+            style={{
+              position: 'relative',
+              padding: '16px',
+              backgroundColor: 'white',
+              margin: '10px',
+              borderRadius: '8px',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+              cursor: 'pointer',
+              width: '250px',
+            }}
+          >
+            <div style={{ position: 'relative', width: '100%', height: '250px', overflow: 'hidden' }}>
+              <Image
+                src={photo.image}
+                alt={`Image ${photo.id}`}
+                layout="fill"
+                objectFit="cover"
+                style={{ borderRadius: '4px' }}
+              />
             </div>
+            <p
+              style={{
+                fontSize: '12px',
+                marginTop: '8px',
+                color: '#8C8C8C',
+                textAlign: 'left',
+              }}
+            >
+              {photo.name}
+            </p>
+            <p
+              style={{
+                fontSize: '14px',
+                fontWeight: 'bold',
+                marginTop: '2px',
+                textAlign: 'left',
+              }}
+            >
+              {photo.id}
+            </p>
           </div>
-        </div>
-
-{/* 자유게시판 최신글 영역 */}
-<div style={{ backgroundColor: 'white', padding: '1.5rem', textAlign: 'center', justifyContent:'center' }}>
-
-<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', padding: '20px', width: '1000px', margin:'0 auto' }}>
-      {latestPosts.map((post) => (
-        <div 
-          key={post.id}
-          onClick={handlefreeClick} 
-          style={{
-            cursor: 'pointer',
-            padding: '10px', // 패딩 조정
-            margin: '10px',
-            backgroundColor: '#f9f9f9',
-            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-            width: 'calc(50% - 20px)', // 2열로 배치
-          }}
-        >
-          <h2 style={{ margin: '0', fontSize: '16px', textAlign: 'left' }}>{post.title}</h2>
-          <p style={{ fontSize: '12px', color: '#555', textAlign: 'left' }}>{post.summary}</p>
         </div>
       ))}
     </div>
-
-
-</div>
-
-
-        {/* 레시피3 */}
-        <div style={{ width: '100%', backgroundColor: '#D8D8D8', padding: '40px 0' }}>
-          <div style={{ maxWidth: '1400px', height: 'max-content', margin: '0 auto' }}>
-          <h1 className='hover:text-red-600' style={{ textAlign: 'center', margin: '30px', fontSize: '22px', textDecoration: 'underline', textUnderlineOffset: '10px', cursor: 'pointer',}}>
-          유저 레시피3
-        </h1>
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-              {['A', 'B', 'C', 'D'].map((letter, index) => (
-                <div key={index} style={{ textAlign: 'center', margin: '10px' }}>
-                  <div style={{ position: 'relative', width: '250px', height: '250px', overflow: 'hidden' }}>
-                    <Image
-                      src={`/png/main${letter}.png`} // 이미지 경로
-                      alt={`Image ${letter}`}
-                      layout="fill"
-                      objectFit="cover"
-                      style={{borderRadius:'10px'}}
-                    />
-                  </div>
-                  <p>Image {letter}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-
-
-<div style={{ width: '100%', backgroundColor: 'white', padding: '20px 0' }}>
-{/* 텍스트 및 버튼 영역2 */}
-<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, marginTop: '50px', marginBottom: '50px' }}>
-  {/* 왼쪽 이미지 */}
-  <div style={{ width: '300px', height: '300px', marginRight: '70px', position: 'relative' }}>
-    <Image
-      src="/png/mainB.png" // 이미지 경로
-      alt="Description"
-      layout="fill"
-      objectFit="cover"
-      style={{ borderRadius: '10px' }}
-    />
-  </div>
-
-  {/* 오른쪽 텍스트 및 버튼 영역 */}
-  <div style={{ textAlign: 'left', color: 'black', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
-    <h1 style={{ fontSize: '40px', fontWeight: 'bold' }}>당신의 주방을 특별하게</h1><br />
-    <p style={{ fontSize: '20px' }}>계절별 신선한 재료로 만든 레시피를 들어보세요!</p><br />
-    <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
-      <button style={{
-        border: '1px solid black',
-        borderRadius: '5px',
-        backgroundColor: 'white', 
-        color: 'black',
-        padding: '10px 20px',
-        fontSize: '16px',
-        cursor: 'pointer',
-        transition: 'background-color 0.1s',
-      }}
-      onMouseEnter={e => e.target.style.backgroundColor = '#D8D8D8'} 
-      onMouseLeave={e => e.target.style.backgroundColor = 'white'}>
-        자세히 보기
-      </button>
-    </div>
   </div>
 </div>
-</div>
+      
+
 
 
 <div style={{backgroundColor:'white', width:'100%', height:'20px'}}></div>
@@ -487,7 +410,7 @@ const handlefreeClick = () => {
 {/* 배경 영역 */}
 <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
   {/* 고정한 이미지 영역 */}
-  <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: -1, opacity: 0.5 }}>
+  <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: -1, opacity: 0.6 }}>
     <Image
       src="/png/mainE.png" // 고정될 이미지 경로
       alt="Background"
