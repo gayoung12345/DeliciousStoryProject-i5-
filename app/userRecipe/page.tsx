@@ -5,26 +5,48 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import { useRouter } from 'next/navigation';
 import { EditIcon, Icon } from '@/components/ui/icon';
+import { useAuth } from '../context/AuthContext';
+import Image from 'next/image';
 
 interface Recipe {
     id: string;
     title: string;
-    images: {
-        'main-image': string;
+    images?: {
+        'main-image'?: string;
     };
+    'main-image'?: string; // testRecipe의 필드
 }
 
-const GalleryPage = () => {
+const UserRecipe = () => {
+    const { user } = useAuth(); // 현재 로그인된 사용자의 정보를 가져옴
     const [recipes, setRecipes] = useState<Recipe[]>([]);
     const router = useRouter();
 
     useEffect(() => {
         const fetchRecipes = async () => {
-            const querySnapshot = await getDocs(collection(db, 'userRecipe'));
+            const userRecipeSnapshot = await getDocs(
+                collection(db, 'userRecipe')
+            );
+            const testRecipeSnapshot = await getDocs(
+                collection(db, 'testRecipe')
+            );
             const fetchedRecipes: Recipe[] = [];
-            querySnapshot.forEach((doc) => {
+
+            // userRecipe 컬렉션의 데이터 처리
+            userRecipeSnapshot.forEach((doc) => {
                 fetchedRecipes.push({ id: doc.id, ...doc.data() } as Recipe);
             });
+
+            // testRecipe 컬렉션의 데이터 처리
+            testRecipeSnapshot.forEach((doc) => {
+                const data = doc.data();
+                fetchedRecipes.push({
+                    id: doc.id,
+                    title: data.title,
+                    'main-image': data['main-image'],
+                } as Recipe);
+            });
+
             setRecipes(fetchedRecipes);
         };
 
@@ -36,32 +58,105 @@ const GalleryPage = () => {
     };
 
     const handleWriteRecipeClick = () => {
-        router.push('/recipeWrite');
+        if (user) {
+            router.push('/recipeWrite');
+        } else {
+            alert('로그인 해주세요.');
+            router.push('/login');
+        }
     };
 
     return (
         <main className='relative max-w-6xl mx-auto p-4'>
             <h1
-            className='text-2xl font-bold mb-6'
-             style={{
+                className='text-2xl font-bold mb-6'
+                style={{
                     textAlign: 'center',
-                    marginBottom: '16px',}}>레시피 갤러리</h1>
+                    marginBottom: '16px',
+                }}
+            >
+                레시피 갤러리
+            </h1>
             <hr className='h-px my-4 bg-gray-300 border-0 dark:bg-gray-700'></hr>
-            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'>
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
                 {recipes.map((recipe) => (
                     <div
                         key={recipe.id}
-                        className='cursor-pointer hover:shadow-lg transition-shadow duration-300'
+                        style={{
+                            position: 'relative',
+                            padding: '16px',
+                            backgroundColor: 'white',
+                            cursor: 'pointer',
+                            transition: 'transform 0.3s',
+                            borderRadius: '8px',
+                        }}
                         onClick={() => handleRecipeClick(recipe.id)}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                        }}
                     >
-                        <div className='w-full h-40 sm:h-48 md:h-56 lg:h-64 bg-gray-200 overflow-hidden rounded-lg'>
-                            <img
-                                src={recipe.images['main-image']}
+                        <div style={{ position: 'relative' }}>
+                            <Image
+                                src={
+                                    (recipe.images?.['main-image'] as string) ||
+                                    (recipe['main-image'] as string)
+                                } // userRecipe와 testRecipe의 구조에 맞게 처리
                                 alt={recipe.title}
-                                className='w-full h-full object-cover'
+                                style={{
+                                    width: '100%',
+                                    height: '200px',
+                                    objectFit: 'cover',
+                                    borderRadius: '8px',
+                                }}
+                                width={400}
+                                height={200}
                             />
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                                    color: 'white',
+                                    opacity: 0,
+                                    transition: 'opacity 0.3s',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => handleRecipeClick(recipe.id)}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.opacity = '1';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.opacity = '0';
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        fontSize: '18px',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    상세 보기
+                                </span>
+                            </div>
                         </div>
-                        <h2 className='mt-2 text-lg font-semibold text-center'>
+                        <h2
+                            style={{
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                marginTop: '8px',
+                                textAlign: 'center',
+                            }}
+                        >
                             {recipe.title}
                         </h2>
                     </div>
@@ -72,14 +167,19 @@ const GalleryPage = () => {
             <div className='fixed right-8 bottom-80 md:right-12 md:bottom-80 z-10'>
                 <button
                     onClick={handleWriteRecipeClick}
-                    className='w-16 h-16 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center'
+                    className='w-16 h-16 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center'
                     aria-label='레시피 작성'
                 >
-                    <span className='text-sm font-semibold text-center'><Icon as={EditIcon} size='xl' /></span>
+                    <span className='text-sm font-semibold text-center'>
+                        <Icon
+                            as={EditIcon}
+                            size='xl'
+                        />
+                    </span>
                 </button>
             </div>
         </main>
     );
 };
 
-export default GalleryPage;
+export default UserRecipe;

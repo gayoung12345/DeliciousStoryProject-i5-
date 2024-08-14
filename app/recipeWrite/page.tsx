@@ -1,12 +1,12 @@
 'use client';
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';  // Next.js의 라우터 사용
+import { useRouter } from 'next/navigation'; // Next.js의 라우터 사용
 import IngredientInput from '@/components/recipe/IngredientInput';
 import RecipeStepInput from '@/components/recipe/RecipeStepInput';
 import { Button, ButtonText } from '@/components/ui/button';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
-
+import { useAuth } from '../context/AuthContext';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import ImageUpload from '@/components/recipe/imageUpload';
 
@@ -22,8 +22,8 @@ interface Ingredient {
 }
 
 const RecipeWrite: React.FC = () => {
-    const router = useRouter();  // 라우터 초기화
-    const [isSubmitting, setIsSubmitting] = useState(false);  // 제출 상태 추가
+    const router = useRouter(); // 라우터 초기화
+    const [isSubmitting, setIsSubmitting] = useState(false); // 제출 상태 추가
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [categoryMethod, setCategoryMethod] = useState('');
@@ -35,6 +35,7 @@ const RecipeWrite: React.FC = () => {
     const [steps, setSteps] = useState<RecipeStep[]>([]);
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const storage = getStorage();
+    const { user } = useAuth(); // 현재 로그인된 사용자의 정보를 가져옴
 
     const uploadImage = async (file: File): Promise<string> => {
         return new Promise((resolve, reject) => {
@@ -63,50 +64,56 @@ const RecipeWrite: React.FC = () => {
     };
 
     const handleSubmit = async () => {
-        setIsSubmitting(true);  // 제출 시작
-        // 이미지 업로드
-        const uploadedImages: { [key: string]: string } = {};
+        if (user) {
+            setIsSubmitting(true); // 제출 시작
+            // 이미지 업로드
+            const uploadedImages: { [key: string]: string } = {};
 
-        for (const [id, file] of Object.entries(images)) {
-            if (file) {
-                try {
-                    const url = await uploadImage(file);
-                    uploadedImages[id] = url;
-                } catch (error) {
-                    console.error(
-                        `Error uploading image with id ${id}:`,
-                        error
-                    );
+            for (const [id, file] of Object.entries(images)) {
+                if (file) {
+                    try {
+                        const url = await uploadImage(file);
+                        uploadedImages[id] = url;
+                    } catch (error) {
+                        console.error(
+                            `Error uploading image with id ${id}:`,
+                            error
+                        );
+                    }
                 }
             }
-        }
 
-        // Firestore에 데이터 저장
-        try {
-            await addDoc(collection(db, 'userRecipe'), {
-                title,
-                description,
-                category: {
-                    method: categoryMethod,
-                    ingredient: categoryIngredient,
-                },
-                info: {
-                    servings,
-                    time,
-                    difficulty,
-                },
-                images: uploadedImages, // 업로드된 이미지 URL
-                steps, // 단계별 설명과 이미지 URL
-                ingredients, // 재료 목록
-                createdAt: new Date(),
-            });
+            // Firestore에 데이터 저장
+            try {
+                await addDoc(collection(db, 'userRecipe'), {
+                    title,
+                    description,
+                    category: {
+                        method: categoryMethod,
+                        ingredient: categoryIngredient,
+                    },
+                    info: {
+                        servings,
+                        time,
+                        difficulty,
+                    },
+                    images: uploadedImages, // 업로드된 이미지 URL
+                    steps, // 단계별 설명과 이미지 URL
+                    ingredients, // 재료 목록
+                    createdAt: new Date(),
+                    user: user?.email,
+                });
 
-            alert('레시피가 성공적으로 저장되었습니다!');
-            router.push('/userRecipe');  // 성공 시 리다이렉트
-        } catch (error) {
-            console.error('Error saving recipe:', error);
-        }finally {
-            setIsSubmitting(false);  // 제출 완료
+                alert('레시피가 성공적으로 저장되었습니다!');
+                router.push('/userRecipe'); // 성공 시 리다이렉트
+            } catch (error) {
+                console.error('Error saving recipe:', error);
+            } finally {
+                setIsSubmitting(false); // 제출 완료
+            }
+        } else {
+            alert('로그인 해주세요.');
+            router.push('/login');
         }
     };
 
@@ -209,8 +216,10 @@ const RecipeWrite: React.FC = () => {
             </div>
 
             <div className='w-full max-w-6xl p-4 border border-gray-300 mt-4'>
-                <RecipeStepInput onStepChange={handleStepChange}
-                uploadImage={uploadImage} />
+                <RecipeStepInput
+                    onStepChange={handleStepChange}
+                    uploadImage={uploadImage}
+                />
             </div>
 
             <div className='w-full max-w-6xl p-4 border border-gray-300 mt-4'>
@@ -244,7 +253,7 @@ const RecipeWrite: React.FC = () => {
                         isSubmitting ? 'bg-gray-200 text-gray-500' : 'bg-white'
                     }`}
                     onClick={handleSubmit}
-                    disabled={isSubmitting}  // 제출 중이면 버튼 비활성화
+                    disabled={isSubmitting} // 제출 중이면 버튼 비활성화
                 >
                     {isSubmitting ? '저장중...' : '저장'}
                 </button>

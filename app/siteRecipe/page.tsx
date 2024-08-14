@@ -118,18 +118,19 @@ const SiteRecipe = () => {
         <div style={{ padding: '20px' }}>
             {/* 페이지 상단 제목 */}
             <Text
-            className='text-2xl font-bold mb-6'
+                className='text-2xl font-bold mb-6'
                 style={{
                     fontSize: '24px',
                     textAlign: 'center',
                     marginBottom: '16px',
                     // textDecoration: 'underline',
                     // textUnderlineOffset: '10px',
+
                 }}
             >
                 공식 레시피
             </Text>
-            
+
             <hr className='h-px my-4 bg-gray-300 border-0 dark:bg-gray-700'></hr>
             {/* 레시피 그리드 컨테이너 */}
             <Box
@@ -139,7 +140,6 @@ const SiteRecipe = () => {
                     justifyContent: 'center',
                 }}
             >
-                
                 <Grid
                     style={{
                         display: 'grid',
@@ -228,6 +228,7 @@ const SiteRecipe = () => {
                                         fontWeight: 'bold',
                                         marginTop: '2px',
                                         // textAlign: 'center',
+
                                     }}
                                 >
                                     {recipe.name}
