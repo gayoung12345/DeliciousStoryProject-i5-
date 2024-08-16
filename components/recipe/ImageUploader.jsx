@@ -1,21 +1,22 @@
+import Image from 'next/image';
 import { useState } from 'react';
 
-const ImageUploader: React.FC = () => {
-    const [images, setImages] = useState<string[]>([]);
+const ImageUploader = () => {
+    const [images, setImages] = useState([]);
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (event) => {
         const files = event.target.files;
         if (files) {
-            const newImages: string[] = [];
+            const newImages = [];
             for (const file of files) {
                 if (file && file.type.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         if (e.target?.result) {
-                            newImages.push(e.target.result as string);
+                            newImages.push(e.target.result);
                             setImages((prevImages) => [
                                 ...prevImages,
-                                e.target.result as string,
+                                e.target.result,
                             ]);
                         }
                     };
@@ -49,7 +50,7 @@ const ImageUploader: React.FC = () => {
             </label>
             <div className='flex flex-wrap gap-4'>
                 {images.map((src, index) => (
-                    <img
+                    <Image
                         key={index}
                         src={src}
                         alt={`Preview ${index}`}

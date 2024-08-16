@@ -47,7 +47,7 @@ const Grid = ({ children, style, ...props }) => (
 
 const SiteRecipe = () => {
     // 레시피 데이터를 저장하는 상태
-    const [recipes, setRecipes] = useState<any[]>([]);
+    const [recipes, setRecipes] = useState([]);
     // 페이지당 아이템 수 상태, 기본값은 8
     const [itemsPerPage, setItemsPerPage] = useState(8);
     // 페이지 이동을 위한 useRouter 훅
@@ -65,7 +65,7 @@ const SiteRecipe = () => {
                 const result = await parser.parseStringPromise(xmlData);
 
                 // 레시피 데이터를 정리하여 상태에 저장
-                const recipeData = result.COOKRCP01.row.map((recipe: any) => ({
+                const recipeData = result.COOKRCP01.row.map((recipe) => ({
                     id: recipe.RCP_SEQ[0],
                     name: recipe.RCP_NM[0],
                     image: recipe.ATT_FILE_NO_MAIN[0] || '/svg/logo.svg', // 기본 이미지 경로 설정
@@ -84,7 +84,7 @@ const SiteRecipe = () => {
     }, []);
 
     // 이미지 클릭 시 상세 페이지로 이동하는 함수
-    const handleImageClick = (id: string) => {
+    const handleImageClick = (id) => {
         router.push(`/galleryPost?id=${id}`);
     };
 
@@ -125,7 +125,6 @@ const SiteRecipe = () => {
                     marginBottom: '16px',
                     // textDecoration: 'underline',
                     // textUnderlineOffset: '10px',
-
                 }}
             >
                 공식 레시피
@@ -217,7 +216,7 @@ const SiteRecipe = () => {
                                     style={{
                                         fontSize: '12px',
                                         marginTop: '8px',
-                                        color:'#8C8C8C',
+                                        color: '#8C8C8C',
                                     }}
                                 >
                                     {recipe.calories} kcal
@@ -228,7 +227,6 @@ const SiteRecipe = () => {
                                         fontWeight: 'bold',
                                         marginTop: '2px',
                                         // textAlign: 'center',
-
                                     }}
                                 >
                                     {recipe.name}
