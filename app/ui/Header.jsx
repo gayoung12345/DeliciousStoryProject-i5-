@@ -90,43 +90,127 @@ const Header = () => {
 
     return (
         <nav className='bg-white text-black px-6 sm:px-24 flex items-center justify-between w-full'>
+            {/* 로고 부분 */}
             <div className='flex-shrink-0'>
                 <Link href='/'>
                     <Image
                         src={logoSrc}
                         alt='logo'
-                        width={317}
-                        height={138}
+                        width={220}
+                        height={140}
                     />
                 </Link>
             </div>
-            <div className='relative flex-grow max-w-lg mx-6 sm:mx-12'>
-                <input
-                    type='text'
-                    className='bg-gray-200 text-black p-4 text-lg rounded-lg focus:outline-none w-full'
-                    placeholder='오늘의메뉴'
-                    value={searchTerm}
-                    onChange={(e) => handleSearch(e.target.value)}
-                />
+            <div style={{ width: '180px' }}></div>
+            {/* 네비게이션 버튼들 (데스크탑에서만 보임) */}
+            <div className='flex-grow flex items-center justify-center space-x-6 ml-12 hidden xl:flex'>
                 <button
-                    className='absolute right-0 top-0 mt-2 mr-2 p-2'
-                    onClick={() => handleSearch(searchTerm)}
+                    onClick={() => handleMenuClick('/')}
+                    className='hover:text-gray-400'
+                    style={{ fontSize: '18px' }}
                 >
-                    <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        fill='none'
-                        viewBox='0 0 24 24'
-                        stroke='currentColor'
-                        className='w-8 h-8'
-                    >
-                        <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            strokeWidth={2}
-                            d='M21 21l-4.35-4.35m2.1-5.35a7 7 0 11-14 0 7 7 0 0114 0z'
-                        />
-                    </svg>
+                    Home
                 </button>
+                <button
+                    onClick={() => handleMenuClick('/siteRecipe')}
+                    className='hover:text-gray-400'
+                    style={{ fontSize: '18px' }}
+                >
+                    siteRecipe
+                </button>
+                <button
+                    onClick={() => handleMenuClick('/userRecipe')}
+                    className='hover:text-gray-400'
+                    style={{ fontSize: '18px' }}
+                >
+                    userRecipe
+                </button>
+                <button
+                    onClick={() => handleMenuClick('/freeBoard')}
+                    className='hover:text-gray-400'
+                    style={{ fontSize: '18px' }}
+                >
+                    freeBoard
+                </button>
+                {user ? (
+                    <>
+                        <button
+                            onClick={() => handleMenuClick('/myPage')}
+                            className='hover:text-gray-400'
+                            style={{ fontSize: '18px' }}
+                        >
+                            myPage
+                        </button>
+                        <button
+                            onClick={() => handleMenuClick('/logout')}
+                            className='hover:text-gray-400'
+                            style={{ fontSize: '18px' }}
+                        >
+                            Logout
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <button
+                            onClick={() => handleMenuClick('/login')}
+                            className='hover:text-gray-400'
+                            style={{ fontSize: '18px' }}
+                        >
+                            Login
+                        </button>
+                        <button
+                            onClick={() => handleMenuClick('/signup')}
+                            className='hover:text-gray-400'
+                            style={{ fontSize: '18px' }}
+                        >
+                            Sign Up
+                        </button>
+                    </>
+                )}
+            </div>
+            {/* 검색창과 돋보기 버튼 부분 */}
+            <div className='relative flex-grow flex justify-center'>
+                {/* 검색창 */}
+                <div className='relative'>
+                    <input
+                        type='text'
+                        className='bg-transparent border border-gray-300 text-black p-2 text-lg focus:outline-none focus:border-gray-300 rounded-3xl pr-10' // pr-10을 사용하여 오른쪽 패딩 추가 (돋보기 아이콘을 위한 공간)
+                        placeholder=' 오늘의 메뉴'
+                        value={searchTerm}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        style={{
+                            borderRadius: '32px', // 둥글기 조절: 검색창의 모서리를 둥글게 만듭니다.
+                            borderWidth: '1px', // 테두리 두께 조절: 검색창의 테두리를 1px 두께로 설정합니다.
+                            borderColor: '#D1D5DB', // 테두리 색상 조절: 검색창의 테두리 색상을 설정합니다. (Tailwind CSS의 gray-300)
+                            fontSize: '16px', // 폰트 크기 조절: 검색창의 텍스트 크기를 16px로 설정합니다.
+                            width: '100%', // 가로 길이 조절: 검색창의 가로 길이를 부모 요소에 대해 80%로 설정합니다.
+                            maxWidth: '400px', // 최대 가로 길이 조절: 검색창의 가로 길이를 최대 400px로 제한합니다.
+                        }}
+                    />
+
+                    {/* 돋보기 버튼 */}
+                    <button
+                        className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400' // 버튼을 검색창의 오른쪽 중앙에 위치시킴
+                        onClick={() => handleSearch(searchTerm)}
+                        style={{ cursor: 'pointer' }} // 버튼에 커서 스타일 추가
+                    >
+                        <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            stroke='currentColor'
+                            className='w-6 h-6'
+                        >
+                            <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth={2}
+                                d='M21 21l-4.35-4.35m2.1-5.35a7 7 0 11-14 0 7 7 0 0114 0z'
+                            />
+                        </svg>
+                    </button>
+                </div>
+                {/* 검색 결과 드롭다운 */}
                 {searchResults.length > 0 && (
                     <div className='dropdown-menu absolute bg-white shadow-lg rounded-lg p-4 mt-4 w-full max-w-lg max-h-60 overflow-y-auto'>
                         <ul>
@@ -151,63 +235,7 @@ const Header = () => {
                     </div>
                 )}
             </div>
-            <div className='flex items-center space-x-4 hidden xl:flex'>
-                <button
-                    onClick={() => handleMenuClick('/')}
-                    className='hover:text-gray-400'
-                >
-                    Home
-                </button>
-                <button
-                    onClick={() => handleMenuClick('/siteRecipe')}
-                    className='hover:text-gray-400'
-                >
-                    siteRecipe
-                </button>
-                <button
-                    onClick={() => handleMenuClick('/userRecipe')}
-                    className='hover:text-gray-400'
-                >
-                    userRecipe
-                </button>
-                <button
-                    onClick={() => handleMenuClick('/freeBoard')}
-                    className='hover:text-gray-400'
-                >
-                    freeBoard
-                </button>
-                {user ? (
-                    <>
-                        <button
-                            onClick={() => handleMenuClick('/myPage')}
-                            className='hover:text-gray-400'
-                        >
-                            myPage
-                        </button>
-                        <button
-                            onClick={() => handleMenuClick('/logout')}
-                            className='hover:text-gray-400'
-                        >
-                            Logout
-                        </button>
-                    </>
-                ) : (
-                    <>
-                        <button
-                            onClick={() => handleMenuClick('/login')}
-                            className='hover:text-gray-400'
-                        >
-                            Login
-                        </button>
-                        <button
-                            onClick={() => handleMenuClick('/signup')}
-                            className='hover:text-gray-400'
-                        >
-                            Sign Up
-                        </button>
-                    </>
-                )}
-            </div>
+            {/* 모바일 메뉴 버튼 */}
             <div className='xl:hidden'>
                 <button
                     onClick={() => setMenuOpen(!menuOpen)}
@@ -229,6 +257,7 @@ const Header = () => {
                     </svg>
                 </button>
             </div>
+            {/* 모바일 메뉴 */}
             {menuOpen && (
                 <div className='dropdown-menu absolute top-16 right-0 bg-white shadow-md rounded-lg p-4 lg:hidden z-50'>
                     <button
