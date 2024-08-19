@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
-        "typeRoots": ["./@types", "./node_modules/@types"],
+        "typeRoots": ["./node_modules/@types"],
+        "types": ["node", "react", "react-dom"], // "react-native" 제거
         "lib": ["dom", "dom.iterable", "esnext"],
         "allowJs": true,
         "skipLibCheck": true,
@@ -28,7 +29,7 @@
         "**/*.ts",
         "**/*.tsx",
         ".next/types/**/*.ts",
-        "app/userRecipe/page.jsx"
-    ],
+        "out/types/**/*.ts"
+, "app/userRecipe/[id]/page.jsx", "app/listPost/page.jsx"    ],
     "exclude": ["node_modules"]
 }

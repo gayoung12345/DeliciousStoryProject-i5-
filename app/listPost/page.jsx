@@ -1,4 +1,4 @@
-// listPost 자유게시판 상세보기 
+// listPost 자유게시판 상세보기
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -18,10 +18,10 @@ import { useAuth } from '../context/AuthContext';
 
 const ListPost = () => {
     // 상태 변수 정의
-    const [post, setPost] = useState<any>(null); // 게시글 데이터 상태
+    const [post, setPost] = useState < any > null; // 게시글 데이터 상태
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [comment, setComment] = useState(''); // 댓글 입력 상태
-    const [comments, setComments] = useState<any[]>([]); // 댓글 목록 상태
+    const [comments, setComments] = useState([]); // 댓글 목록 상태
     const { user } = useAuth(); // 인증된 사용자 정보
     const router = useRouter(); // 라우터 객체
     const searchParams = useSearchParams(); // URL 쿼리 파라미터
@@ -83,7 +83,7 @@ const ListPost = () => {
     }, [postId]); // postId가 변경될 때마다 실행
 
     // 댓글 제출 처리 함수
-    const handleCommentSubmit = async (event: React.FormEvent) => {
+    const handleCommentSubmit = async (event) => {
         event.preventDefault(); // 폼 제출 기본 동작 방지
 
         if (user) {

@@ -6,6 +6,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebaseConfig';
 import xml2js from 'xml2js'; // XML 데이터를 파싱하기 위한 라이브러리
 import debounce from 'lodash/debounce';
+import { Image } from '@/components/ui/image';
 
 const MyLikes = () => {
     const { user } = useAuth();
@@ -26,7 +27,9 @@ const MyLikes = () => {
                 );
                 const querySnapshot = await getDocs(q);
 
-                const likedRecipeIds = querySnapshot.docs.map(doc => doc.data().recipeId);
+                const likedRecipeIds = querySnapshot.docs.map(
+                    (doc) => doc.data().recipeId
+                );
 
                 // XML 파일에서 전체 레시피 데이터를 가져온 후, 사용자가 좋아요한 레시피로 필터링
                 const response = await fetch('/data/siterecipe.xml');
@@ -41,7 +44,9 @@ const MyLikes = () => {
                     ingredients: rec.RCP_PARTS_DTLS[0],
                 }));
 
-                const likedRecipes = recipes.filter(recipe => likedRecipeIds.includes(recipe.id));
+                const likedRecipes = recipes.filter((recipe) =>
+                    likedRecipeIds.includes(recipe.id)
+                );
                 setLikedRecipes(likedRecipes);
                 setSearchResults(likedRecipes); // 초기 검색 결과는 전체 좋아요 레시피로 설정
             } catch (error) {
@@ -60,7 +65,9 @@ const MyLikes = () => {
             const filteredRecipes = likedRecipes.filter(
                 (recipe) =>
                     recipe.name.toLowerCase().includes(term.toLowerCase()) ||
-                    recipe.ingredients.toLowerCase().includes(term.toLowerCase())
+                    recipe.ingredients
+                        .toLowerCase()
+                        .includes(term.toLowerCase())
             );
             setSearchResults(filteredRecipes);
         } else {
@@ -79,22 +86,40 @@ const MyLikes = () => {
 
     return (
         <div className='p-6'>
-            <h1 className='text-3xl font-bold mb-6 text-center' style={{ marginTop: '40px' }}>좋아요 리스트</h1>
-            
+            <h1
+                className='text-3xl font-bold mb-6 text-center'
+                style={{ marginTop: '40px' }}
+            >
+                좋아요 리스트
+            </h1>
+
             {searchResults.length > 0 ? (
                 <div style={{ marginTop: '60px', marginBottom: '20px' }}>
                     <ul className='flex flex-wrap justify-center'>
                         {searchResults.map((recipe) => (
-                            <li key={recipe.id} className='flex flex-col items-center m-4'>
-                                <img src={recipe.image} alt={recipe.name} width="150" className='rounded-lg mb-2' />
+                            <li
+                                key={recipe.id}
+                                className='flex flex-col items-center m-4'
+                            >
+                                <Image
+                                    src={recipe.image}
+                                    alt={recipe.name}
+                                    width='150'
+                                    className='rounded-lg mb-2'
+                                />
                                 <div className='text-center'>
-                                    <h2 className='text-lg font-semibold'>{recipe.name}</h2>
+                                    <h2 className='text-lg font-semibold'>
+                                        {recipe.name}
+                                    </h2>
                                 </div>
                             </li>
                         ))}
                     </ul>
 
-                    <div className='flex justify-center mb-6 space-x-1' style={{ marginTop: '40px', marginBottom: '30px' }}>
+                    <div
+                        className='flex justify-center mb-6 space-x-1'
+                        style={{ marginTop: '40px', marginBottom: '30px' }}
+                    >
                         <input
                             type='text'
                             value={searchTerm}
@@ -118,7 +143,9 @@ const MyLikes = () => {
                     </div>
                 </div>
             ) : (
-                <p className='text-center text-gray-600'>No liked recipes found.</p>
+                <p className='text-center text-gray-600'>
+                    No liked recipes found.
+                </p>
             )}
         </div>
     );
