@@ -1,20 +1,31 @@
 // freeBoard 자유게시판 리스트
 'use client'; // Next.js에서 이 파일이 클라이언트에서 실행된다는 것을 알림
 
-import React, { useEffect, useState } from 'react'; // React와 필요한 훅들을 import
+import React, { ReactNode, useEffect, useState } from 'react'; // React와 필요한 훅들을 import
 import { useRouter } from 'next/navigation'; // Next.js의 라우터 훅을 import
 import { useAuth } from '../context/AuthContext'; // 인증 컨텍스트에서 현재 사용자 정보를 가져오는 훅을 import
 import { fetchPosts } from '../../lib/firestore'; // Firestore에서 게시글을 가져오는 함수 import
 import { EditIcon, Icon } from '@/components/ui/icon';
 
+
+// Post 인터페이스 정의
+interface Post {
+    views: number;
+    comments: number;
+    author: string;
+    date: string;
+    title: string;
+    id: string;
+}
+
 const FreeBoard = () => {
-    // 게시글을 저장할 상태 변수와 현재 페이지, 검색어, 필터된 게시글을 위한 상태 변수를 정의
-    const [posts, setPosts] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filteredPosts, setFilteredPosts] = useState([]);
+
+    const [posts, setPosts] = useState<Post[]>([]); // 모든 게시글을 저장하는 상태 변수
+    const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호를 저장하는 상태 변수
+    const [searchTerm, setSearchTerm] = useState(''); // 검색어를 저장하는 상태 변수
+    const [filteredPosts, setFilteredPosts] = useState<Post[]>([]); // 검색어에 기반해 필터링된 게시글을 저장하는 상태 변수
     const postsPerPage = 10; // 페이지당 게시글 수 설정
-    const router = useRouter(); // 라우터 객체 생성
+    const router = useRouter(); // Next.js 라우터 객체를 생성하여 페이지 이동을 처리하는 데 사용
     const { user } = useAuth(); // 현재 사용자 정보를 인증 컨텍스트에서 가져옴
 
     // 컴포넌트가 마운트될 때 Firestore에서 게시글 데이터를 불러옴
@@ -39,12 +50,12 @@ const FreeBoard = () => {
     };
 
     // 게시글 제목을 클릭하면 해당 게시글의 상세보기 페이지로 이동
-    const handlePostClick = (id) => {
+    const handlePostClick = (id: string) => {
         router.push(`/listPost?id=${id}`);
     };
 
     // 검색어 입력이 변경될 때 호출되어 검색어 상태를 업데이트
-    const handleSearchChange = (event) => {
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
     };
 
@@ -70,16 +81,22 @@ const FreeBoard = () => {
     const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
 
     // 페이지 번호를 클릭하면 해당 페이지로 이동
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     // 날짜를 보기 좋게 포맷팅하는 함수
-    const formatDate = (dateString) => {
+    const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
+
+     // 페이지 번호를 생성하는 방법을 Array.from()을 사용하여 수정
+     const pageNumbers = Array.from(
+        { length: Math.ceil(filteredPosts.length / postsPerPage) },
+        (_, index) => index + 1
+    );
 
     return (
         <main>
@@ -325,54 +342,26 @@ const FreeBoard = () => {
                     </div>
 
                     {/* 페이지네이션 */}
-                    <nav
-                        style={{
-                            textAlign: 'center',
-                            marginTop: '20px',
-                        }}
-                    >
-                        <ul
-                            style={{
-                                display: 'inline-flex',
-                                listStyleType: 'none',
-                                padding: 0,
-                            }}
-                        >
-                            {[
-                                ...Array(
-                                    Math.ceil(
-                                        filteredPosts.length / postsPerPage
-                                    )
-                                ).keys(), // 페이지 번호 생성
-                            ].map((number) => (
-                                <li
-                                    key={number + 1}
-                                    style={{ margin: '0 5px' }}
-                                >
-                                    <button
-                                        onClick={
-                                            () => paginate(number + 1) // 페이지 번호 클릭 시 해당 페이지로 이동
-                                        }
-                                        style={{
-                                            background:
-                                                number + 1 === currentPage
-                                                    ? 'orange' // 현재 페이지일 경우 배경색 변경
-                                                    : 'white',
-                                            color:
-                                                number + 1 === currentPage
-                                                    ? 'white'
-                                                    : 'black',
-                                            border: '1px solid #ddd',
-                                            padding: '5px 10px',
-                                            borderRadius: '5px',
-                                        }}
-                                    >
-                                        {number + 1}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
+                     <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                                <ul style={{ listStyleType: 'none', padding: 0 }}>
+                                    {pageNumbers.map((number) => (
+                                        <li key={number} style={{ margin: '0 5px' }}>
+                                            <button
+                                                onClick={() => paginate(number)}
+                                                style={{
+                                                    background: number === currentPage ? 'orange' : 'white',
+                                                    color: number === currentPage ? 'white' : 'black',
+                                                    border: '1px solid #ddd',
+                                                    padding: '5px 10px',
+                                                    borderRadius: '5px',
+                                                }}
+                                            >
+                                                {number}
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                 </div>
             </div>
         </main>
