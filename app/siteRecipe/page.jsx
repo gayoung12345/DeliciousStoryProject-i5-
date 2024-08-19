@@ -115,22 +115,42 @@ const SiteRecipe = () => {
     }, [itemsPerPage, recipes]);
 
     return (
-        <div style={{ padding: '20px' }}>
-            {/* 페이지 상단 제목 */}
-            <Text
-                className='text-2xl font-bold mb-6'
+        <div>
+            {/* 페이지 상단 제목 시작   */}
+            <Box
                 style={{
-                    fontSize: '24px',
-                    textAlign: 'center',
-                    marginBottom: '16px',
-                    // textDecoration: 'underline',
-                    // textUnderlineOffset: '10px',
+                    position: 'relative',
+                    width: '100%', // 가로를 화면에 꽉 차게 변경
+                    height: '30vh', // 화면의 30% 높이
+                    overflow: 'hidden',
+                    marginBottom: '30px',
                 }}
             >
-                공식 레시피
-            </Text>
-
-            <hr className='h-px my-4 bg-gray-300 border-0 dark:bg-gray-700'></hr>
+                <Image
+                    src='/png/recipe-title.png' // 이미지 파일 경로
+                    alt='공식 레시피'
+                    layout='fill' // 부모 요소에 맞게 이미지 크기 조절
+                    objectFit='cover' // 이미지 비율 유지 및 컨테이너에 맞게 자르기
+                    style={{}}
+                />
+                <Box
+                    style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        color: 'white',
+                        fontSize: '36px',
+                        fontWeight: 'bold',
+                        textShadow: '3px 3px 6px rgba(0, 0, 0, 1)', // 강한 명암 효과 추가
+                        zIndex: 1,
+                        textAlign: 'center', // 텍스트 중앙 정렬
+                    }}
+                >
+                    공식 레시피
+                </Box>
+            </Box>{' '}
+            {/* 페이지 상단 제목 끝 */}
             {/* 레시피 그리드 컨테이너 */}
             <Box
                 style={{
