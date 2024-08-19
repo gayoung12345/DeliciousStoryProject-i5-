@@ -1,11 +1,63 @@
 // siteRecipe 공식레시피 리스트
 'use client';
 
-import { useEffect, useState } from 'react';
+import {
+    CSSProperties,
+    HTMLProps,
+    ReactNode,
+    useEffect,
+    useState,
+} from 'react';
 import Image from 'next/image';
 import xml2js from 'xml2js';
 import { useRouter } from 'next/navigation';
 import { FaArrowUp } from 'react-icons/fa';
+
+////////////// 임시 Box, Text 컴포넌트 //////////////
+interface BoxProps {
+    children: ReactNode;
+    style?: CSSProperties;
+    [key: string]: any;
+}
+
+const Box: React.FC<BoxProps> = ({ children, style, ...props }) => (
+    <div
+        style={style}
+        {...props}
+    >
+        {children}
+    </div>
+);
+
+interface TextProps extends HTMLProps<HTMLParagraphElement> {
+    children: ReactNode;
+    style?: CSSProperties;
+}
+
+const Text: React.FC<TextProps> = ({ children, style, ...props }) => (
+    <p
+        style={style}
+        {...props}
+    >
+        {children}
+    </p>
+);
+
+/////////////////////////////////////////////////////////////////////////////////
+
+// 임시 Grid 컴포넌트 - 그리드 레이아웃을 제공
+interface GridProps extends React.HTMLProps<HTMLDivElement> {
+    children: React.ReactNode; // children의 타입을 React.ReactNode로 명시
+}
+
+const Grid: React.FC<GridProps> = ({ children, style, ...props }) => (
+    <div
+        style={style}
+        {...props}
+    >
+        {children}
+    </div>
+);
 
 // 스크롤을 페이지 상단으로 이동시키는 함수
 const scrollToTop = () => {
@@ -15,37 +67,8 @@ const scrollToTop = () => {
     });
 };
 
-// 임시 Box 컴포넌트 - 스타일을 적용하여 컨테이너 역할
-const Box = ({ children, style, ...props }) => (
-    <div
-        style={style}
-        {...props}
-    >
-        {children}
-    </div>
-);
-
-// 임시 Text 컴포넌트 - 텍스트 요소에 스타일을 적용
-const Text = ({ children, style, ...props }) => (
-    <p
-        style={style}
-        {...props}
-    >
-        {children}
-    </p>
-);
-
-// 임시 Grid 컴포넌트 - 그리드 레이아웃을 제공
-const Grid = ({ children, style, ...props }) => (
-    <div
-        style={style}
-        {...props}
-    >
-        {children}
-    </div>
-);
-
 const SiteRecipe = () => {
+
     // 레시피 데이터를 저장하는 상태
     const [recipes, setRecipes] = useState([]);
     // 페이지당 아이템 수 상태, 기본값은 8

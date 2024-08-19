@@ -33,7 +33,7 @@ function MyPage() {
         return () => unsubscribe();
     }, []);
 
-    const handleChange = (e) => {
+    const handleChange = (e: any) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
@@ -41,7 +41,7 @@ function MyPage() {
         }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         setError('');
 
@@ -59,7 +59,7 @@ function MyPage() {
             } else {
                 setError('사용자가 로그인되어 있지 않습니다.');
             }
-        } catch (error) {
+        } catch (error: any) {
             setError('비밀번호 변경 중 오류가 발생했습니다: ' + error.message);
         }
     };
