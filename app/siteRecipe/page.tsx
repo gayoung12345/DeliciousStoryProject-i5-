@@ -12,6 +12,7 @@ import Image from 'next/image';
 import xml2js from 'xml2js';
 import { useRouter } from 'next/navigation';
 import { FaArrowUp } from 'react-icons/fa';
+import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 
 ////////////// 임시 Box, Text 컴포넌트 //////////////
 interface BoxProps {
@@ -68,7 +69,6 @@ const scrollToTop = () => {
 };
 
 const SiteRecipe = () => {
-
     // 레시피 데이터를 저장하는 상태
     const [recipes, setRecipes] = useState([]);
     // 페이지당 아이템 수 상태, 기본값은 8
@@ -88,7 +88,7 @@ const SiteRecipe = () => {
                 const result = await parser.parseStringPromise(xmlData);
 
                 // 레시피 데이터를 정리하여 상태에 저장
-                const recipeData = result.COOKRCP01.row.map((recipe) => ({
+                const recipeData = result.COOKRCP01.row.map((recipe: any) => ({
                     id: recipe.RCP_SEQ[0],
                     name: recipe.RCP_NM[0],
                     image: recipe.ATT_FILE_NO_MAIN[0] || '/svg/logo.svg', // 기본 이미지 경로 설정
@@ -107,7 +107,7 @@ const SiteRecipe = () => {
     }, []);
 
     // 이미지 클릭 시 상세 페이지로 이동하는 함수
-    const handleImageClick = (id) => {
+    const handleImageClick = (id: any) => {
         router.push(`/galleryPost?id=${id}`);
     };
 
@@ -195,7 +195,7 @@ const SiteRecipe = () => {
                 >
                     {/* 레시피 목록이 있는 경우 */}
                     {currentRecipes.length > 0 ? (
-                        currentRecipes.map((recipe) => (
+                        currentRecipes.map((recipe: any) => (
                             <Box
                                 key={recipe.id}
                                 style={{
@@ -238,10 +238,10 @@ const SiteRecipe = () => {
                                         onClick={() =>
                                             handleImageClick(recipe.id)
                                         }
-                                        onMouseEnter={(e) => {
+                                        onMouseEnter={(e: any) => {
                                             e.currentTarget.style.opacity = '1';
                                         }}
-                                        onMouseLeave={(e) => {
+                                        onMouseLeave={(e: any) => {
                                             e.currentTarget.style.opacity = '0';
                                         }}
                                     >
