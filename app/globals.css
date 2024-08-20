@@ -50,5 +50,5 @@ body {
 }
 
 .button:hover {
-    transform: scale(1.1); /* 확대 비율 (1.1배) */
+    transform: scale(1.2); /* 확대 비율 */
 }
