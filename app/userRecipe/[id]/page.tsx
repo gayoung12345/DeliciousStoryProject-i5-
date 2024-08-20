@@ -22,6 +22,7 @@ import {
     getDoc,
     getDocs,
     deleteDoc,
+    DocumentSnapshot,
 } from 'firebase/firestore';
 import { useAuth } from '@/app/context/AuthContext';
 import Image from 'next/image';
@@ -33,11 +34,6 @@ interface Recipe {
         method: string;
         ingredient: string;
     };
-    // info: {
-    //     servings: string;
-    //     time: string;
-    //     difficulty: string;
-    // };
     images: {
         'main-image': string;
     };
@@ -52,16 +48,25 @@ interface Recipe {
     }[];
     user: string;
 }
+
+interface Comment {
+    userId: string;
+    text: string;
+    recipeId: string;
+}
+
 const RecipeDetail = ({ params }: { params: { id: string } }) => {
     const [liked, setLiked] = useState(false);
     const router = useRouter();
     const [recipe, setRecipe] = useState<Recipe | null>(null);
     const { id } = params;
-    const [speechRate, setSpeechRate] = useState<any>(1);
-    const [utterance, setUtterance] = useState<any>(null);
+    const [speechRate, setSpeechRate] = useState<number>(1);
+    const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(
+        null
+    );
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [user, setUser] = useState<any | null>(null);
-    const [comments, setComments] = useState([]);
+    const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState('');
 
     useEffect(() => {
@@ -90,7 +95,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
         checkIfLiked();
     }, [user, recipe]);
 
-    const speakText = (text: any) => {
+    const speakText = (text: string) => {
         if ('speechSynthesis' in window) {
             const newUtterance = new SpeechSynthesisUtterance(text);
             newUtterance.rate = speechRate; // Set speech rate
@@ -114,7 +119,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
         }
     };
 
-    const handleRateChange = (event: any) => {
+    const handleRateChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSpeechRate(parseFloat(event.target.value));
     };
 
@@ -190,9 +195,9 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                         text: newComment,
                         timestamp: new Date(),
                     });
-                    setComments([
-                        ...comments,
-                        { userId: user.uid, text: newComment },
+                    setComments((prevComments) => [
+                        ...prevComments,
+                        { userId: user.uid, text: newComment, recipeId: id },
                     ]);
                     setNewComment('');
                 } catch (error) {
@@ -212,12 +217,14 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                 const querySnapshot = await getDocs(collection(db, 'comments'));
                 const commentsList = querySnapshot.docs.map((doc) =>
                     doc.data()
-                );
+                ) as Comment[];
 
                 // 댓글 목록에서 recipeId가 일치하는 댓글만 필터링
-                setComments(
-                    commentsList.filter((comment) => comment.recipeId === id)
+                const filteredComments = commentsList.filter(
+                    (comment) => comment.recipeId === id
                 );
+
+                setComments(filteredComments);
             } catch (error) {
                 console.error('Error fetching comments:', error);
             }
@@ -295,9 +302,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
         }
     };
 
-    if (!recipe) {
-        return <div>Loading...</div>;
-    }
+    if (!recipe) return <div>Loading...</div>;
 
     return (
         <main className='max-w-4xl mx-auto p-4'>

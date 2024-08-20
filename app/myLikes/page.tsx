@@ -1,21 +1,39 @@
+// MyLikes.tsx
 'use client';
-
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebaseConfig';
 import xml2js from 'xml2js'; // XML 데이터를 파싱하기 위한 라이브러리
 import debounce from 'lodash/debounce';
-import { Image } from '@/components/ui/image';
+import Image from 'next/image'; // Next.js Image 컴포넌트 import
+
+// 타입 정의
+interface Recipe {
+    id: string;
+    name: string;
+    image: string;
+    ingredients: string;
+}
+
+interface XmlResult {
+    COOKRCP01: {
+        row: {
+            RCP_SEQ: string[];
+            RCP_NM: string[];
+            ATT_FILE_NO_MAIN: string[];
+            RCP_PARTS_DTLS: string[];
+        }[];
+    };
+}
 
 const MyLikes = () => {
     const { user } = useAuth();
-    const [likedRecipes, setLikedRecipes] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [likedRecipes, setLikedRecipes] = useState<Recipe[]>([]);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [searchResults, setSearchResults] = useState<Recipe[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
-    // 사용자가 좋아요한 레시피 ID 가져오기
     useEffect(() => {
         const fetchLikedRecipes = async () => {
             if (!user) return;
@@ -26,29 +44,29 @@ const MyLikes = () => {
                     where('userId', '==', user.uid)
                 );
                 const querySnapshot = await getDocs(q);
-
                 const likedRecipeIds = querySnapshot.docs.map(
                     (doc) => doc.data().recipeId
                 );
 
-                // XML 파일에서 전체 레시피 데이터를 가져온 후, 사용자가 좋아요한 레시피로 필터링
                 const response = await fetch('/data/siterecipe.xml');
                 const xmlData = await response.text();
                 const parser = new xml2js.Parser();
-                const result = await parser.parseStringPromise(xmlData);
+                const result = (await parser.parseStringPromise(
+                    xmlData
+                )) as XmlResult;
 
-                const recipes = result.COOKRCP01.row.map((rec) => ({
+                const recipes: Recipe[] = result.COOKRCP01.row.map((rec) => ({
                     id: rec.RCP_SEQ[0],
                     name: rec.RCP_NM[0],
-                    image: rec.ATT_FILE_NO_MAIN[0] || '/svg/logo.svg',
+                    image: rec.ATT_FILE_NO_MAIN[0] || '/svg/logo.svg', // 기본 이미지 경로 설정
                     ingredients: rec.RCP_PARTS_DTLS[0],
                 }));
 
-                const likedRecipes = recipes.filter((recipe) =>
+                const filteredLikedRecipes = recipes.filter((recipe) =>
                     likedRecipeIds.includes(recipe.id)
                 );
-                setLikedRecipes(likedRecipes);
-                setSearchResults(likedRecipes); // 초기 검색 결과는 전체 좋아요 레시피로 설정
+                setLikedRecipes(filteredLikedRecipes);
+                setSearchResults(filteredLikedRecipes);
             } catch (error) {
                 console.error('Error fetching liked recipes:', error);
             } finally {
@@ -59,8 +77,7 @@ const MyLikes = () => {
         fetchLikedRecipes();
     }, [user]);
 
-    // 디바운싱된 검색 함수
-    const debouncedSearch = debounce((term) => {
+    const debouncedSearch = debounce((term: string) => {
         if (term) {
             const filteredRecipes = likedRecipes.filter(
                 (recipe) =>
@@ -73,9 +90,8 @@ const MyLikes = () => {
         } else {
             setSearchResults(likedRecipes);
         }
-    }, 300); // 300ms 디바운싱 시간
+    }, 300);
 
-    // 검색어로 필터링
     const handleSearch = () => {
         debouncedSearch(searchTerm);
     };
@@ -102,10 +118,15 @@ const MyLikes = () => {
                                 className='flex flex-col items-center m-4'
                             >
                                 <Image
-                                    src={recipe.image}
+                                    src={recipe.image} // 기본 이미지 설정
                                     alt={recipe.name}
-                                    width='150'
+                                    width={300} // 이미지의 너비 설정
+                                    height={200} // 이미지의 높이 설정
                                     className='rounded-lg mb-2'
+                                    onError={(e) => {
+                                        // 이미지 로드 오류 시 기본 이미지로 변경
+                                        (e.target as HTMLImageElement).src = '/svg/logo.svg';
+                                    }}
                                 />
                                 <div className='text-center'>
                                     <h2 className='text-lg font-semibold'>
@@ -134,7 +155,7 @@ const MyLikes = () => {
                             }}
                         />
                         <button
-                            onClick={handleSearch} // Ensure button click triggers search
+                            onClick={handleSearch} // 검색 버튼 클릭 시 검색 함수 호출
                             type='button'
                             className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600'
                         >

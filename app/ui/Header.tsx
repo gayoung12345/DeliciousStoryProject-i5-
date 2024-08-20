@@ -27,7 +27,7 @@ const Header = () => {
                 const parser = new xml2js.Parser(); // XML 파서를 생성
                 const result = await parser.parseStringPromise(xmlData); // XML 데이터를 파싱하여 JavaScript 객체로 변환
 
-                const recipes = result.COOKRCP01.row.map((rec) => ({
+                const recipes = result.COOKRCP01.row.map((rec: any) => ({
                     id: rec.RCP_SEQ[0],
                     name: rec.RCP_NM[0],
                     image: rec.ATT_FILE_NO_MAIN[0] || '/svg/logo.svg',
@@ -63,12 +63,12 @@ const Header = () => {
         fetchRecipes(); // 레시피 데이터를 가져오는 함수 호출
     }, []); // 빈 배열을 의존성으로 하여 컴포넌트 마운트 시 한 번만 실행
 
-    const handleSearch = (term) => {
+    const handleSearch = (term: any) => {
         setSearchTerm(term);
         if (term) {
             const filteredRecipes = Array.isArray(recipes)
                 ? recipes.filter(
-                      (recipe) =>
+                      (recipe: any) =>
                           recipe.name
                               ?.toLowerCase()
                               .includes(term.toLowerCase()) ||
@@ -83,7 +83,7 @@ const Header = () => {
         }
     };
 
-    const handleMenuClick = (href) => {
+    const handleMenuClick = (href: string) => {
         setMenuOpen(false); // 메뉴 클릭 시 드롭다운 메뉴 닫기
         window.location.href = href; // 페이지 이동 및 새로고침
     };
@@ -214,7 +214,7 @@ const Header = () => {
                 {searchResults.length > 0 && (
                     <div className='dropdown-menu absolute bg-white shadow-lg rounded-lg p-4 mt-4 w-full max-w-lg max-h-60 overflow-y-auto'>
                         <ul>
-                            {searchResults.map((recipe) => (
+                            {searchResults.map((recipe: any) => (
                                 <li
                                     key={recipe.id}
                                     className='p-2 border-b last:border-b-0'
