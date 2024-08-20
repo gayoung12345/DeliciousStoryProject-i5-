@@ -11,7 +11,7 @@ import React, {
 import { useRouter } from 'next/navigation'; // Next.js의 라우팅 훅을 import
 import Image from 'next/image'; // 이미지 최적화를 위한 Next.js Image 컴포넌트
 import xml2js from 'xml2js'; // XML 데이터를 파싱하기 위한 라이브러리
-import { FaArrowLeft, FaPause, FaPlay, FaStop, FaHeart } from 'react-icons/fa'; // 아이콘을 위한 라이브러리
+import { FaArrowLeft, FaPause, FaPlay, FaStop, FaHeart, FaVolumeUp } from 'react-icons/fa'; // 아이콘을 위한 라이브러리
 import { db, auth } from '../../lib/firebaseConfig'; // Firebase 설정 파일 import
 import { onAuthStateChanged, User } from 'firebase/auth'; // Firebase 인증 상태 변화를 감지하는 함수
 import {
@@ -363,161 +363,51 @@ const GalleryPost = () => {
     }, [recipe]);
 
 
-
-
     
     return (
-        <main style={{ marginTop: '80px' }}>
+        <main style={{ marginTop: '120px' }}>
             <Box style={{ padding: '16px' }}>
-                <button
-                    onClick={handleBackClick} // 뒤로가기 버튼 클릭 시 handleBackClick 호출
-                    style={{
-                        color: '#ffffff',
-                        backgroundColor: '#383838', // 기본 주황색
-                        position: 'fixed',
-                        top: 50,
-                        left: 50,
-                        width: 80,
-                        height: 80,
-                        borderRadius: 40,
-                        zIndex: 10,
-                        border: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                    }}
-                >
-                    <FaArrowLeft
-                        size={24}
-                        color='#ffffff'
-                    />
-                </button>
-
                 {loading ? (
                     <p style={{ textAlign: 'center', fontSize: '18px' }}>
                         레시피를 불러오는 중입니다...
                     </p>
                 ) : recipe ? (
                     <div style={{ maxWidth: '800px', margin: 'auto' }}>
-                        <header
+                        <div
                             style={{
                                 display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                marginBottom: '14px',
+                                flexDirection: 'row', // 가로 정렬
+                                alignItems: 'flex-start', // 상단 정렬
+                                marginBottom: '60px',
                             }}
                         >
-                            <h1 style={{ width: '60%', fontSize: '24px' }}>
-                                {recipe.name}
-                            </h1>
-                        </header>
+                    <div style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center' // 중앙 정렬
+                    }}>
                         <Image
                             src={recipe.image}
                             alt={recipe.name}
-                            width={800}
-                            height={800}
+                            width={400}
+                            height={400}
                             style={{
-                                borderRadius: '8px',
-                                marginBottom: '16px',
+                                marginBottom: '22px', // 이미지와 버튼 사이의 간격
+                                marginRight: '22px',
                             }}
                         />
-                        <Box
-                            style={{
-                                backgroundColor: '#f0f0f0',
-                                padding: '36px',
-                                borderRadius: '8px',
-                            }}
-                        >
-                            <h1
-                                style={{
-                                    fontSize: '34px',
-                                    textAlign: 'center',
-                                    marginTop: '10px',
-                                    marginBottom: '30px',
-                                    fontWeight: '800',
-                                    color: '#383838',
-                                }}
-                            >
-                                {recipe.name}
-                            </h1>
-                            <p style={{ fontSize: '16px' }}>
-                                칼로리: {recipe.calories} kcal
-                            </p>
-                            <p style={{ fontSize: '16px' }}>
-                                단백질: {recipe.protein} g
-                            </p>
-                            <p style={{ fontSize: '16px' }}>
-                                지방: {recipe.fat} g
-                            </p>
-                            <p style={{ fontSize: '16px' }}>
-                                나트륨: {recipe.sodium} mg
-                            </p>
-                            <h2
-                                style={{
-                                    fontSize: '24px',
-                                    fontWeight: '800',
-                                    marginTop: '45px',
-                                    marginBottom: '8px',
-                                    color: '#383838',
-                                }}
-                            >
-                                재료
-                            </h2>
-                            <Text
-                                style={{
-                                    fontSize: '16px',
-                                    marginBottom: '16px',
-                                }}
-                            >
-                                {recipe.ingredients}
-                            </Text>
-                            <h2
-                                style={{
-                                    fontSize: '24px',
-                                    fontWeight: '800',
-                                    marginTop: '45px',
-                                    marginBottom: '8px',
-                                    color: '#383838',
-                                }}
-                            >
-                                조리법
-                            </h2>
-                            {recipe.manual.map((item: any, index: any) => (
-                                <div
-                                    key={index}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        marginBottom: '16px',
-                                    }}
-                                >
-                                    {item.image && (
-                                        <Image
-                                            src={item.image}
-                                            alt={`메뉴얼 이미지 ${index + 1}`}
-                                            width={200}
-                                            height={200}
-                                            style={{
-                                                borderRadius: '8px',
-                                                marginRight: '16px',
-                                            }}
-                                        />
-                                    )}
-                                    <Text style={{ fontSize: '16px' }}>
-                                        {item.text}
-                                    </Text>
-                                </div>
-                            ))}
+                        
+
                             {/* TTS 재생 버튼 */}
                             <div
                                 style={{
                                     display: 'flex',
                                     flexDirection: 'row',
                                     justifyContent: 'center',
-                                    gap: '16px',
-                                    marginTop: '56px',
+                                    gap: '10px',
+                                    marginTop: '8px',
                                     marginBottom: '16px',
+                                    marginRight: '22px',
                                 }}
                             >
                                 <button
@@ -525,7 +415,7 @@ const GalleryPost = () => {
                                     style={{
                                         color: '#ffffff',
                                         backgroundColor: '#FF8C00', // 기본 주황색
-                                        width: 100,
+                                        width: 80,
                                         height: 40,
                                         borderRadius: 20,
                                         border: 'none',
@@ -549,7 +439,7 @@ const GalleryPost = () => {
                                         e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
                                     }}
                                 >
-                                    TTS 재생
+                                    <FaVolumeUp size={20} />
                                 </button>
                                 <select
                                     value={speechRate}
@@ -640,122 +530,227 @@ const GalleryPost = () => {
                                     <FaStop size={15} />
                                 </button>
                             </div>
-                        </Box>
-                        <div style={{ marginTop: '16px' }}>
-                            <h3>댓글</h3>
-                            {comments.map((comment, index) => (
+
+                    </div>
+
+                    <Box
+                        style={{
+                            padding: '16px',
+                            flex: '1', // 남은 공간 채우기
+                        }}
+                    >
+                        <div style={{
+                            display: 'flex', // 가로 정렬
+                            alignItems: 'center', // 수직 정렬
+                            marginBottom: '16px'
+                        }}>
+                            <h1
+                                style={{
+                                    fontSize: '32px',
+                                    fontWeight: '600',
+                                    color: '#383838',
+                                    marginRight: '16px'
+                                }}
+                            >
+                                {recipe.name}
+                            </h1>
+                            <button 
+                            onClick={handleLikeToggle} 
+                            style={{
+                                background: 'none',
+                                cursor: 'pointer',
+                                display: 'flex', // 가로 정렬
+                                alignItems: 'center', // 세로 정렬
+                                color: '#FF8C00', // 텍스트 색상 주황색
+                                fontSize: '24px', // 텍스트 크기
+                                fontWeight: '600', // 텍스트 두께
+                                transition: 'background-color 0.3s, color 0.3s', // 색상 변경 시 부드러운 전환 효과
+                            }}
+                        >
+                            {/* 좋아요 버튼 */}
+                            <FaHeart color={liked ? 'red' : 'gray'} />
+                        </button>
+                        </div>
+                        <p style={{ fontSize: '15px', color: '#5c5c5c' }}>
+                            칼로리: {recipe.calories} kcal
+                        </p>
+                        <p style={{ fontSize: '15px', color: '#5c5c5c' }}>
+                            단백질: {recipe.protein} g
+                        </p>
+                        <p style={{ fontSize: '15px', color: '#5c5c5c' }}>
+                            지방: {recipe.fat} g
+                        </p>
+                        <p style={{ fontSize: '15px', color: '#5c5c5c' }}>
+                            나트륨: {recipe.sodium} mg
+                        </p>
+
+                        <h2
+                            style={{
+                                fontSize: '21px',
+                                fontWeight: '600',
+                                marginTop: '32px',
+                                marginBottom: '8px',
+                                color: '#383838',
+                            }}
+                        >
+                            재료
+                        </h2>
+                        <p
+                            style={{
+                                fontSize: '15px',
+                                marginBottom: '8px',
+                                color: '#5c5c5c',
+                            }}
+                        >
+                            {recipe.ingredients}
+                        </p>
+                    </Box>
+                </div>
+
+
+
+                        <hr />
+
+                        <Box
+                            style={{
+                                marginTop: '80px',
+                                marginBottom: '100px',
+                            }}
+                        >
+                            
+                            <h2
+                                style={{
+                                    fontSize: '21px',
+                                    fontWeight: '600',
+                                    marginBottom: '24px',
+                                    color: '#383838',
+                                }}
+                            >
+                                ※ 조리법
+                            </h2>
+                            {recipe.manual.map((item, index) => (
                                 <div
                                     key={index}
                                     style={{
-                                        border: '1px solid #ddd',
-                                        padding: '8px',
-                                        marginBottom: '8px',
-                                        borderRadius: '4px',
-                                    }}
-                                >
-                                    <p>작성자: {comment.userEmail}</p>
-                                    <p>{comment.text}</p>
-                                </div>
-                            ))}
-
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '8px',
-                                    marginTop: '16px',
-                                }}
-                            >
-                                <textarea
-                                    value={newComment} // 댓글 입력 필드
-                                    onChange={
-                                        (e) => setNewComment(e.target.value) // 입력된 댓글을 상태로 저장
-                                    }
-                                    rows={3}
-                                    placeholder='댓글을 작성하세요...'
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px',
-                                        borderRadius: '4px',
-                                        border: '1px solid #ddd',
-                                        fontSize: '16px',
-                                        boxSizing: 'border-box',
-                                    }}
-                                />
-                                <button
-                                    onClick={handleAddComment} // 댓글 작성 버튼 클릭 시 handleAddComment 호출
-                                    style={{
-                                        color: '#ffffff',
-                                        backgroundColor: '#FF8C00', // 기본 주황색
-                                        width: '100%',
-                                        height: 40,
-                                        borderRadius: 20,
-                                        border: 'none',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center',
-                                        cursor: 'pointer',
-                                        fontSize: '16px',
-                                        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                                        transition:
-                                            'background-color 0.3s, box-shadow 0.3s, color 0.3s',
-                                    }}
-                                    onMouseDown={(e) => {
-                                        e.currentTarget.style.backgroundColor =
-                                            '#FF7F00'; // 클릭 시 색상
-                                        e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
-                                    }}
-                                    onMouseUp={(e) => {
-                                        e.currentTarget.style.backgroundColor =
-                                            '#FF8C00'; // 기본 색상으로 복구
-                                        e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
+                                        marginBottom: '18px',
                                     }}
                                 >
-                                    댓글 작성
-                                </button>
-                                <div style={{ display: 'flex', gap: '16px' }}>
-                                    <button onClick={handleLikeToggle}>
-                                        {' '}
-                                        {/* 좋아요 버튼 */}
-                                        <FaHeart
-                                            color={liked ? 'red' : 'gray'}
+                                    {item.image && (
+                                        <Image
+                                            src={item.image}
+                                            alt={`메뉴얼 이미지 ${index + 1}`}
+                                            width={200}
+                                            height={200}
+                                            style={{
+                                                marginRight: '18px',
+                                            }}
                                         />
-                                    </button>
+                                    )}
+                                    <p style={{ fontSize: '16px' }}>
+                                        {item.text}
+                                    </p>
                                 </div>
-                            </div>
-                        </div>
+                            ))}
+                            
+                        </Box>
+
+                        <hr />
+                    </div>
+                ) : null}
+
+                    <div style={{ 
+                        maxWidth: '800px', // 가로 영역을 800px로 설정
+                        margin: '0 auto', // 중앙 정렬
+                        marginTop: '80px',
+                        marginBottom: '50px',
+                    }}>
+                        <h2
+                            style={{
+                                fontSize: '21px',
+                                fontWeight: '600',
+                                marginTop: '32px',
+                                marginBottom: '18px',
+                                color: '#383838',
+                            }}
+                        >
+                            댓글
+                        </h2>
                         <div
                             style={{
                                 display: 'flex',
-                                justifyContent: 'space-between',
-                                gap: '16px',
-                                marginTop: '16px',
+                                gap: '8px', // 입력 필드와 버튼 사이의 간격
+                                marginBottom: '8px',
                             }}
                         >
+                            <textarea
+                                value={newComment} // 댓글 입력 필드
+                                onChange={
+                                    (e) => setNewComment(e.target.value) // 입력된 댓글을 상태로 저장
+                                }
+                                rows={3}
+                                placeholder='댓글을 작성하세요.'
+                                style={{
+                                    flex: '1', // 가로 공간을 최대한 차지하도록 설정
+                                    padding: '8px',
+                                    borderRadius: '4px',
+                                    border: '1px solid #ddd',
+                                    fontSize: '16px',
+                                    boxSizing: 'border-box',
+                                    height: 80,
+                                }}
+                            />
                             <button
+                                onClick={handleAddComment} // 댓글 작성 버튼 클릭 시 handleAddComment 호출
                                 style={{
                                     color: '#ffffff',
-                                    backgroundColor: '#383838',
-                                    width: 70,
-                                    height: 50,
-                                    borderRadius: 5,
+                                    backgroundColor: '#FF8C00', // 기본 주황색
+                                    height: 80,
+                                    borderRadius: 4,
                                     border: 'none',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     cursor: 'pointer',
                                     fontSize: '16px',
+                                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                                    transition:
+                                        'background-color 0.3s, box-shadow 0.3s, color 0.3s',
+                                    padding: '0 16px', // 버튼 내 여백
+                                }}
+                                onMouseDown={(e) => {
+                                    e.currentTarget.style.backgroundColor =
+                                        '#FF7F00'; // 클릭 시 색상
+                                    e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
+                                }}
+                                onMouseUp={(e) => {
+                                    e.currentTarget.style.backgroundColor =
+                                        '#FF8C00'; // 기본 색상으로 복구
+                                    e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
                                 }}
                             >
-                                목록
+                                댓글 작성
                             </button>
                         </div>
+
+                        {comments.map((comment, index) => (
+                            <div
+                                key={index}
+                                style={{
+                                    border: '1px solid #ddd',
+                                    padding: '8px',
+                                    marginBottom: '8px',
+                                    borderRadius: '4px',
+                                }}
+                            >
+                                <p style={{ fontSize: '16px', color: '#FF8C00', marginBottom: '4px' }}>{comment.userEmail}</p>
+                                <p style={{ fontSize: '15px', color: '#5c5c5c' }}>{comment.text}</p>
+                            </div>
+                        ))}
+
+                        
                     </div>
-                ) : (
-                    <p style={{ textAlign: 'center', fontSize: '18px' }}>
-                        레시피를 찾을 수 없습니다.
-                    </p>
-                )}
             </Box>
         </main>
     );
