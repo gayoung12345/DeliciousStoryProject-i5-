@@ -50,7 +50,13 @@ const Posting = () => {
                     글 작성하기
                 </h1>
                 <form onSubmit={handleSubmit}>
-                    <div style={{ marginBottom: '20px', textAlign: 'left' }}>
+                    <div
+                        style={{
+                            marginTop: '40px',
+                            marginBottom: '20px',
+                            textAlign: 'left',
+                        }}
+                    >
                         <label
                             htmlFor='title'
                             style={{
@@ -59,14 +65,13 @@ const Posting = () => {
                                 textAlign: 'left',
                                 marginLeft: '20%',
                             }}
-                        >
-                            제목
-                        </label>
+                        ></label>
                         <input
                             id='title'
                             type='text'
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
+                            placeholder='제목을 입력하세요'
                             style={{
                                 width: '60%',
                                 padding: '10px',
@@ -88,9 +93,7 @@ const Posting = () => {
                                 textAlign: 'left',
                                 marginLeft: '20%',
                             }}
-                        >
-                            내용
-                        </label>
+                        ></label>
                         <div
                             style={{
                                 width: '60%',
@@ -103,6 +106,7 @@ const Posting = () => {
                             <TextEditor
                                 content={content}
                                 setContent={setContent}
+                                placeholder='내용을 입력하세요' // TextEditor에 대한 기본 placeholder 추가
                             />
                         </div>
                     </div>

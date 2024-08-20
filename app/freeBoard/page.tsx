@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation'; // Next.js의 라우터 훅을 impo
 import { useAuth } from '../context/AuthContext'; // 인증 컨텍스트에서 현재 사용자 정보를 가져오는 훅을 import
 import { fetchPosts } from '../../lib/firestore'; // Firestore에서 게시글을 가져오는 함수 import
 import { EditIcon, Icon } from '@/components/ui/icon';
-
+import Image from 'next/image'; // 'react-native'의 Image 대신 'next/image'를 사용
+import { Box } from '@/components/ui/box/index.web';
 
 // Post 인터페이스 정의
 interface Post {
@@ -19,7 +20,6 @@ interface Post {
 }
 
 const FreeBoard = () => {
-
     const [posts, setPosts] = useState<Post[]>([]); // 모든 게시글을 저장하는 상태 변수
     const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호를 저장하는 상태 변수
     const [searchTerm, setSearchTerm] = useState(''); // 검색어를 저장하는 상태 변수
@@ -92,49 +92,105 @@ const FreeBoard = () => {
         return `${year}-${month}-${day}`;
     };
 
-     // 페이지 번호를 생성하는 방법을 Array.from()을 사용하여 수정
-     const pageNumbers = Array.from(
+    // 페이지 번호를 생성하는 방법을 Array.from()을 사용하여 수정
+    const pageNumbers = Array.from(
         { length: Math.ceil(filteredPosts.length / postsPerPage) },
         (_, index) => index + 1
     );
 
     return (
         <main>
-            <div style={{ padding: '20px' }}>
-                <h1
-                    className='text-2xl font-bold mb-6'
+            <div>
+                {/* 페이지 상단 제목 시작 */}
+                <Box
                     style={{
-                        textAlign: 'center',
-                        marginBottom: '16px',
-                        // textDecoration: 'underline',
-                        // textUnderlineOffset: '10px',
+                        position: 'relative',
+                        width: '100%', // 가로를 화면에 꽉 차게 변경
+                        height: '30vh', // 화면의 30% 높이
+                        overflow: 'hidden',
+                        marginBottom: '30px',
                     }}
                 >
-                    자유게시판
-                </h1>
-                <hr className='h-px my-4 bg-gray-300 border-0 dark:bg-gray-700'></hr>
+                    <Image
+                        src='/png/freeboard.png' // 이미지 파일 경로
+                        layout='fill' // 부모 요소에 맞게 이미지 크기 조절
+                        objectFit='cover' // 이미지 비율 유지 및 컨테이너에 맞게 자르기
+                        alt={'자유게시판'}
+                        style={{}}
+                    />
+                    <Box
+                        style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            color: 'white',
+                            fontSize: '42px',
+                            fontWeight: '600',
+                            textShadow: '3px 3px 6px rgba(0, 0, 0, 0.8)', // 강한 명암 효과 추가
+                            zIndex: 1,
+                            textAlign: 'center', // 텍스트 중앙 정렬
+                        }}
+                    >
+                        자유게시판
+                    </Box>
 
-                {/* 글 작성하기 버튼을 테이블 바로 위에 위치시키기 */}
-                {user && ( // 사용자가 로그인되어 있을 때만 글 작성하기 버튼을 표시
-                    <div style={{ marginLeft: '1350px', marginBottom: '20px' }}>
-                        <button
-                            type='button'
-                            className='w-16 h-16 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center'
-                            onClick={handleWriteClick}
+                    {/* 글 작성하기 버튼 */}
+                    {/* {user && ( // 사용자가 로그인되어 있을 때만 글 작성하기 버튼을 표시
+                        <Box
+                            style={{
+                                position: 'absolute',
+                                top: '200px', // 상단에서 약간의 여백
+                                right: '200px', // 오른쪽에서 약간의 여백
+                                zIndex: 2, // 버튼이 텍스트 위에 위치하도록 설정
+                            }}
                         >
-                            <span className='text-sm font-semibold text-center'>
-                                <Icon
-                                    as={EditIcon}
-                                    size='xl'
-                                />
-                            </span>
-                        </button>
+                            <button
+                                type='button'
+                                className='w-16 h-16 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center'
+                                onClick={handleWriteClick}
+                            >
+                                <span className='text-sm font-semibold text-center'>
+                                    <Icon
+                                        as={EditIcon}
+                                        size='xl'
+                                    />
+                                </span>
+                            </button>
+                        </Box>
+                    )} */}
+                </Box>
+                {/* 페이지 상단 제목 끝 */}
+                <div>
+                    <div>
+                        {user && ( // 사용자가 로그인되어 있을 때만 글 작성하기 버튼을 표시
+                            <Box
+                                style={{
+                                    position: 'absolute',
+                                    top: '410px', // 상단에서 약간의 여백
+                                    right: '180px', // 오른쪽에서 약간의 여백
+                                    zIndex: 2, // 버튼이 텍스트 위에 위치하도록 설정
+                                }}
+                            >
+                                <button
+                                    type='button'
+                                    className='w-16 h-16 bg-orange-400 text-white rounded-full shadow-lg hover:bg-orange-600 transition-colors duration-300 flex items-center justify-center'
+                                    onClick={handleWriteClick}
+                                >
+                                    <span className='text-sm font-semibold text-center'>
+                                        <Icon
+                                            as={EditIcon}
+                                            size='xl'
+                                        />
+                                    </span>
+                                </button>
+                            </Box>
+                        )}
                     </div>
-                )}
-
+                </div>
                 <div
                     style={{
-                        marginTop: '20px',
+                        marginTop: '30px',
                         display: 'flex',
                         justifyContent: 'center',
                     }}
@@ -305,7 +361,7 @@ const FreeBoard = () => {
                 {/* 검색과 페이지네이션을 아래로 이동 */}
                 <div
                     style={{
-                        marginTop: '20px',
+                        marginTop: '40px',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -316,7 +372,7 @@ const FreeBoard = () => {
                         style={{
                             display: 'flex',
                             alignItems: 'center',
-                            marginBottom: '20px', // 검색 버튼과 검색어 사이 간격
+                            marginBottom: '5px', // 검색 버튼과 검색어 사이 간격
                         }}
                     >
                         <input
@@ -342,26 +398,47 @@ const FreeBoard = () => {
                     </div>
 
                     {/* 페이지네이션 */}
-                     <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                                <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                    {pageNumbers.map((number) => (
-                                        <li key={number} style={{ margin: '0 5px' }}>
-                                            <button
-                                                onClick={() => paginate(number)}
-                                                style={{
-                                                    background: number === currentPage ? 'orange' : 'white',
-                                                    color: number === currentPage ? 'white' : 'black',
-                                                    border: '1px solid #ddd',
-                                                    padding: '5px 10px',
-                                                    borderRadius: '5px',
-                                                }}
-                                            >
-                                                {number}
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                    <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                        <ul
+                            style={{
+                                listStyleType: 'none', // 리스트 아이템의 기본 스타일을 제거
+                                padding: 0, // 리스트의 기본 패딩을 제거
+                                display: 'flex', // 리스트 아이템을 가로로 나열하기 위해 flexbox 사용
+                                justifyContent: 'center', // 페이지네이션을 가운데 정렬
+                            }}
+                        >
+                            {pageNumbers.map((number) => (
+                                <li
+                                    key={number}
+                                    style={{
+                                        margin: '0 5px', // 각 페이지 번호 간의 간격 설정
+                                        display: 'inline-block', // 페이지 번호가 가로로 배치되도록 설정
+                                    }}
+                                >
+                                    <button
+                                        onClick={() => paginate(number)}
+                                        style={{
+                                            background:
+                                                number === currentPage
+                                                    ? 'orange'
+                                                    : 'white', // 현재 페이지는 주황색 배경
+                                            color:
+                                                number === currentPage
+                                                    ? 'white'
+                                                    : 'black', // 현재 페이지는 흰색 텍스트
+                                            border: '1px solid #ddd', // 경계선 스타일 설정
+                                            padding: '5px 10px', // 패딩 설정
+                                            borderRadius: '5px', // 모서리를 둥글게 설정
+                                            minWidth: '40px', // 모든 버튼의 최소 너비를 동일하게 설정하여 크기 통일
+                                            textAlign: 'center', // 텍스트를 버튼 중앙에 배치
+                                        }}
+                                    >
+                                        {number} {/* 페이지 번호 */}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </main>
