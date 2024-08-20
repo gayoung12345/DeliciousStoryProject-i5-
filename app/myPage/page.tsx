@@ -33,7 +33,7 @@ function MyPage() {
         return () => unsubscribe();
     }, []);
 
-    const handleChange = (e: any) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
@@ -41,11 +41,18 @@ function MyPage() {
         }));
     };
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
-        if (formData.password !== formData.confirmPassword) {
+        const { password, confirmPassword } = formData;
+
+        if (password === '' || confirmPassword === '') {
+            setError('새 비밀번호와 비밀번호 확인을 입력하세요.');
+            return;
+        }
+
+        if (password !== confirmPassword) {
             setError('비밀번호가 일치하지 않습니다.');
             return;
         }
@@ -53,7 +60,7 @@ function MyPage() {
         try {
             const user = auth.currentUser;
             if (user) {
-                await updatePassword(user, formData.password);
+                await updatePassword(user, password);
                 alert('비밀번호가 성공적으로 변경되었습니다.');
                 window.location.reload();
             } else {
