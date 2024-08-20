@@ -68,7 +68,6 @@ const scrollToTop = () => {
 };
 
 const SiteRecipe = () => {
-
     // 레시피 데이터를 저장하는 상태
     const [recipes, setRecipes] = useState([]);
     // 페이지당 아이템 수 상태, 기본값은 8
@@ -163,9 +162,9 @@ const SiteRecipe = () => {
                         left: '50%',
                         transform: 'translate(-50%, -50%)',
                         color: 'white',
-                        fontSize: '36px',
-                        fontWeight: 'bold',
-                        textShadow: '3px 3px 6px rgba(0, 0, 0, 1)', // 강한 명암 효과 추가
+                        fontSize: '42px',
+                        fontWeight: '600',
+                        textShadow: '3px 3px 6px rgba(0, 0, 0, 0.8)', // 강한 명암 효과 추가
                         zIndex: 1,
                         textAlign: 'center', // 텍스트 중앙 정렬
                     }}
