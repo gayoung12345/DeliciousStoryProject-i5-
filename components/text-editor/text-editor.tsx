@@ -45,8 +45,8 @@ const TextEditor = ({
                 <div
                     style={{
                         position: 'absolute',
-                        top: '60px', // 위에서 약간 내려옴
-                        left: '10px', // 왼쪽 상단으로 이동
+                        top: '50px', // 위에서 약간 내려옴
+                        left: '5px', // 왼쪽 상단으로 이동
                         color: '#aaa',
                         pointerEvents: 'none',
                         zIndex: 1,
