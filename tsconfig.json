@@ -30,6 +30,6 @@
         "**/*.tsx",
         ".next/types/**/*.ts",
         "out/types/**/*.ts"
-, "app/userRecipe/[id]/page.jsx", "app/listPost/page.tsx"    ],
+, "app/userRecipe/[id]/page.tsx", "app/listPost/page.tsx"    ],
     "exclude": ["node_modules"]
 }
