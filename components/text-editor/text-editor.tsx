@@ -29,22 +29,42 @@ const formats = [
 const TextEditor = ({
     content,
     setContent,
+    placeholder,
 }: {
     content: string;
     setContent: React.Dispatch<React.SetStateAction<string>>;
+    placeholder?: string; // placeholder 속성 추가
 }) => {
     const handleContentChange = (value: string) => {
         setContent(value);
     };
 
     return (
-        <ReactQuill
-            style={{ height: '300px' }}
-            value={content}
-            onChange={handleContentChange}
-            modules={modules}
-            formats={formats}
-        />
+        <div style={{ position: 'relative', height: '300px' }}>
+            {content === '' && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '60px', // 위에서 약간 내려옴
+                        left: '10px', // 왼쪽 상단으로 이동
+                        color: '#aaa',
+                        pointerEvents: 'none',
+                        zIndex: 1,
+                        padding: '0 10px',
+                        boxSizing: 'border-box', // 패딩 포함하여 전체 크기 조정
+                    }}
+                >
+                    {placeholder}
+                </div>
+            )}
+            <ReactQuill
+                style={{ height: '100%' }}
+                value={content}
+                onChange={handleContentChange}
+                modules={modules}
+                formats={formats}
+            />
+        </div>
     );
 };
 
