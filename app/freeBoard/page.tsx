@@ -8,6 +8,7 @@ import { fetchPosts } from '../../lib/firestore'; // Firestore에서 게시글�
 import { EditIcon, Icon } from '@/components/ui/icon';
 import Image from 'next/image'; // 'react-native'의 Image 대신 'next/image'를 사용
 import { Box } from '@/components/ui/box/index.web';
+import { FaArrowUp } from 'react-icons/fa';
 
 // Post 인터페이스 정의
 interface Post {
@@ -18,6 +19,13 @@ interface Post {
     title: string;
     id: string;
 }
+// 스크롤을 페이지 상단으로 이동시키는 함수
+const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth', // 부드러운 스크롤 효과
+    });
+};
 
 const FreeBoard = () => {
     const [posts, setPosts] = useState<Post[]>([]); // 모든 게시글을 저장하는 상태 변수
@@ -142,29 +150,13 @@ const FreeBoard = () => {
                         justifyContent: 'flex-end', // 오른쪽 정렬
                         paddingRight: '20rem', // 오른쪽 패딩 추가 (선택 사항)
                     }}
-                >
-                    {/* 글 작성하기 버튼 시작 */}
-                    <button
-                        type='button'
-                        className='bg-orange-400 text-white hover:bg-orange-600 transition-colors flex items-center justify-center border-2 border-black'
-                        onClick={handleWriteClick}
-                        style={{    
-                            padding: '0.5rem',
-                            borderRadius: '4px',
-                            border: '1px solid #ddd',
-                            width: '120px', // 고정된 너비
-                        }}
-                    >
-                        글쓰기
-                    </button>
-                    {/* 글 작성하기 버튼 끝 */}
-                </div>
+                ></div>
 
                 {/* 리스트 영역 */}
                 <div>
                     <div
                         style={{
-                            marginTop: '30px',
+                            marginTop: '60px',
                             display: 'flex',
                             justifyContent: 'center',
                         }}
@@ -173,7 +165,7 @@ const FreeBoard = () => {
                             <>
                                 <table
                                     style={{
-                                        width: '70%', // 테이블 너비 조정
+                                        width: '55%', // 테이블 너비 조정
                                         borderCollapse: 'collapse',
                                     }}
                                 >
@@ -186,7 +178,7 @@ const FreeBoard = () => {
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                     backgroundColor: '#f9f9f9',
-                                                    width: '5%', // 번호 열 너비
+                                                    width: '3%', // 번호 열 너비
                                                 }}
                                             >
                                                 번호
@@ -210,7 +202,7 @@ const FreeBoard = () => {
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                     backgroundColor: '#f9f9f9',
-                                                    width: '10%', // 작성자 열 너비
+                                                    width: '5%', // 작성자 열 너비
                                                 }}
                                             >
                                                 작성자
@@ -222,7 +214,7 @@ const FreeBoard = () => {
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                     backgroundColor: '#f9f9f9',
-                                                    width: '10%', // 작성일 열 너비
+                                                    width: '5%', // 작성일 열 너비
                                                 }}
                                             >
                                                 작성일
@@ -234,7 +226,7 @@ const FreeBoard = () => {
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                     backgroundColor: '#f9f9f9',
-                                                    width: '5%', // 댓글수 열 너비
+                                                    width: '3%', // 댓글수 열 너비
                                                 }}
                                             >
                                                 댓글 수
@@ -246,7 +238,7 @@ const FreeBoard = () => {
                                                     padding: '8px',
                                                     textAlign: 'center',
                                                     backgroundColor: '#f9f9f9',
-                                                    width: '5%', // 조회수 열 너비
+                                                    width: '3%', // 조회수 열 너비
                                                 }}
                                             >
                                                 조회 수
@@ -276,7 +268,7 @@ const FreeBoard = () => {
                                                         padding: '8px',
                                                         cursor: 'pointer',
                                                         color: 'blue',
-                                                        textAlign: 'center',
+                                                        textAlign: 'left',
 
                                                         textDecoration:
                                                             'underline',
@@ -342,6 +334,7 @@ const FreeBoard = () => {
                     </div>
 
                     {/* 검색과 페이지네이션을 아래로 이동 */}
+
                     <div
                         style={{
                             marginTop: '40px',
@@ -359,6 +352,15 @@ const FreeBoard = () => {
                                 width: '100%', // 부모 요소에 맞게 전체 너비를 사용
                             }}
                         >
+                            {' '}
+                            <div
+                                style={{
+                                    padding: '0.5rem',
+                                    borderRadius: '4px',
+                                    width: '320px', // 고정된 너비
+                                    marginRight: '20px',
+                                }}
+                            ></div>
                             <input
                                 type='text'
                                 value={searchTerm}
@@ -384,6 +386,31 @@ const FreeBoard = () => {
                             >
                                 검색
                             </button>
+                            <div
+                                style={{
+                                    padding: '0.5rem',
+                                    borderRadius: '4px',
+                                    width: '220px', // 고정된 너비
+                                    marginRight: '20px',
+                                }}
+                            ></div>
+                            {/* 글 작성하기 버튼 시작 */}
+                            {
+                                <button
+                                    type='button'
+                                    className='bg-pink-300 text-white hover:bg-pink-400 transition-colors flex items-center justify-center border-2 border-black'
+                                    onClick={handleWriteClick}
+                                    style={{
+                                        padding: '0.5rem',
+                                        borderRadius: '4px',
+                                        border: '1px solid #ddd',
+                                        width: '140px', // 고정된 너비
+                                    }}
+                                >
+                                    글쓰기
+                                </button>
+                            }
+                            {/* 글 작성하기 버튼 끝 */}
                         </div>
 
                         {/* 페이지네이션 */}
@@ -430,6 +457,31 @@ const FreeBoard = () => {
                         </div>
                     </div>
                 </div>
+                {/* 페이지 상단으로 이동하는 버튼 */}
+                <button
+                    onClick={scrollToTop}
+                    style={{
+                        color: '#ffffff',
+                        backgroundColor: '#000000',
+                        position: 'fixed',
+                        bottom: 50,
+                        right: 50,
+                        width: 80,
+                        height: 80,
+                        borderRadius: 40,
+                        zIndex: 10,
+                        border: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                    }}
+                >
+                    <FaArrowUp
+                        size={24}
+                        color='#ffffff'
+                    />
+                </button>
             </div>
         </main>
     );
