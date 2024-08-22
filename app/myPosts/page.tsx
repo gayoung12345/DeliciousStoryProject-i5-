@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebaseConfig';
+import TopBar from '@/components/Topbar';
 
 interface Post {
     id: string;
@@ -91,6 +92,9 @@ const MyPosts = () => {
 
     return (
         <main className='p-6'>
+
+<TopBar />
+
             <h1 className='text-3xl font-bold mb-6 text-center' style={{ marginTop: '40px' }}>내 게시글</h1>
 
             {searchResults.length > 0 ? (

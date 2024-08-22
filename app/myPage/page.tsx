@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../../lib/firebaseConfig';
 import { onAuthStateChanged, updatePassword } from 'firebase/auth';
-import Link from 'next/link';
 import { FaPen, FaComment, FaThumbsUp } from 'react-icons/fa';
+import TopBar from '@/components/Topbar';
 
 function MyPage() {
     const [formData, setFormData] = useState({
@@ -76,15 +76,10 @@ function MyPage() {
     }
 
     return (
-        <main
-            className='flex flex-col items-center justify-center p-4'
-            style={{ marginTop: '60px' }}
-        >
+        <main className='p-6'>
+            <TopBar /> {/* Add the TopBar component */}
 
-            
             <div className='flex flex-col space-y-4'>
-                
-                {/* 상단고정바 */}
                 <h1
                     className='text-2xl font-bold mb-6'
                     style={{
@@ -94,92 +89,7 @@ function MyPage() {
                 >
                     회원정보 확인/수정하기
                 </h1>
-
-                {/* 상단 버튼들 추가 */}
-                <div
-                    className='flex justify-center mb-8'
-                    style={{ marginTop: '60px', marginBottom: '20px' }}
-                >
-                    <Link href='/myPosts'>
-                        <span
-                            className='flex items-center px-16 py-2 text-center font-normal'
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                border: '1px solid #383838',
-                                backgroundColor: '#fff',
-                                color: '#333',
-                                transition: 'background-color 0.3s, color 0.3s',
-                                borderRight: 'none',
-                            }}
-                            onMouseEnter={(e) =>
-                                (e.currentTarget.style.backgroundColor =
-                                    '#E5E7EB')
-                            }
-                            onMouseLeave={(e) =>
-                                (e.currentTarget.style.backgroundColor = '#fff')
-                            }
-                        >
-                            <FaPen
-                                style={{ color: '#333', marginRight: '8px' }}
-                            />
-                            작성글
-                        </span>
-                    </Link>
-                    <Link href='/myComments'>
-                        <span
-                            className='flex items-center px-16 py-2 text-center font-normal'
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                border: '1px solid #383838',
-                                backgroundColor: '#fff',
-                                color: '#333',
-                                transition: 'background-color 0.3s, color 0.3s',
-                                borderRight: 'none',
-                            }}
-                            onMouseEnter={(e) =>
-                                (e.currentTarget.style.backgroundColor =
-                                    '#E5E7EB')
-                            }
-                            onMouseLeave={(e) =>
-                                (e.currentTarget.style.backgroundColor = '#fff')
-                            }
-                        >
-                            <FaComment
-                                style={{ color: '#333', marginRight: '8px' }}
-                            />
-                            댓글
-                        </span>
-                    </Link>
-                    <Link href='/myLikes'>
-                        <span
-                            className='flex items-center px-16 py-2 text-center font-normal'
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                border: '1px solid #383838',
-                                backgroundColor: '#fff',
-                                color: '#333',
-                                transition: 'background-color 0.3s, color 0.3s',
-                            }}
-                            onMouseEnter={(e) =>
-                                (e.currentTarget.style.backgroundColor =
-                                    '#E5E7EB')
-                            }
-                            onMouseLeave={(e) =>
-                                (e.currentTarget.style.backgroundColor = '#fff')
-                            }
-                        >
-                            <FaThumbsUp
-                                style={{ color: '#333', marginRight: '8px' }}
-                            />
-                            좋아요
-                        </span>
-                    </Link>
-                </div>
-                {/* 상단고정바 끝 */}
-
+                <div className='mx-auto' style={{ width:'45%', marginTop: '60px', marginBottom: '20px' }}>
                 <hr className='h-px my-8 bg-gray-300 border-0 dark:bg-gray-700'></hr>
 
                 {error && <p className='text-red-500 text-center'>{error}</p>}
@@ -246,6 +156,8 @@ function MyPage() {
                         수정하기
                     </button>
                 </form>
+                </div>
+
             </div>
         </main>
     );
