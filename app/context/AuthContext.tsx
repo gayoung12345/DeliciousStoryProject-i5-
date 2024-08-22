@@ -8,6 +8,7 @@ import { onAuthStateChanged, User } from 'firebase/auth'; // Firebase의 인증 
 // AuthContext에서 사용할 타입을 정의, user는 Firebase의 User 객체이거나 null일 수 있음
 interface AuthContextType {
     user: User | null;
+    loading: boolean;
 }
 
 // AuthContext 생성, 초기값은 undefined로 설정
@@ -20,12 +21,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     // user 상태를 관리하는 useState 훅, 초기값은 null
     const [user, setUser] = useState<User | null>(null);
 
+    // loading
+    const [loading, setLoading] = useState(true); // 초기 상태는 true로 설정
+
     // 컴포넌트가 마운트될 때 Firebase의 인증 상태를 확인하고 user 상태를 업데이트
     useEffect(() => {
         // onAuthStateChanged는 인증 상태가 변경될 때 호출되는 Firebase 함수
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             // 상태 변경 시 user 값을 업데이트
             setUser(user);
+            setLoading(false); // 인증 상태가 변경된 후 로딩 완료
         });
 
         // 컴포넌트가 언마운트될 때 구독을 해제함으로써 메모리 누수를 방지
@@ -34,8 +39,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // AuthContext.Provider를 통해 하위 컴포넌트에 user 상태를 제공
     return (
-        <AuthContext.Provider value={{ user }}>
-            {children} {/* AuthProvider의 하위 컴포넌트들이 children으로 전달됨 */}
+        <AuthContext.Provider value={{ user, loading }}>
+            {children}
+            {/* AuthProvider의 하위 컴포넌트들이 children으로 전달됨 */}
         </AuthContext.Provider>
     );
 };
