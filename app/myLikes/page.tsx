@@ -7,6 +7,7 @@ import { db } from '../../lib/firebaseConfig';
 import xml2js from 'xml2js'; // XML 데이터를 파싱하기 위한 라이브러리
 import debounce from 'lodash/debounce';
 import Image from 'next/image'; // Next.js Image 컴포넌트 import
+import { useRouter } from 'next/navigation';
 
 // 타입 정의
 interface Recipe {
@@ -33,6 +34,7 @@ const MyLikes = () => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [searchResults, setSearchResults] = useState<Recipe[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchLikedRecipes = async () => {
@@ -97,7 +99,7 @@ const MyLikes = () => {
     };
 
     if (loading) {
-        return <div className='text-center p-4'>Loading...</div>;
+        return <div className='spinner'></div>;
     }
 
     return (
@@ -116,16 +118,20 @@ const MyLikes = () => {
                             <li
                                 key={recipe.id}
                                 className='flex flex-col items-center m-4'
+                                onClick={() =>
+                                    router.push(`/galleryPost?id=${recipe.id}`)
+                                } // 이미지 클릭 시 페이지 이동
                             >
                                 <Image
                                     src={recipe.image} // 기본 이미지 설정
                                     alt={recipe.name}
                                     width={300} // 이미지의 너비 설정
                                     height={200} // 이미지의 높이 설정
-                                    className='rounded-lg mb-2'
+                                    className='rounded-lg mb-2 cursor-pointer' // 이미지에 포인터 커서 추가
                                     onError={(e) => {
                                         // 이미지 로드 오류 시 기본 이미지로 변경
-                                        (e.target as HTMLImageElement).src = '/svg/logo.svg';
+                                        (e.target as HTMLImageElement).src =
+                                            '/svg/logo.svg';
                                     }}
                                 />
                                 <div className='text-center'>
