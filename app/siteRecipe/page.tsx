@@ -177,6 +177,7 @@ const SiteRecipe = () => {
             {/* 레시피 그리드 컨테이너 */}
             <Box
                 style={{
+                    position: 'relative',
                     padding: '16px',
                     display: 'flex',
                     justifyContent: 'center',
@@ -277,14 +278,9 @@ const SiteRecipe = () => {
                             </Box>
                         ))
                     ) : (
-                        <Text
-                            style={{
-                                fontSize: '16px',
-                                textAlign: 'center',
-                            }}
-                        >
-                            레시피가 없습니다.
-                        </Text>
+                        // 얘가 가운데서 돌 도록 수정
+                        <div className='spinner'></div>
+                        // 게시글이 없을 때 메시지 표시
                     )}
                 </Grid>
             </Box>

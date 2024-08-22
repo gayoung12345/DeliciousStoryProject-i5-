@@ -329,7 +329,8 @@ const FreeBoard = () => {
                                 </table>
                             </>
                         ) : (
-                            <p>작성된 글이 없습니다.</p> // 게시글이 없을 때 메시지 표시
+                            <div className='spinner'></div>
+                            // 게시글이 없을 때 메시지 표시
                         )}
                     </div>
 
