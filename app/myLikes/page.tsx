@@ -8,6 +8,7 @@ import xml2js from 'xml2js'; // XML 데이터를 파싱하기 위한 라이브�
 import debounce from 'lodash/debounce';
 import Image from 'next/image'; // Next.js Image 컴포넌트 import
 import { useRouter } from 'next/navigation';
+import TopBar from '@/components/Topbar';
 
 // 타입 정의
 interface Recipe {
@@ -104,6 +105,7 @@ const MyLikes = () => {
 
     return (
         <div className='p-6'>
+            <TopBar />
             <h1
                 className='text-3xl font-bold mb-6 text-center'
                 style={{ marginTop: '40px' }}
