@@ -55,6 +55,7 @@ const ImageUploader = () => {
                         src={src}
                         alt={`Preview ${index}`}
                         className='w-52 h-52 object-cover border border-gray-300 rounded'
+                        width={400}
                     />
                 ))}
             </div>

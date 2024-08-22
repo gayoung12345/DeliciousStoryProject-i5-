@@ -63,6 +63,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ id, onImageSelected }) => {
                             top: '0',
                             left: '0',
                         }}
+                        width={400}
+                        height={400}
                     />
                 ) : (
                     <span
