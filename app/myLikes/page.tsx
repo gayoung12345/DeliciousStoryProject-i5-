@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebaseConfig';
 import xml2js from 'xml2js'; // XML 데이터를 파싱하기 위한 라이브러리
+import debounce from 'lodash/debounce';
 
 const MyLikes = () => {
     const { user } = useAuth();
@@ -53,8 +54,8 @@ const MyLikes = () => {
         fetchLikedRecipes();
     }, [user]);
 
-    const handleSearch = (term) => {
-        setSearchTerm(term);
+    // 디바운싱된 검색 함수
+    const debouncedSearch = debounce((term) => {
         if (term) {
             const filteredRecipes = likedRecipes.filter(
                 (recipe) =>
@@ -65,35 +66,59 @@ const MyLikes = () => {
         } else {
             setSearchResults(likedRecipes);
         }
+    }, 300); // 300ms 디바운싱 시간
+
+    // 검색어로 필터링
+    const handleSearch = () => {
+        debouncedSearch(searchTerm);
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className='text-center p-4'>Loading...</div>;
     }
 
     return (
-        <div>
-            <h1>My Liked Recipes</h1>
-            <input
-                type='text'
-                value={searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
-                placeholder='Search in liked recipes...'
-            />
+        <div className='p-6'>
+            <h1 className='text-3xl font-bold mb-6 text-center' style={{ marginTop: '40px' }}>좋아요 리스트</h1>
+            
             {searchResults.length > 0 ? (
-                <ul>
-                    {searchResults.map((recipe) => (
-                        <li key={recipe.id}>
-                            <img src={recipe.image} alt={recipe.name} width="100" />
-                            <div>
-                                <h2>{recipe.name}</h2>
-                                <p>{recipe.ingredients}</p>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+                <div style={{ marginTop: '60px', marginBottom: '20px' }}>
+                    <ul className='flex flex-wrap justify-center'>
+                        {searchResults.map((recipe) => (
+                            <li key={recipe.id} className='flex flex-col items-center m-4'>
+                                <img src={recipe.image} alt={recipe.name} width="150" className='rounded-lg mb-2' />
+                                <div className='text-center'>
+                                    <h2 className='text-lg font-semibold'>{recipe.name}</h2>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <div className='flex justify-center mb-6 space-x-1' style={{ marginTop: '40px', marginBottom: '30px' }}>
+                        <input
+                            type='text'
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder='검색어를 입력하세요...'
+                            style={{
+                                padding: '8px',
+                                borderRadius: '4px',
+                                border: '1px solid #ddd',
+                                width: '400px',
+                                marginRight: '4px', // 검색 버튼과의 간격 조정
+                            }}
+                        />
+                        <button
+                            onClick={handleSearch} // Ensure button click triggers search
+                            type='button'
+                            className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600'
+                        >
+                            검색
+                        </button>
+                    </div>
+                </div>
             ) : (
-                <p>No liked recipes found.</p>
+                <p className='text-center text-gray-600'>No liked recipes found.</p>
             )}
         </div>
     );

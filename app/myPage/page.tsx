@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { auth } from '../../lib/firebaseConfig'; // Firebase 설정 파일 경로에 맞게 수정하세요
+import { auth } from '../../lib/firebaseConfig';
 import { onAuthStateChanged, updatePassword } from 'firebase/auth';
-import Link from 'next/link'; // 페이지 이동을 위한 Link 임포트
+import Link from 'next/link';
+import { FaPen, FaComment, FaThumbsUp } from 'react-icons/fa';
 
 function MyPage() {
     const [formData, setFormData] = useState({
-        username: '', // 이메일이 들어갈 부분
+        username: '',
         password: '',
         confirmPassword: '',
     });
@@ -68,36 +69,80 @@ function MyPage() {
     }
 
     return (
-        <main className='flex flex-col items-center justify-center h-screen p-4'>
-            <div className='w-full max-w-2xl flex flex-col space-y-4'>
+        <main className='flex flex-col items-center justify-center p-4' style={{ marginTop: '60px' }}>
+            <div className='flex flex-col space-y-4'>
+                <h1
+                    className='text-2xl font-bold mb-6'
+                    style={{
+                        textAlign: 'center',
+                        marginBottom: '16px',
+                    }}>
+                    회원정보 확인/수정하기
+                </h1>
+
                 {/* 상단 버튼들 추가 */}
-                <div className='flex justify-center space-x-4 mb-6'>
+                <div className='flex justify-center mb-8' style={{ marginTop: '60px', marginBottom: '20px' }}>
                     <Link href='/myPosts'>
-                        <span className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer'>
-                            내가 작성한 글
+                        <span className='flex items-center px-16 py-2 text-center font-normal' style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            border: '1px solid #383838',
+                            backgroundColor: '#fff',
+                            color: '#333',
+                            transition: 'background-color 0.3s, color 0.3s',
+                            borderRight: 'none'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#E5E7EB'}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fff'}
+                        >
+                            <FaPen style={{ color: '#333', marginRight: '8px' }} />
+                            작성글
                         </span>
                     </Link>
                     <Link href='/myComments'>
-                        <span className='bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 cursor-pointer'>
-                            내가 작성한 댓글
+                        <span className='flex items-center px-16 py-2 text-center font-normal' style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            border: '1px solid #383838',
+                            backgroundColor: '#fff',
+                            color: '#333',
+                            transition: 'background-color 0.3s, color 0.3s',
+                            borderRight: 'none'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#E5E7EB'}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fff'}
+                        >
+                            <FaComment style={{ color: '#333', marginRight: '8px' }} />
+                            댓글
                         </span>
                     </Link>
                     <Link href='/myLikes'>
-                        <span className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 cursor-pointer'>
-                            내가 좋아요 누른 게시물
+                        <span className='flex items-center px-16 py-2 text-center font-normal' style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            border: '1px solid #383838',
+                            backgroundColor: '#fff',
+                            color: '#333',
+                            transition: 'background-color 0.3s, color 0.3s'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#E5E7EB'}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fff'}
+                        >
+                            <FaThumbsUp style={{ color: '#333', marginRight: '8px' }} />
+                            좋아요
                         </span>
                     </Link>
                 </div>
+
+                <hr className='h-px my-8 bg-gray-300 border-0 dark:bg-gray-700'></hr>
+
+                {error && (
+                    <p className='text-red-500 text-center'>{error}</p>
+                )}
                 <form
                     onSubmit={handleSubmit}
                     className='w-full flex flex-col space-y-4'
                 >
-                    <p className='text-2xl font-semibold mb-32 text-center'>
-                        회원정보 확인/수정하기
-                    </p>
-                    {error && (
-                        <p className='text-red-500 text-center'>{error}</p>
-                    )}
                     <div className='flex items-center space-x-4'>
                         <label
                             htmlFor='username'
@@ -114,7 +159,7 @@ function MyPage() {
                             className='border border-gray-300 p-2 rounded w-2/3 bg-gray-100 cursor-not-allowed'
                         />
                     </div>
-                    <hr />
+                    <hr className='my-8' />
                     <div className='flex items-center space-x-4'>
                         <label
                             htmlFor='password'
@@ -131,7 +176,7 @@ function MyPage() {
                             className='border border-gray-300 p-2 rounded w-2/3'
                         />
                     </div>
-                    <hr />
+                    <hr className='my-8' />
                     <div className='flex items-center space-x-4'>
                         <label
                             htmlFor='confirmPassword'
@@ -148,10 +193,11 @@ function MyPage() {
                             className='border border-gray-300 p-2 rounded w-2/3'
                         />
                     </div>
-                    <hr />
+                    <hr className='my-8' />
                     <button
                         type='submit'
                         className='bg-orange-400 text-white px-4 py-2 rounded hover:bg-orange-500 w-1/3 mx-auto'
+                        style={{ marginTop: '60px', marginBottom: '40px' }}
                     >
                         수정하기
                     </button>
