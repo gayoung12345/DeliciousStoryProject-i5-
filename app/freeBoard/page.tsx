@@ -267,11 +267,11 @@ const FreeBoard = () => {
                                                             '1px solid #ddd',
                                                         padding: '8px',
                                                         cursor: 'pointer',
-                                                        color: 'blue',
+                                                        color: 'black',
                                                         textAlign: 'left',
 
                                                         textDecoration:
-                                                            'underline',
+                                                            'none',
                                                         whiteSpace: 'nowrap', // 제목이 너무 길면 줄바꿈 없이 표시
                                                         overflow: 'hidden',
                                                         textOverflow:
