@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { CSSProperties, HTMLProps, useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import { useRouter } from 'next/navigation';
@@ -18,6 +18,20 @@ interface Recipe {
     };
     'main-image'?: string; // testRecipe의 필드
 }
+
+// 임시 Grid 컴포넌트 - 그리드 레이아웃을 제공
+interface GridProps extends React.HTMLProps<HTMLDivElement> {
+    children: React.ReactNode; // children의 타입을 React.ReactNode로 명시
+}
+
+const Grid: React.FC<GridProps> = ({ children, style, ...props }) => (
+    <div
+        style={style}
+        {...props}
+    >
+        {children}
+    </div>
+);
 
 const UserRecipe = () => {
     const { user } = useAuth(); // 현재 로그인된 사용자의 정보를 가져옴
@@ -117,139 +131,146 @@ const UserRecipe = () => {
                 </Box>
             </Box>{' '}
             {/* 페이지 상단 제목 끝 */}
-            {/* 글 작성하기 버튼 시작 */}
-            {
-                <button
-                    type='button'
-                    className='bg-orange-400 text-white hover:bg-orange-600 transition-colors flex items-center justify-center border-2 border-black'
-                    onClick={handleWriteClick}
-                    style={{
-                        padding: '0.5rem',
-                        borderRadius: '4px',
-                        border: '1px solid #ddd',
-                        width: '150px', // 고정된 너비
-                        marginLeft: '1330px',
-                    }}
-                >
-                    레시피 등록하기
-                </button>
-            }
-            {/* 글 작성하기 버튼 끝 */}
-            <div className='relative max-w-6xl mx-auto p-4'>
-                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
-                    {recipes.map((recipe) => (
-                        <div
-                            key={recipe.id}
-                            style={{
-                                position: 'relative',
-                                padding: '16px',
-                                backgroundColor: 'white',
-                                cursor: 'pointer',
-                                transition: 'transform 0.3s',
-                                borderRadius: '8px',
-                            }}
-                            onClick={() => handleRecipeClick(recipe.id)}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'scale(1.05)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'scale(1)';
-                            }}
-                        >
-                            <div style={{ position: 'relative' }}>
-                                <Image
-                                    src={
-                                        (recipe.images?.[
-                                            'main-image'
-                                        ] as string) ||
-                                        (recipe['main-image'] as string)
-                                    } // userRecipe와 testRecipe의 구조에 맞게 처리
-                                    alt={recipe.title}
-                                    style={{
-                                        width: '100%',
-                                        height: '200px',
-                                        objectFit: 'cover',
-                                        borderRadius: '8px',
-                                    }}
-                                    width={400}
-                                    height={200}
-                                />
-                                <div
-                                    style={{
-                                        position: 'absolute',
-                                        top: 0,
-                                        left: 0,
-                                        right: 0,
-                                        bottom: 0,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                                        color: 'white',
-                                        opacity: 0,
-                                        transition: 'opacity 0.3s',
-                                        borderRadius: '8px',
-                                        cursor: 'pointer',
-                                    }}
-                                    onClick={() => handleRecipeClick(recipe.id)}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.opacity = '1';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.opacity = '0';
-                                    }}
-                                >
-                                    <span
-                                        style={{
-                                            fontSize: '18px',
-                                            fontWeight: 'bold',
-                                        }}
-                                    >
-                                        상세 보기
-                                    </span>
-                                </div>
-                            </div>
-                            <h2
+            <Grid>
+                {/* 글 작성하기 버튼 시작 */}
+                {
+                    <button
+                        type='button'
+                        className='bg-orange-400 text-white hover:bg-orange-600 transition-colors flex items-center justify-center border-2 border-black'
+                        onClick={handleWriteClick}
+                        style={{
+                            padding: '0.5rem',
+                            borderRadius: '4px',
+                            border: '1px solid #ddd',
+                            width: '150px', // 고정된 너비
+                            marginLeft: '1330px',
+                        }}
+                    >
+                        레시피 등록하기
+                    </button>
+                }
+                {/* 글 작성하기 버튼 끝 */}
+                <div className='relative max-w-6xl mx-auto p-4'>
+                    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
+                        {recipes.map((recipe) => (
+                            <div
+                                key={recipe.id}
                                 style={{
-                                    fontSize: '14px',
-                                    fontWeight: 'bold',
-                                    marginTop: '8px',
-                                    textAlign: 'center',
+                                    position: 'relative',
+                                    padding: '16px',
+                                    backgroundColor: 'white',
+                                    cursor: 'pointer',
+                                    transition: 'transform 0.3s',
+                                    borderRadius: '8px',
+                                }}
+                                onClick={() => handleRecipeClick(recipe.id)}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform =
+                                        'scale(1.05)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform =
+                                        'scale(1)';
                                 }}
                             >
-                                {recipe.title}
-                            </h2>
-                        </div>
-                    ))}
+                                <div style={{ position: 'relative' }}>
+                                    <Image
+                                        src={
+                                            (recipe.images?.[
+                                                'main-image'
+                                            ] as string) ||
+                                            (recipe['main-image'] as string)
+                                        } // userRecipe와 testRecipe의 구조에 맞게 처리
+                                        alt={recipe.title}
+                                        style={{
+                                            width: '100%',
+                                            height: '200px',
+                                            objectFit: 'cover',
+                                            borderRadius: '8px',
+                                        }}
+                                        width={400}
+                                        height={200}
+                                    />
+                                    <div
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            backgroundColor:
+                                                'rgba(0, 0, 0, 0.6)',
+                                            color: 'white',
+                                            opacity: 0,
+                                            transition: 'opacity 0.3s',
+                                            borderRadius: '8px',
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() =>
+                                            handleRecipeClick(recipe.id)
+                                        }
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.opacity = '1';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.opacity = '0';
+                                        }}
+                                    >
+                                        <span
+                                            style={{
+                                                fontSize: '18px',
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            상세 보기
+                                        </span>
+                                    </div>
+                                </div>
+                                <h2
+                                    style={{
+                                        fontSize: '14px',
+                                        fontWeight: 'bold',
+                                        marginTop: '8px',
+                                        textAlign: 'center',
+                                    }}
+                                >
+                                    {recipe.title}
+                                </h2>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
-            <div className='fixed right-8 bottom-80 md:right-12 md:bottom-80 z-10'>
-                {/* 페이지 상단으로 이동하는 버튼 */}
-                <button
-                    onClick={scrollToTop}
-                    style={{
-                        color: '#ffffff',
-                        backgroundColor: '#000000',
-                        position: 'fixed',
-                        bottom: 50,
-                        right: 50,
-                        width: 80,
-                        height: 80,
-                        borderRadius: 40,
-                        zIndex: 10,
-                        border: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                    }}
-                >
-                    <FaArrowUp
-                        size={24}
-                        color='#ffffff'
-                    />
-                </button>
-            </div>
+                <div className='fixed right-8 bottom-80 md:right-12 md:bottom-80 z-10'>
+                    {/* 페이지 상단으로 이동하는 버튼 */}
+                    <button
+                        onClick={scrollToTop}
+                        style={{
+                            color: '#ffffff',
+                            backgroundColor: '#000000',
+                            position: 'fixed',
+                            bottom: 50,
+                            right: 50,
+                            width: 80,
+                            height: 80,
+                            borderRadius: 40,
+                            zIndex: 10,
+                            border: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        <FaArrowUp
+                            size={24}
+                            color='#ffffff'
+                        />
+                    </button>
+                </div>
+            </Grid>
         </main>
     );
 };

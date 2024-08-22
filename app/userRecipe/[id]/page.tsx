@@ -318,7 +318,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
         }
     };
 
-    if (!recipe) return <div>Loading...</div>;
+    if (!recipe) return <div className='spinner'></div>;
 
     return (
         <main

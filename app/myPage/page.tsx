@@ -72,7 +72,7 @@ function MyPage() {
     };
 
     if (loading) {
-        return <div>로딩 중...</div>;
+        return <div className='spinner'></div>;
     }
 
     return (
