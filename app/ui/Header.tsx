@@ -167,32 +167,24 @@ const Header = () => {
                         </button>
                     </>
                 ) : (
-                    !authLoading && ( // 인증 상태가 로딩 중이 아닌 경우에만 렌더링
-                        <>
-                            <button
-                                onClick={() => handleMenuClick('/login')}
-                                onMouseEnter={() => speakText('로그인')}
-                                className='block butt'
-                                style={{
-                                    fontSize: '18px',
-                                    width: 'max-content',
-                                }}
-                            >
-                                로그인
-                            </button>
-                            <button
-                                onClick={() => handleMenuClick('/signup')}
-                                onMouseEnter={() => speakText('회원가입')}
-                                className='block butt'
-                                style={{
-                                    fontSize: '18px',
-                                    width: 'max-content',
-                                }}
-                            >
-                                회원가입
-                            </button>
-                        </>
-                    )
+                    <>
+                        <button
+                            onClick={() => handleMenuClick('/signup')}
+                            onMouseEnter={() => speakText('회원가입')}
+                            className='block butt'
+                            style={{ fontSize: '18px', width: 'max-content' }}
+                        >
+                            회원가입
+                        </button>
+                        <button
+                            onClick={() => handleMenuClick('/login')}
+                            onMouseEnter={() => speakText('로그인')}
+                            className='block butt'
+                            style={{ fontSize: '18px', width: 'max-content' }}
+                        >
+                            로그인
+                        </button>
+                    </>
                 )}
             </div>
             <div className='relative flex-grow flex justify-center'>
@@ -328,18 +320,18 @@ const Header = () => {
                         ) : (
                             <>
                                 <button
-                                    onClick={() => handleMenuClick('/login')}
-                                    className='block butt'
-                                    style={{ margin: '5px' }}
-                                >
-                                    로그인
-                                </button>
-                                <button
                                     onClick={() => handleMenuClick('/signup')}
                                     className='block butt'
                                     style={{ margin: '5px' }}
                                 >
                                     회원가입
+                                </button>
+                                <button
+                                    onClick={() => handleMenuClick('/login')}
+                                    className='block butt'
+                                    style={{ margin: '5px' }}
+                                >
+                                    로그인
                                 </button>
                             </>
                         )}
