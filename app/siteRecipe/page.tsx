@@ -176,114 +176,116 @@ const SiteRecipe = () => {
             {/* 페이지 상단 제목 끝 */}
             {/* 레시피 그리드 컨테이너 */}
             <Box
-                style={{
-                    position: 'relative',
-                    padding: '16px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                }}
-            >
-                <Grid
+    style={{
+        position: 'relative',
+        padding: '16px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center', // 수직 중앙 정렬 추가
+        minHeight: '200px', // 충분한 높이 확보
+    }}
+>
+    {currentRecipes.length > 0 ? (
+        <Grid
+            style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                gap: '14px',
+                marginBottom: '24px',
+                maxWidth: '1000px',
+                width: '100%',
+            }}
+        >
+            {currentRecipes.map((recipe: any) => (
+                <Box
+                    key={recipe.id}
                     style={{
-                        display: 'grid',
-                        gridTemplateColumns:
-                            'repeat(auto-fill, minmax(200px, 1fr))',
-                        gap: '14px',
-                        marginBottom: '24px',
-                        maxWidth: '1000px',
-                        width: '100%',
+                        position: 'relative',
+                        padding: '16px',
+                        backgroundColor: 'white',
+                        cursor: 'pointer',
                     }}
+                    onClick={() => handleImageClick(recipe.id)}
                 >
-                    {/* 레시피 목록이 있는 경우 */}
-                    {currentRecipes.length > 0 ? (
-                        currentRecipes.map((recipe: any) => (
-                            <Box
-                                key={recipe.id}
+                    <Box style={{ position: 'relative' }}>
+                        <Image
+                            src={recipe.image}
+                            alt={recipe.name}
+                            width={250}
+                            height={250}
+                            style={{ borderRadius: '4px' }}
+                        />
+                        <Box
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                                color: 'white',
+                                opacity: 0,
+                                transition: 'opacity 0.3s',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => handleImageClick(recipe.id)}
+                            onMouseEnter={(e: any) => {
+                                e.currentTarget.style.opacity = '1';
+                            }}
+                            onMouseLeave={(e: any) => {
+                                e.currentTarget.style.opacity = '0';
+                            }}
+                        >
+                            <Text
                                 style={{
-                                    position: 'relative',
-                                    // border: '1px solid #ddd',
-                                    // borderRadius: '8px',
-                                    padding: '16px',
-                                    backgroundColor: 'white',
-                                    // boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                                    cursor: 'pointer',
+                                    fontSize: '18px',
+                                    fontWeight: 'bold',
                                 }}
-                                onClick={() => handleImageClick(recipe.id)}
                             >
-                                <Box style={{ position: 'relative' }}>
-                                    <Image
-                                        src={recipe.image}
-                                        alt={recipe.name}
-                                        width={250}
-                                        height={250}
-                                        style={{ borderRadius: '4px' }}
-                                    />
-                                    <Box
-                                        style={{
-                                            position: 'absolute',
-                                            top: 0,
-                                            left: 0,
-                                            right: 0,
-                                            bottom: 0,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            backgroundColor:
-                                                'rgba(0, 0, 0, 0.6)',
-                                            color: 'white',
-                                            opacity: 0,
-                                            transition: 'opacity 0.3s',
-                                            borderRadius: '8px',
-                                            cursor: 'pointer',
-                                        }}
-                                        onClick={() =>
-                                            handleImageClick(recipe.id)
-                                        }
-                                        onMouseEnter={(e: any) => {
-                                            e.currentTarget.style.opacity = '1';
-                                        }}
-                                        onMouseLeave={(e: any) => {
-                                            e.currentTarget.style.opacity = '0';
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                fontSize: '18px',
-                                                fontWeight: 'bold',
-                                            }}
-                                        >
-                                            상세 보기
-                                        </Text>
-                                    </Box>
-                                </Box>
-                                <Text
-                                    style={{
-                                        fontSize: '12px',
-                                        marginTop: '8px',
-                                        color: '#8C8C8C',
-                                    }}
-                                >
-                                    {recipe.calories} kcal
-                                </Text>
-                                <Text
-                                    style={{
-                                        fontSize: '14px',
-                                        fontWeight: 'bold',
-                                        marginTop: '2px',
-                                        // textAlign: 'center',
-                                    }}
-                                >
-                                    {recipe.name}
-                                </Text>
-                            </Box>
-                        ))
-                    ) : (
-                        // 얘가 가운데서 돌 도록 수정
-                        <div className='spinner'></div>
-                        // 게시글이 없을 때 메시지 표시
-                    )}
-                </Grid>
-            </Box>
+                                상세 보기
+                            </Text>
+                        </Box>
+                    </Box>
+                    <Text
+                        style={{
+                            fontSize: '12px',
+                            marginTop: '8px',
+                            color: '#8C8C8C',
+                        }}
+                    >
+                        {recipe.calories} kcal
+                    </Text>
+                    <Text
+                        style={{
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            marginTop: '2px',
+                        }}
+                    >
+                        {recipe.name}
+                    </Text>
+                </Box>
+            ))}
+        </Grid>
+    ) : (
+        <div
+            style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                height: '100%', // 또는 원하는 높이 설정
+            }}
+        >
+            <div className='spinner'></div>
+        </div>
+    )}
+</Box>
+
             {/* 페이지 상단으로 이동하는 버튼 */}
             <button
                 onClick={scrollToTop}

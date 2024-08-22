@@ -1,6 +1,6 @@
 'use client';
 
-import React, { CSSProperties, HTMLProps, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import { useRouter } from 'next/navigation';
@@ -39,7 +39,9 @@ const UserRecipe = () => {
 
     useEffect(() => {
         const fetchRecipes = async () => {
+
             setLoading(true);
+
             const userRecipeSnapshot = await getDocs(
                 collection(db, 'userRecipe')
             );
@@ -62,7 +64,8 @@ const UserRecipe = () => {
             });
 
             setRecipes(fetchedRecipes);
-            setLoading(false);
+            setLoading(false); // 로딩 종료
+
         };
 
         fetchRecipes();
@@ -72,7 +75,7 @@ const UserRecipe = () => {
         router.push(`/userRecipe/${id}`);
     };
 
-    const handleWriteRecipeClick = () => {
+    const handleWriteClick = () => {
         if (user) {
             router.push('/recipeWrite');
         } else {
@@ -87,6 +90,7 @@ const UserRecipe = () => {
             behavior: 'smooth',
         });
     };
+
 
     const handleWriteClick = () => {
         router.push('/recipeWrite');
@@ -148,7 +152,6 @@ const UserRecipe = () => {
                 >
                     레시피 등록하기
                 </button>
-
                 {loading ? (
                     <div className='spinner'></div>
                 ) : (
@@ -169,7 +172,9 @@ const UserRecipe = () => {
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.transform =
                                             'scale(1.05)';
+
                                         speakText(recipe.title); // Trigger TTS when hovering
+
                                     }}
                                     onMouseLeave={(e) => {
                                         e.currentTarget.style.transform =
@@ -216,12 +221,14 @@ const UserRecipe = () => {
                                                 handleRecipeClick(recipe.id)
                                             }
                                             onMouseEnter={(e) => {
+
                                                 e.currentTarget.style.opacity =
                                                     '1';
                                             }}
                                             onMouseLeave={(e) => {
                                                 e.currentTarget.style.opacity =
                                                     '0';
+
                                             }}
                                         >
                                             <span
@@ -247,8 +254,8 @@ const UserRecipe = () => {
                                 </div>
                             ))}
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
 
                 <div className='fixed right-8 bottom-80 md:right-12 md:bottom-80 z-10'>
                     <button
