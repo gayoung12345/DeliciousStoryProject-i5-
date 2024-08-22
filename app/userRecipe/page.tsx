@@ -4,9 +4,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import { useRouter } from 'next/navigation';
 import { FaArrowUp } from 'react-icons/fa';
-import { FaArrowUp } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
-import Image from 'next/image';
 import Image from 'next/image';
 import { Box } from '@/components/ui/box/index.web';
 interface Recipe {
@@ -30,9 +28,7 @@ const Grid: React.FC<GridProps> = ({ children, style, ...props }) => (
 );
 const UserRecipe = () => {
     const { user } = useAuth();
-    const { user } = useAuth();
     const [recipes, setRecipes] = useState<Recipe[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(true);
     const router = useRouter();
     useEffect(() => {
@@ -135,10 +131,6 @@ const UserRecipe = () => {
                 >
                     레시피 등록하기
                 </button>
-                {loading ? (
-                    <div className='spinner'></div>
-                ) : (
-                    <div className='relative max-w-6xl mx-auto p-4'>
                 {loading ? (
                     <div className='spinner'></div>
                 ) : (
