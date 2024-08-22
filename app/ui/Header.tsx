@@ -169,20 +169,20 @@ const Header = () => {
                 ) : (
                     <>
                         <button
-                            onClick={() => handleMenuClick('/login')}
-                            onMouseEnter={() => speakText('로그인')}
-                            className='block butt'
-                            style={{ fontSize: '18px', width: 'max-content' }}
-                        >
-                            로그인
-                        </button>
-                        <button
                             onClick={() => handleMenuClick('/signup')}
                             onMouseEnter={() => speakText('회원가입')}
                             className='block butt'
                             style={{ fontSize: '18px', width: 'max-content' }}
                         >
                             회원가입
+                        </button>
+                        <button
+                            onClick={() => handleMenuClick('/login')}
+                            onMouseEnter={() => speakText('로그인')}
+                            className='block butt'
+                            style={{ fontSize: '18px', width: 'max-content' }}
+                        >
+                            로그인
                         </button>
                     </>
                 )}
@@ -320,18 +320,18 @@ const Header = () => {
                         ) : (
                             <>
                                 <button
-                                    onClick={() => handleMenuClick('/login')}
-                                    className='block butt'
-                                    style={{ margin: '5px' }}
-                                >
-                                    로그인
-                                </button>
-                                <button
                                     onClick={() => handleMenuClick('/signup')}
                                     className='block butt'
                                     style={{ margin: '5px' }}
                                 >
                                     회원가입
+                                </button>
+                                <button
+                                    onClick={() => handleMenuClick('/login')}
+                                    className='block butt'
+                                    style={{ margin: '5px' }}
+                                >
+                                    로그인
                                 </button>
                             </>
                         )}

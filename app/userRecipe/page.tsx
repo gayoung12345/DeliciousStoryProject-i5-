@@ -1,14 +1,12 @@
 'use client';
-
-import React, { useEffect, useState } from 'react';
+import React, { CSSProperties, HTMLProps, useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../context/AuthContext';
-import Image from 'next/image'; 
-import { Box } from '@/components/ui/box/index.web';
 import { FaArrowUp } from 'react-icons/fa';
-
+import { useAuth } from '../context/AuthContext';
+import Image from 'next/image';
+import { Box } from '@/components/ui/box/index.web';
 interface Recipe {
     id: string;
     title: string;
@@ -17,11 +15,9 @@ interface Recipe {
     };
     'main-image'?: string;
 }
-
 interface GridProps extends React.HTMLProps<HTMLDivElement> {
     children: React.ReactNode;
 }
-
 const Grid: React.FC<GridProps> = ({ children, style, ...props }) => (
     <div
         style={style}
@@ -30,16 +26,14 @@ const Grid: React.FC<GridProps> = ({ children, style, ...props }) => (
         {children}
     </div>
 );
-
 const UserRecipe = () => {
-    const { user } = useAuth(); 
+    const { user } = useAuth();
     const [recipes, setRecipes] = useState<Recipe[]>([]);
-    const [loading, setLoading] = useState<boolean>(true); // 추가된 로딩 상태
+    const [loading, setLoading] = useState<boolean>(true);
     const router = useRouter();
-
     useEffect(() => {
         const fetchRecipes = async () => {
-            setLoading(true); // 로딩 시작
+            setLoading(true);
             const userRecipeSnapshot = await getDocs(
                 collection(db, 'userRecipe')
             );
@@ -47,11 +41,9 @@ const UserRecipe = () => {
                 collection(db, 'testRecipe')
             );
             const fetchedRecipes: Recipe[] = [];
-
             userRecipeSnapshot.forEach((doc) => {
                 fetchedRecipes.push({ id: doc.id, ...doc.data() } as Recipe);
             });
-
             testRecipeSnapshot.forEach((doc) => {
                 const data = doc.data();
                 fetchedRecipes.push({
@@ -60,19 +52,15 @@ const UserRecipe = () => {
                     'main-image': data['main-image'],
                 } as Recipe);
             });
-
             setRecipes(fetchedRecipes);
-            setLoading(false); // 로딩 종료
+            setLoading(false);
         };
-
         fetchRecipes();
     }, []);
-
     const handleRecipeClick = (id: string) => {
         router.push(`/userRecipe/${id}`);
     };
-
-    const handleWriteClick = () => {
+    const handleWriteRecipeClick = () => {
         if (user) {
             router.push('/recipeWrite');
         } else {
@@ -80,14 +68,20 @@ const UserRecipe = () => {
             router.push('/login');
         }
     };
-
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
             behavior: 'smooth',
         });
     };
-
+    const handleWriteClick = () => {
+        router.push('/recipeWrite');
+    };
+    // Function to handle Text-to-Speech
+    const speakText = (text: string) => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        speechSynthesis.speak(utterance);
+    };
     return (
         <main>
             <Box
@@ -122,7 +116,6 @@ const UserRecipe = () => {
                     레시피 갤러리
                 </Box>
             </Box>
-
             <Grid>
                 <button
                     type='button'
@@ -138,21 +131,10 @@ const UserRecipe = () => {
                 >
                     레시피 등록하기
                 </button>
-
-                <div className='relative max-w-6xl mx-auto p-4'>
-                    {loading ? (
-                        <div
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                width: '100%',
-                                height: '100%',
-                            }}
-                        >
-                            <div className='spinner'></div>
-                        </div>
-                    ) : (
+                {loading ? (
+                    <div className='spinner'></div>
+                ) : (
+                    <div className='relative max-w-6xl mx-auto p-4'>
                         <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
                             {recipes.map((recipe) => (
                                 <div
@@ -169,6 +151,7 @@ const UserRecipe = () => {
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.transform =
                                             'scale(1.05)';
+                                        speakText(recipe.title); // Trigger TTS when hovering
                                     }}
                                     onMouseLeave={(e) => {
                                         e.currentTarget.style.transform =
@@ -215,10 +198,12 @@ const UserRecipe = () => {
                                                 handleRecipeClick(recipe.id)
                                             }
                                             onMouseEnter={(e) => {
-                                                e.currentTarget.style.opacity = '1';
+                                                e.currentTarget.style.opacity =
+                                                    '1';
                                             }}
                                             onMouseLeave={(e) => {
-                                                e.currentTarget.style.opacity = '0';
+                                                e.currentTarget.style.opacity =
+                                                    '0';
                                             }}
                                         >
                                             <span
@@ -244,13 +229,13 @@ const UserRecipe = () => {
                                 </div>
                             ))}
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
                 <div className='fixed right-8 bottom-80 md:right-12 md:bottom-80 z-10'>
                     <button
                         onClick={scrollToTop}
                         style={{
-                            color: '#ffffff',
+                            color: '#FFFFFF',
                             backgroundColor: '#000000',
                             position: 'fixed',
                             bottom: 50,
@@ -268,7 +253,7 @@ const UserRecipe = () => {
                     >
                         <FaArrowUp
                             size={24}
-                            color='#ffffff'
+                            color='#FFFFFF'
                         />
                     </button>
                 </div>
@@ -276,5 +261,4 @@ const UserRecipe = () => {
         </main>
     );
 };
-
 export default UserRecipe;

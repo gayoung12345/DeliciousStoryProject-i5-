@@ -80,7 +80,11 @@ function MyPage() {
             className='flex flex-col items-center justify-center p-4'
             style={{ marginTop: '60px' }}
         >
+
+            
             <div className='flex flex-col space-y-4'>
+                
+                {/* 상단고정바 */}
                 <h1
                     className='text-2xl font-bold mb-6'
                     style={{
@@ -174,6 +178,7 @@ function MyPage() {
                         </span>
                     </Link>
                 </div>
+                {/* 상단고정바 끝 */}
 
                 <hr className='h-px my-8 bg-gray-300 border-0 dark:bg-gray-700'></hr>
 
