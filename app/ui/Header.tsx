@@ -94,7 +94,7 @@ const Header = () => {
             window.speechSynthesis.cancel();
         }
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
+        utterance.lang = 'ko';
         window.speechSynthesis.speak(utterance);
     };
 
@@ -114,72 +114,72 @@ const Header = () => {
             <div className='flex-grow flex items-center justify-center space-x-6 ml-12 hidden xl:flex'>
                 <button
                     onClick={() => handleMenuClick('/')}
-                    onMouseEnter={() => speakText('Home')}
+                    onMouseEnter={() => speakText('홈')}
                     className='button hover:text-orange-400'
                     style={{ fontSize: '18px' }}
                 >
-                    Home
+                    홈
                 </button>
                 <button
                     onClick={() => handleMenuClick('/siteRecipe')}
-                    onMouseEnter={() => speakText('siteRecipe')}
+                    onMouseEnter={() => speakText('공식레시피')}
                     className='button hover:text-orange-400'
                     style={{ fontSize: '18px' }}
                 >
-                    siteRecipe
+                    공식레시피
                 </button>
                 <button
                     onClick={() => handleMenuClick('/userRecipe')}
-                    onMouseEnter={() => speakText('userRecipe')}
+                    onMouseEnter={() => speakText('모두의레시피')}
                     className='button hover:text-orange-400'
                     style={{ fontSize: '18px' }}
                 >
-                    userRecipe
+                    모두의레시피
                 </button>
                 <button
                     onClick={() => handleMenuClick('/freeBoard')}
-                    onMouseEnter={() => speakText('freeBoard')}
+                    onMouseEnter={() => speakText('자유게시판')}
                     className='button hover:text-orange-400'
                     style={{ fontSize: '18px' }}
                 >
-                    freeBoard
+                    자유게시판
                 </button>
                 {user ? (
                     <>
                         <button
                             onClick={() => handleMenuClick('/myPage')}
-                            onMouseEnter={() => speakText('myPage')}
+                            onMouseEnter={() => speakText('마이페이지')}
                             className='button hover:text-orange-400'
                             style={{ fontSize: '18px' }}
                         >
-                            myPage
+                            마이페이지
                         </button>
                         <button
                             onClick={() => handleMenuClick('/logout')}
-                            onMouseEnter={() => speakText('Logout')}
+                            onMouseEnter={() => speakText('로그아웃')}
                             className='button hover:text-orange-400'
                             style={{ fontSize: '18px' }}
                         >
-                            Logout
+                            로그아웃
                         </button>
                     </>
                 ) : (
                     <>
                         <button
                             onClick={() => handleMenuClick('/login')}
-                            onMouseEnter={() => speakText('Login')}
+                            onMouseEnter={() => speakText('로그인')}
                             className='button hover:text-orange-400'
                             style={{ fontSize: '18px' }}
                         >
-                            Login
+                            로그인
                         </button>
                         <button
                             onClick={() => handleMenuClick('/signup')}
-                            onMouseEnter={() => speakText('Sign Up')}
+                            onMouseEnter={() => speakText('회원가입')}
                             className='button hover:text-orange-400'
                             style={{ fontSize: '18px' }}
                         >
-                            Sign Up
+                            회원가입
                         </button>
                     </>
                 )}
@@ -273,25 +273,25 @@ const Header = () => {
                         onClick={() => handleMenuClick('/')}
                         className='block hover:text-orange-400'
                     >
-                        Home
+                        홈
                     </button>
                     <button
                         onClick={() => handleMenuClick('/siteRecipe')}
                         className='block hover:text-orange-400'
                     >
-                        siteRecipe
+                        공식레시피
                     </button>
                     <button
                         onClick={() => handleMenuClick('/userRecipe')}
                         className='block hover:text-orange-400'
                     >
-                        userRecipe
+                        모두의레시피
                     </button>
                     <button
                         onClick={() => handleMenuClick('/freeBoard')}
                         className='block hover:text-orange-400'
                     >
-                        freeBoard
+                        자유게시판
                     </button>
                     {user ? (
                         <>
@@ -299,13 +299,13 @@ const Header = () => {
                                 onClick={() => handleMenuClick('/myPage')}
                                 className='block hover:text-orange-400'
                             >
-                                myPage
+                                마이페이지
                             </button>
                             <button
                                 onClick={() => handleMenuClick('/logout')}
                                 className='block hover:text-orange-400'
                             >
-                                Logout
+                                로그아웃
                             </button>
                         </>
                     ) : (
@@ -314,13 +314,13 @@ const Header = () => {
                                 onClick={() => handleMenuClick('/login')}
                                 className='block hover:text-orange-400'
                             >
-                                Login
+                                로그인
                             </button>
                             <button
                                 onClick={() => handleMenuClick('/signup')}
                                 className='block hover:text-orange-400'
                             >
-                                Sign Up
+                                회원가입
                             </button>
                         </>
                     )}
