@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useAuth } from '../context/AuthContext';
 import xml2js from 'xml2js';
 import Link from 'next/link';
+import LoadingScreen from '../../components/LoadingScreen/LoadingScreen';
 
 const logoSrc = '/svg/logo.svg';
 
@@ -98,11 +99,15 @@ const Header = () => {
         window.speechSynthesis.speak(utterance);
     };
 
+    if (authLoading) {
+        return <LoadingScreen />; // 로딩 중일 때 로딩 스크린을 렌더링
+    }
+
     return (
         <nav className='bg-white text-black px-6 sm:px-24 flex items-center justify-between w-full'>
             <div
                 className='flex-shrink-0'
-                onMouseEnter={() => speakText('홈')}
+                // onMouseEnter={() => speakText('홈')}
                 style={{ marginRight: '20px', marginLeft: '40px' }}
             >
                 <Link href='/'>
@@ -147,7 +152,7 @@ const Header = () => {
                 >
                     자유게시판
                 </button>
-                {!authLoading && user ? ( // 인증 상태가 로딩 중이 아닌 경우에만 렌더링
+                {user ? (
                     <>
                         <button
                             onClick={() => handleMenuClick('/myPage')}
