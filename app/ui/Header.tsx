@@ -10,7 +10,7 @@ const logoSrc = '/svg/logo.svg';
 
 const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth(); // 로딩 상태를 가져옴
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [recipes, setRecipes] = useState([]);
@@ -103,7 +103,7 @@ const Header = () => {
             <div
                 className='flex-shrink-0'
                 onMouseEnter={() => speakText('홈')}
-                style={{marginRight:'20px',marginLeft:'40px'}}
+                style={{ marginRight: '20px', marginLeft: '40px' }}
             >
                 <Link href='/'>
                     <Image
@@ -147,7 +147,7 @@ const Header = () => {
                 >
                     자유게시판
                 </button>
-                {user ? (
+                {!authLoading && user ? ( // 인증 상태가 로딩 중이 아닌 경우에만 렌더링
                     <>
                         <button
                             onClick={() => handleMenuClick('/myPage')}
@@ -167,24 +167,32 @@ const Header = () => {
                         </button>
                     </>
                 ) : (
-                    <>
-                        <button
-                            onClick={() => handleMenuClick('/login')}
-                            onMouseEnter={() => speakText('로그인')}
-                            className='block butt'
-                            style={{ fontSize: '18px', width: 'max-content' }}
-                        >
-                            로그인
-                        </button>
-                        <button
-                            onClick={() => handleMenuClick('/signup')}
-                            onMouseEnter={() => speakText('회원가입')}
-                            className='block butt'
-                            style={{ fontSize: '18px', width: 'max-content' }}
-                        >
-                            회원가입
-                        </button>
-                    </>
+                    !authLoading && ( // 인증 상태가 로딩 중이 아닌 경우에만 렌더링
+                        <>
+                            <button
+                                onClick={() => handleMenuClick('/login')}
+                                onMouseEnter={() => speakText('로그인')}
+                                className='block butt'
+                                style={{
+                                    fontSize: '18px',
+                                    width: 'max-content',
+                                }}
+                            >
+                                로그인
+                            </button>
+                            <button
+                                onClick={() => handleMenuClick('/signup')}
+                                onMouseEnter={() => speakText('회원가입')}
+                                className='block butt'
+                                style={{
+                                    fontSize: '18px',
+                                    width: 'max-content',
+                                }}
+                            >
+                                회원가입
+                            </button>
+                        </>
+                    )
                 )}
             </div>
             <div className='relative flex-grow flex justify-center'>
