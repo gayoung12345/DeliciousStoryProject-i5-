@@ -10,16 +10,34 @@ import {
 
 // 게시글을 가져오는 함수
 // lib/firestore.ts
-export const fetchPosts = async () => {
+// Post 인터페이스 정의
+interface Post {
+    views: number;
+    comments: number;
+    author: string;
+    date: string;
+    title: string;
+    id: string;
+}
+
+// 게시글을 가져오는 함수
+export const fetchPosts = async (): Promise<Post[]> => {
     try {
         const postsCollection = collection(db, 'posts');
         const postsQuery = query(postsCollection, orderBy('date', 'desc'));
         const querySnapshot = await getDocs(postsQuery);
 
-        const postsData = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-        }));
+        const postsData: Post[] = querySnapshot.docs.map((doc) => {
+            const data = doc.data();
+            return {
+                views: data.views || 0, // 기본값 설정
+                comments: data.comments || 0, // 기본값 설정
+                author: data.author || '', // 기본값 설정
+                date: data.date || '', // 기본값 설정
+                title: data.title || '', // 기본값 설정
+                id: doc.id, // Firestore 문서 ID
+            };
+        });
 
         console.log('Fetched posts:', postsData); // 디버깅용 로그
 

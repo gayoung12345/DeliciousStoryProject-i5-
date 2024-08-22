@@ -3,10 +3,8 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useAuth } from '../context/AuthContext';
-import { Icon } from '@/components/ui/icon';
-import { BiCamera } from 'react-icons/bi';
+import xml2js from 'xml2js';
 import Link from 'next/link';
-import xml2js from 'xml2js'; // XML 데이터를 파싱하기 위한 라이브러리
 
 const logoSrc = '/svg/logo.svg';
 
@@ -15,19 +13,18 @@ const Header = () => {
     const { user } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
-    const [recipes, setRecipes] = useState([]); // 전체 레시피 데이터를 저장할 상태 변수
-    const [loading, setLoading] = useState(true); // 데이터 로딩 상태를 관리하는 변수
+    const [recipes, setRecipes] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // 레시피 데이터를 가져오는 useEffect
     useEffect(() => {
         const fetchRecipes = async () => {
             try {
-                const response = await fetch('/data/siterecipe.xml'); // XML 데이터를 가져옴
-                const xmlData = await response.text(); // 텍스트 형태로 XML 데이터를 파싱
-                const parser = new xml2js.Parser(); // XML 파서를 생성
-                const result = await parser.parseStringPromise(xmlData); // XML 데이터를 파싱하여 JavaScript 객체로 변환
+                const response = await fetch('/data/siterecipe.xml');
+                const xmlData = await response.text();
+                const parser = new xml2js.Parser();
+                const result = await parser.parseStringPromise(xmlData);
 
-                const recipes = result.COOKRCP01.row.map((rec) => ({
+                const recipes = result.COOKRCP01.row.map((rec: any) => ({
                     id: rec.RCP_SEQ[0],
                     name: rec.RCP_NM[0],
                     image: rec.ATT_FILE_NO_MAIN[0] || '/svg/logo.svg',
@@ -52,23 +49,23 @@ const Header = () => {
                     sodium: rec.INFO_NA[0],
                 }));
 
-                setRecipes(recipes); // 전체 레시피 데이터를 상태 변수에 저장
+                setRecipes(recipes);
             } catch (error) {
-                console.error('Error parsing XML:', error); // 에러 발생 시 콘솔에 출력
+                console.error('Error parsing XML:', error);
             } finally {
-                setLoading(false); // 데이터 로딩이 끝난 후 상태 업데이트
+                setLoading(false);
             }
         };
 
-        fetchRecipes(); // 레시피 데이터를 가져오는 함수 호출
-    }, []); // 빈 배열을 의존성으로 하여 컴포넌트 마운트 시 한 번만 실행
+        fetchRecipes();
+    }, []);
 
-    const handleSearch = (term) => {
+    const handleSearch = (term: string) => {
         setSearchTerm(term);
         if (term) {
             const filteredRecipes = Array.isArray(recipes)
                 ? recipes.filter(
-                      (recipe) =>
+                      (recipe: any) =>
                           recipe.name
                               ?.toLowerCase()
                               .includes(term.toLowerCase()) ||
@@ -83,9 +80,22 @@ const Header = () => {
         }
     };
 
-    const handleMenuClick = (href) => {
-        setMenuOpen(false); // 메뉴 클릭 시 드롭다운 메뉴 닫기
-        window.location.href = href; // 페이지 이동 및 새로고침
+    const handleMenuClick = (href: string) => {
+        setMenuOpen(false);
+        window.location.href = href;
+    };
+
+    const toggleMenu = () => {
+        setMenuOpen((prev) => !prev);
+    };
+
+    const speakText = (text: string) => {
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+        }
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ko';
+        window.speechSynthesis.speak(utterance);
     };
 
     return (
@@ -95,42 +105,127 @@ const Header = () => {
                     <Image
                         src={logoSrc}
                         alt='logo'
-                        width={317}
-                        height={138}
+                        width={220}
+                        height={140}
                     />
                 </Link>
             </div>
-            <div className='relative flex-grow max-w-lg mx-6 sm:mx-12'>
-                <input
-                    type='text'
-                    className='bg-gray-200 text-black p-4 text-lg rounded-lg focus:outline-none w-full'
-                    placeholder='오늘의메뉴'
-                    value={searchTerm}
-                    onChange={(e) => handleSearch(e.target.value)}
-                />
+            <div style={{ width: '180px' }}></div>
+            <div className='flex-grow flex items-center justify-center space-x-6 ml-12 hidden xl:flex'>
                 <button
-                    className='absolute right-0 top-0 mt-2 mr-2 p-2'
-                    onClick={() => handleSearch(searchTerm)}
+                    onClick={() => handleMenuClick('/')}
+                    onMouseEnter={() => speakText('홈')}
+                    className='button hover:text-orange-400'
+                    style={{ fontSize: '18px' }}
                 >
-                    <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        fill='none'
-                        viewBox='0 0 24 24'
-                        stroke='currentColor'
-                        className='w-8 h-8'
-                    >
-                        <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            strokeWidth={2}
-                            d='M21 21l-4.35-4.35m2.1-5.35a7 7 0 11-14 0 7 7 0 0114 0z'
-                        />
-                    </svg>
+                    홈
                 </button>
+                <button
+                    onClick={() => handleMenuClick('/siteRecipe')}
+                    onMouseEnter={() => speakText('공식레시피')}
+                    className='button hover:text-orange-400'
+                    style={{ fontSize: '18px' }}
+                >
+                    공식레시피
+                </button>
+                <button
+                    onClick={() => handleMenuClick('/userRecipe')}
+                    onMouseEnter={() => speakText('모두의레시피')}
+                    className='button hover:text-orange-400'
+                    style={{ fontSize: '18px' }}
+                >
+                    모두의레시피
+                </button>
+                <button
+                    onClick={() => handleMenuClick('/freeBoard')}
+                    onMouseEnter={() => speakText('자유게시판')}
+                    className='button hover:text-orange-400'
+                    style={{ fontSize: '18px' }}
+                >
+                    자유게시판
+                </button>
+                {user ? (
+                    <>
+                        <button
+                            onClick={() => handleMenuClick('/myPage')}
+                            onMouseEnter={() => speakText('마이페이지')}
+                            className='button hover:text-orange-400'
+                            style={{ fontSize: '18px' }}
+                        >
+                            마이페이지
+                        </button>
+                        <button
+                            onClick={() => handleMenuClick('/logout')}
+                            onMouseEnter={() => speakText('로그아웃')}
+                            className='button hover:text-orange-400'
+                            style={{ fontSize: '18px' }}
+                        >
+                            로그아웃
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <button
+                            onClick={() => handleMenuClick('/login')}
+                            onMouseEnter={() => speakText('로그인')}
+                            className='button hover:text-orange-400'
+                            style={{ fontSize: '18px' }}
+                        >
+                            로그인
+                        </button>
+                        <button
+                            onClick={() => handleMenuClick('/signup')}
+                            onMouseEnter={() => speakText('회원가입')}
+                            className='button hover:text-orange-400'
+                            style={{ fontSize: '18px' }}
+                        >
+                            회원가입
+                        </button>
+                    </>
+                )}
+            </div>
+            <div className='relative flex-grow flex justify-center'>
+                <div className='relative'>
+                    <input
+                        type='text'
+                        className='bg-transparent border border-gray-300 text-black p-2 text-lg focus:outline-none focus:border-gray-300 rounded-3xl pr-10'
+                        placeholder=' 오늘의 메뉴'
+                        value={searchTerm}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        style={{
+                            borderRadius: '32px',
+                            borderWidth: '1px',
+                            borderColor: '#D1D5DB',
+                            fontSize: '16px',
+                            width: '100%',
+                            maxWidth: '400px',
+                        }}
+                    />
+                    <button
+                        className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+                        onClick={() => handleSearch(searchTerm)}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            stroke='currentColor'
+                            className='w-6 h-6'
+                        >
+                            <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth={2}
+                                d='M21 21l-4.35-4.35m2.1-5.35a7 7 0 11-14 0 7 7 0 0114 0z'
+                            />
+                        </svg>
+                    </button>
+                </div>
                 {searchResults.length > 0 && (
                     <div className='dropdown-menu absolute bg-white shadow-lg rounded-lg p-4 mt-4 w-full max-w-lg max-h-60 overflow-y-auto'>
                         <ul>
-                            {searchResults.map((recipe) => (
+                            {searchResults.map((recipe: any) => (
                                 <li
                                     key={recipe.id}
                                     className='p-2 border-b last:border-b-0'
@@ -151,66 +246,9 @@ const Header = () => {
                     </div>
                 )}
             </div>
-            <div className='flex items-center space-x-4 hidden xl:flex'>
-                <button
-                    onClick={() => handleMenuClick('/')}
-                    className='hover:text-gray-400'
-                >
-                    Home
-                </button>
-                <button
-                    onClick={() => handleMenuClick('/siteRecipe')}
-                    className='hover:text-gray-400'
-                >
-                    siteRecipe
-                </button>
-                <button
-                    onClick={() => handleMenuClick('/userRecipe')}
-                    className='hover:text-gray-400'
-                >
-                    userRecipe
-                </button>
-                <button
-                    onClick={() => handleMenuClick('/freeBoard')}
-                    className='hover:text-gray-400'
-                >
-                    freeBoard
-                </button>
-                {user ? (
-                    <>
-                        <button
-                            onClick={() => handleMenuClick('/myPage')}
-                            className='hover:text-gray-400'
-                        >
-                            myPage
-                        </button>
-                        <button
-                            onClick={() => handleMenuClick('/logout')}
-                            className='hover:text-gray-400'
-                        >
-                            Logout
-                        </button>
-                    </>
-                ) : (
-                    <>
-                        <button
-                            onClick={() => handleMenuClick('/login')}
-                            className='hover:text-gray-400'
-                        >
-                            Login
-                        </button>
-                        <button
-                            onClick={() => handleMenuClick('/signup')}
-                            className='hover:text-gray-400'
-                        >
-                            Sign Up
-                        </button>
-                    </>
-                )}
-            </div>
             <div className='xl:hidden'>
                 <button
-                    onClick={() => setMenuOpen(!menuOpen)}
+                    onClick={toggleMenu}
                     className='focus:outline-none'
                 >
                     <svg
@@ -230,53 +268,61 @@ const Header = () => {
                 </button>
             </div>
             {menuOpen && (
-                <div className='dropdown-menu absolute top-16 right-0 bg-white shadow-md rounded-lg p-4 lg:hidden z-50'>
+                <div className='dropdown-menu absolute top-16 right-0 bg-white shadow-md rounded-lg p-4 lg:hidden z-100'>
                     <button
                         onClick={() => handleMenuClick('/')}
-                        className='block hover:text-gray-400'
+                        className='block hover:text-orange-400'
                     >
-                        Home
+                        홈
                     </button>
                     <button
                         onClick={() => handleMenuClick('/siteRecipe')}
-                        className='block hover:text-gray-400'
+                        className='block hover:text-orange-400'
                     >
-                        siteRecipe
+                        공식레시피
                     </button>
                     <button
                         onClick={() => handleMenuClick('/userRecipe')}
-                        className='block hover:text-gray-400'
+                        className='block hover:text-orange-400'
                     >
-                        userRecipe
+                        모두의레시피
                     </button>
                     <button
                         onClick={() => handleMenuClick('/freeBoard')}
-                        className='block hover:text-gray-400'
+                        className='block hover:text-orange-400'
                     >
-                        freeBoard
+                        자유게시판
                     </button>
                     {user ? (
                         <>
                             <button
                                 onClick={() => handleMenuClick('/myPage')}
-                                className='block hover:text-gray-400'
+                                className='block hover:text-orange-400'
                             >
-                                myPage
+                                마이페이지
                             </button>
                             <button
                                 onClick={() => handleMenuClick('/logout')}
-                                className='block hover:text-gray-400'
+                                className='block hover:text-orange-400'
                             >
-                                Logout
+                                로그아웃
                             </button>
                         </>
                     ) : (
-                        <button
-                            onClick={() => handleMenuClick('/signup')}
-                            className='block hover:text-gray-400'
-                        >
-                            Sign Up
-                        </button>
+                        <>
+                            <button
+                                onClick={() => handleMenuClick('/login')}
+                                className='block hover:text-orange-400'
+                            >
+                                로그인
+                            </button>
+                            <button
+                                onClick={() => handleMenuClick('/signup')}
+                                className='block hover:text-orange-400'
+                            >
+                                회원가입
+                            </button>
+                        </>
                     )}
                 </div>
             )}

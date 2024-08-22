@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import React, { useState } from 'react';
 
 interface ImageUploadProps {
@@ -51,7 +52,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ id, onImageSelected }) => {
                 }}
             >
                 {preview ? (
-                    <img
+                    <Image
                         src={preview}
                         alt='Preview'
                         style={{
@@ -62,6 +63,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ id, onImageSelected }) => {
                             top: '0',
                             left: '0',
                         }}
+                        width={400}
+                        height={400}
                     />
                 ) : (
                     <span

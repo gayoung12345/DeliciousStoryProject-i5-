@@ -1,4 +1,4 @@
-// listPost 자유게시판 상세보기 
+// listPost 자유게시판 상세보기
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -16,19 +16,36 @@ import {
 import { db } from '../../lib/firebaseConfig';
 import { useAuth } from '../context/AuthContext';
 
+// 타입 정의
+interface Post {
+    author: string;
+    comments: number; // 댓글 수
+    content: string;
+    date: string; // ISO 8601 형식의 날짜 문자열
+    postId: string;
+    title: string;
+    views: number;
+}
+interface Comment {
+    author: string;
+    content: string;
+    date: string; // ISO 8601 형식의 날짜 문자열
+    postId: string;
+}
+
 const ListPost = () => {
     // 상태 변수 정의
-    const [post, setPost] = useState<any>(null); // 게시글 데이터 상태
+    const [post, setPost] = useState<Post | null>(null); // 게시글 데이터 상태
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [comment, setComment] = useState(''); // 댓글 입력 상태
-    const [comments, setComments] = useState<any[]>([]); // 댓글 목록 상태
+    const [comments, setComments] = useState<Comment[]>([]); // 댓글 목록 상태
     const { user } = useAuth(); // 인증된 사용자 정보
     const router = useRouter(); // 라우터 객체
     const searchParams = useSearchParams(); // URL 쿼리 파라미터
     const postId = searchParams.get('id'); // URL에서 게시글 ID 추출
 
+    // 게시글 데이터를 가져오는 함수
     useEffect(() => {
-        // 게시글 데이터를 가져오는 함수
         const fetchPost = async () => {
             if (postId) {
                 try {
@@ -37,7 +54,8 @@ const ListPost = () => {
                     const postSnapshot = await getDoc(postDoc);
 
                     if (postSnapshot.exists()) {
-                        const postData = postSnapshot.data();
+                        // 데이터 가져오기 및 타입 단언
+                        const postData = postSnapshot.data() as Post; // 타입 단언 사용
                         setPost(postData); // 게시글 데이터 상태 업데이트
 
                         // 게시글 조회 수 업데이트
@@ -58,35 +76,39 @@ const ListPost = () => {
         fetchPost(); // 게시글 데이터 가져오기
     }, [postId]); // postId가 변경될 때마다 실행
 
+    // 댓글 데이터를 가져오는 함수
     useEffect(() => {
-        // 댓글 데이터를 가져오는 함수
         const fetchComments = async () => {
             if (postId) {
                 try {
-                    // Firebase에서 댓글 컬렉션 참조 생성
                     const commentsRef = collection(db, 'comments');
                     const q = query(commentsRef, where('postId', '==', postId));
                     const querySnapshot = await getDocs(q);
 
-                    // 댓글 데이터 목록 추출
-                    const fetchedComments = querySnapshot.docs.map((doc) =>
-                        doc.data()
+                    const fetchedComments: Comment[] = querySnapshot.docs.map(
+                        (doc) => ({
+                            author: doc.data().author as string,
+                            content: doc.data().content as string,
+                            date: doc.data().date as string,
+                            postId: doc.data().postId as string,
+                        })
                     );
-                    setComments(fetchedComments); // 댓글 목록 상태 업데이트
+                    setComments(fetchedComments);
                 } catch (error) {
-                    console.error('댓글 가져오기 오류:', error); // 댓글 가져오기 오류 로그
+                    console.error('댓글 가져오기 오류:', error);
                 }
             }
         };
 
-        fetchComments(); // 댓글 데이터 가져오기
-    }, [postId]); // postId가 변경될 때마다 실행
+        fetchComments();
+    }, [postId]);
 
     // 댓글 제출 처리 함수
     const handleCommentSubmit = async (event: React.FormEvent) => {
         event.preventDefault(); // 폼 제출 기본 동작 방지
 
-        if (user) {
+        if (user && postId) {
+            // postId가 null이 아닌지 확인
             try {
                 // 댓글 추가
                 await addDoc(collection(db, 'comments'), {
@@ -97,11 +119,17 @@ const ListPost = () => {
                 });
 
                 // 게시글 문서 참조 생성 및 댓글 수 업데이트
-                const postDoc = doc(db, 'posts', postId);
-                const postSnapshot = await getDoc(postDoc);
-                const postData = postSnapshot.data();
+                const postDocRef = doc(db, 'posts', postId);
+                const postSnapshot = await getDoc(postDocRef);
+
+                if (!postSnapshot.exists()) {
+                    console.error('게시글이 존재하지 않습니다.');
+                    return;
+                }
+
+                const postData = postSnapshot.data() as Post;
                 const newCommentCount = (postData.comments || 0) + 1;
-                await updateDoc(postDoc, {
+                await updateDoc(postDocRef, {
                     comments: newCommentCount,
                 });
 
@@ -109,16 +137,20 @@ const ListPost = () => {
                 const commentsRef = collection(db, 'comments');
                 const q = query(commentsRef, where('postId', '==', postId));
                 const querySnapshot = await getDocs(q);
-                const updatedComments = querySnapshot.docs.map((doc) =>
-                    doc.data()
+                const updatedComments = querySnapshot.docs.map(
+                    (doc) => doc.data() as Comment // DocumentData를 Comment 타입으로 단언
                 );
                 setComments(updatedComments);
 
                 // 상태 업데이트
-                setPost((prevPost) => ({
-                    ...prevPost,
-                    comments: newCommentCount,
-                }));
+                setPost((prevPost) =>
+                    prevPost
+                        ? {
+                              ...prevPost,
+                              comments: newCommentCount,
+                          }
+                        : null
+                );
 
                 alert('댓글이 작성되었습니다!'); // 댓글 작성 성공 메시지
                 setComment(''); // 댓글 입력 초기화
@@ -157,6 +189,7 @@ const ListPost = () => {
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                 }}
             >
+                {/* // 글 제목 */}
                 <h1
                     style={{
                         textAlign: 'center',
@@ -180,7 +213,7 @@ const ListPost = () => {
                         댓글 수 {post.comments || 0} | 조회 수 {post.views || 0}
                     </p>
                 </div>
-
+                {/* // 게시물 내용 */}
                 <div
                     style={{
                         padding: '20px',
@@ -200,7 +233,7 @@ const ListPost = () => {
                         }}
                     />
                 </div>
-
+                {/* // 댓글 폼 */}
                 <div
                     style={{
                         padding: '20px',
@@ -239,7 +272,7 @@ const ListPost = () => {
                         </button>
                     </form>
                 </div>
-
+                {/* // 댓글 리스트 */}
                 <div
                     style={{
                         padding: '20px',
@@ -259,30 +292,37 @@ const ListPost = () => {
                     ) : (
                         // 댓글 목록 표시
                         <ul style={{ listStyleType: 'none', padding: '0' }}>
-                            {comments.map((comment, index) => (
-                                <li
-                                    key={index}
-                                    style={{
-                                        border: '1px solid #ddd',
-                                        padding: '10px',
-                                        borderRadius: '4px',
-                                        marginBottom: '10px',
-                                    }}
-                                >
-                                    <p>
-                                        <strong>{comment.author}</strong> (
-                                        {new Date(
-                                            comment.date
-                                        ).toLocaleDateString()}
-                                        )
-                                    </p>
-                                    <p>{comment.content}</p>
-                                </li>
-                            ))}
+                            {comments
+                                .slice() // 배열을 복사하여 원본 배열을 변경하지 않도록 합니다.
+                                .sort(
+                                    (a, b) =>
+                                        new Date(a.date).getTime() -
+                                        new Date(b.date).getTime()
+                                ) // 날짜를 기준으로 정렬합니다.
+                                .map((comment, index) => (
+                                    <li
+                                        key={index}
+                                        style={{
+                                            border: '1px solid #ddd',
+                                            padding: '10px',
+                                            borderRadius: '4px',
+                                            marginBottom: '10px',
+                                        }}
+                                    >
+                                        <p>
+                                            <strong>{comment.author}</strong> (
+                                            {new Date(
+                                                comment.date
+                                            ).toLocaleDateString()}
+                                            )
+                                        </p>
+                                        <p>{comment.content}</p>
+                                    </li>
+                                ))}
                         </ul>
                     )}
                 </div>
-
+                {/* // 뒤로가기 */}
                 <div
                     style={{
                         display: 'flex',

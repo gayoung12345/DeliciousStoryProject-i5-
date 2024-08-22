@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '@/lib/firebaseConfig';
+import { FaArrowUp } from 'react-icons/fa';
+
 import {
     FaArrowLeft,
     FaHeart,
@@ -11,6 +13,7 @@ import {
     FaPlay,
     FaStop,
     FaTrash,
+    FaVolumeUp,
 } from 'react-icons/fa';
 import TextToSpeechDiv from '@/components/tts/textToSpeech';
 import {
@@ -22,6 +25,7 @@ import {
     getDoc,
     getDocs,
     deleteDoc,
+    DocumentSnapshot,
 } from 'firebase/firestore';
 import { useAuth } from '@/app/context/AuthContext';
 import Image from 'next/image';
@@ -33,11 +37,6 @@ interface Recipe {
         method: string;
         ingredient: string;
     };
-    // info: {
-    //     servings: string;
-    //     time: string;
-    //     difficulty: string;
-    // };
     images: {
         'main-image': string;
     };
@@ -52,16 +51,33 @@ interface Recipe {
     }[];
     user: string;
 }
+// 스크롤을 페이지 상단으로 이동시키는 함수
+const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth', // 부드러운 스크롤 효과
+    });
+};
+
+interface Comment {
+    userId: string;
+    userEmail: string | null;
+    text: string;
+    recipeId: string;
+}
+
 const RecipeDetail = ({ params }: { params: { id: string } }) => {
     const [liked, setLiked] = useState(false);
     const router = useRouter();
     const [recipe, setRecipe] = useState<Recipe | null>(null);
     const { id } = params;
-    const [speechRate, setSpeechRate] = useState<any>(1);
-    const [utterance, setUtterance] = useState<any>(null);
+    const [speechRate, setSpeechRate] = useState<number>(1);
+    const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(
+        null
+    );
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [user, setUser] = useState<any | null>(null);
-    const [comments, setComments] = useState([]);
+    const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState('');
 
     useEffect(() => {
@@ -90,7 +106,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
         checkIfLiked();
     }, [user, recipe]);
 
-    const speakText = (text: any) => {
+    const speakText = (text: string) => {
         if ('speechSynthesis' in window) {
             const newUtterance = new SpeechSynthesisUtterance(text);
             newUtterance.rate = speechRate; // Set speech rate
@@ -114,7 +130,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
         }
     };
 
-    const handleRateChange = (event: any) => {
+    const handleRateChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSpeechRate(parseFloat(event.target.value));
     };
 
@@ -190,9 +206,14 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                         text: newComment,
                         timestamp: new Date(),
                     });
-                    setComments([
-                        ...comments,
-                        { userId: user.uid, text: newComment },
+                    setComments((prevComments) => [
+                        ...prevComments,
+                        {
+                            userId: user.uid,
+                            userEmail: user.email || 'unknown',
+                            text: newComment,
+                            recipeId: id,
+                        },
                     ]);
                     setNewComment('');
                 } catch (error) {
@@ -212,12 +233,14 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                 const querySnapshot = await getDocs(collection(db, 'comments'));
                 const commentsList = querySnapshot.docs.map((doc) =>
                     doc.data()
-                );
+                ) as Comment[];
 
                 // 댓글 목록에서 recipeId가 일치하는 댓글만 필터링
-                setComments(
-                    commentsList.filter((comment) => comment.recipeId === id)
+                const filteredComments = commentsList.filter(
+                    (comment) => comment.recipeId === id
                 );
+
+                setComments(filteredComments);
             } catch (error) {
                 console.error('Error fetching comments:', error);
             }
@@ -295,119 +318,293 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
         }
     };
 
-    if (!recipe) {
-        return <div>Loading...</div>;
-    }
+    if (!recipe) return <div>Loading...</div>;
 
     return (
-        <main className='max-w-4xl mx-auto p-4'>
-            <button
-                onClick={router.back}
+        <main
+            className='max-w-4xl mx-auto p-4'
+            style={{ marginTop: '120px' }}
+        >
+            <div
                 style={{
-                    color: '#ffffff',
-                    backgroundColor: '#383838',
-                    position: 'fixed',
-                    top: 150,
-                    left: 50,
-                    width: 80,
-                    height: 80,
-                    borderRadius: 40,
-                    zIndex: 10,
-                    border: 'none',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
+                    alignItems: 'flex-start',
+                    marginBottom: '24px',
                 }}
             >
-                <FaArrowLeft
-                    size={24}
-                    color='#ffffff'
-                />
-            </button>
-            <Image
-                width={400}
-                height={200}
-                src={recipe.images['main-image']}
-                alt={recipe.title}
-                className='w-full object-cover mb-4'
-            />
+                {/* 이미지 */}
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center', // 중앙 정렬
+                    }}
+                >
+                    <Image
+                        src={recipe.images['main-image']}
+                        alt={recipe.title}
+                        width={400}
+                        height={400}
+                        style={{
+                            width: '400PX',
+                            height: '400PX',
+                            marginBottom: '22px', // 이미지와 버튼 사이의 간격
+                            marginRight: '22px',
+                        }}
+                    />
+                    {/* TTS 버튼 영역 */}
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            gap: '16px',
+                            marginTop: '20px',
+                            marginBottom: '16px',
+                        }}
+                    >
+                        <button
+                            onClick={handleTtsClick}
+                            style={{
+                                color: '#ffffff',
+                                backgroundColor: '#FF8C00',
+                                width: 80,
+                                height: 40,
+                                borderRadius: 20,
+                                border: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '16px',
+                                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                                transition:
+                                    'background-color 0.3s, box-shadow 0.3s, color 0.3s',
+                            }}
+                            onMouseDown={(e) => {
+                                e.currentTarget.style.backgroundColor =
+                                    '#FF7F00';
+                            }}
+                            onMouseUp={(e) => {
+                                e.currentTarget.style.backgroundColor =
+                                    '#FF8C00';
+                            }}
+                        >
+                            <FaVolumeUp size={20} />
+                        </button>
+                        <select
+                            value={speechRate}
+                            onChange={handleRateChange}
+                            style={{
+                                width: 80,
+                                height: 40,
+                                borderRadius: 20,
+                                border: '1px solid #ddd',
+                                padding: '0 10px',
+                                fontSize: '16px',
+                                cursor: 'pointer',
+                                textAlign: 'center',
+                                boxSizing: 'border-box',
+                                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                            }}
+                        >
+                            <option value={0.5}>0.5배속</option>
+                            <option value={1}>1배속</option>
+                            <option value={2}>2배속</option>
+                        </select>
+                        <button
+                            onClick={handlePauseClick}
+                            style={{
+                                color: '#ffffff',
+                                backgroundColor: '#FF8C00',
+                                width: 80,
+                                height: 40,
+                                borderRadius: 20,
+                                border: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '16px',
+                                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                                transition:
+                                    'background-color 0.3s, box-shadow 0.3s, color 0.3s',
+                            }}
+                            onMouseDown={(e) => {
+                                e.currentTarget.style.backgroundColor =
+                                    '#FF7F00';
+                            }}
+                            onMouseUp={(e) => {
+                                e.currentTarget.style.backgroundColor =
+                                    '#FF8C00';
+                            }}
+                        >
+                            <FaPause size={15} />
+                        </button>
+                        <button
+                            onClick={handleResumeClick}
+                            style={{
+                                color: '#ffffff',
+                                backgroundColor: '#FF8C00',
+                                width: 80,
+                                height: 40,
+                                borderRadius: 20,
+                                border: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '16px',
+                                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                                transition:
+                                    'background-color 0.3s, box-shadow 0.3s, color 0.3s',
+                            }}
+                            onMouseDown={(e) => {
+                                e.currentTarget.style.backgroundColor =
+                                    '#FF7F00';
+                            }}
+                            onMouseUp={(e) => {
+                                e.currentTarget.style.backgroundColor =
+                                    '#FF8C00';
+                            }}
+                        >
+                            <FaPlay size={15} />
+                        </button>
+                        <button
+                            onClick={handleStopClick}
+                            style={{
+                                color: '#ffffff',
+                                backgroundColor: '#FF8C00',
+                                width: 80,
+                                height: 40,
+                                borderRadius: 20,
+                                border: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '16px',
+                                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                                transition:
+                                    'background-color 0.3s, box-shadow 0.3s, color 0.3s',
+                            }}
+                            onMouseDown={(e) => {
+                                e.currentTarget.style.backgroundColor =
+                                    '#FF7F00';
+                            }}
+                            onMouseUp={(e) => {
+                                e.currentTarget.style.backgroundColor =
+                                    '#FF8C00';
+                            }}
+                        >
+                            <FaStop size={15} />
+                        </button>
+                    </div>
+                </div>
+
+                {/* 제목, 설명, 재료를 세로로 나열 */}
+                <div style={{ padding: '16px', flex: '1' }}>
+                    {/* 제목 */}
+                    <TextToSpeechDiv>
+                        <div
+                            style={{
+                                display: 'flex', // 가로 정렬
+                                alignItems: 'center', // 수직 정렬
+                                marginBottom: '16px',
+                            }}
+                        >
+                            <h1
+                                style={{
+                                    fontSize: '32px',
+                                    fontWeight: '600',
+                                    color: '#383838',
+                                    marginRight: '16px',
+                                }}
+                            >
+                                {recipe.title}
+                            </h1>
+
+                            <div style={{ display: 'flex' }}>
+                                <button
+                                    onClick={handleLikeToggle}
+                                    style={{
+                                        background: 'none',
+                                        cursor: 'pointer',
+                                        display: 'flex', // 가로 정렬
+                                        alignItems: 'center', // 세로 정렬
+                                        color: '#FF8C00', // 텍스트 색상 주황색
+                                        fontSize: '24px', // 텍스트 크기
+                                        fontWeight: '600', // 텍스트 두께
+                                        transition:
+                                            'background-color 0.3s, color 0.3s', // 색상 변경 시 부드러운 전환 효과
+                                    }}
+                                >
+                                    <FaHeart color={liked ? 'red' : 'gray'} />
+                                </button>
+                            </div>
+                        </div>
+                    </TextToSpeechDiv>
+                    {/* 설명 */}
+                    <TextToSpeechDiv>
+                        <div
+                            style={{
+                                fontSize: '15px',
+                                color: '#5c5c5c',
+                            }}
+                        >
+                            <p>{recipe.description}</p>
+                        </div>
+                    </TextToSpeechDiv>
+
+                    {/* 재료 */}
+                    <TextToSpeechDiv>
+                        <h2
+                            style={{
+                                fontSize: '21px',
+                                fontWeight: '600',
+                                marginTop: '32px',
+                                marginBottom: '8px',
+                                color: '#383838',
+                            }}
+                        >
+                            재료
+                        </h2>
+                        <div
+                            style={{
+                                fontSize: '15px',
+                                marginBottom: '8px',
+                                color: '#5c5c5c',
+                            }}
+                        >
+                            {recipe.ingredients.map((ingredient, index) => (
+                                <div key={index}>
+                                    {ingredient.name} {ingredient.quantity}{' '}
+                                    {ingredient.unit}
+                                </div>
+                            ))}
+                        </div>
+                    </TextToSpeechDiv>
+                </div>
+            </div>
 
             {/* 회색 박스 */}
             <div
                 style={{
-                    backgroundColor: '#f0f0f0',
-                    padding: '20px',
-                    borderRadius: '8px',
+                    marginTop: '80px',
+                    marginBottom: '100px',
                 }}
             >
-                {/* 제목 */}
-                <TextToSpeechDiv>
-                    <h1
-                        style={{
-                            fontSize: '32px',
-                            fontWeight: 'bold',
-                            textAlign: 'center',
-                            marginBottom: '16px',
-                        }}
-                    >
-                        {recipe.title}
-                    </h1>
-                </TextToSpeechDiv>
-                <TextToSpeechDiv>
-                    <div
-                        style={{
-                            justifyContent: 'center',
-                            textAlign: 'center',
-                            padding: '20px',
-                            maxWidth: '60%',
-                            margin: '0 auto',
-                            wordBreak: 'keep-all',
-                        }}
-                    >
-                        <p>{recipe.description}</p>
-                    </div>
-                </TextToSpeechDiv>
-                <br />
-
-                {/* 재료 */}
-                <TextToSpeechDiv>
-                    <h2
-                        style={{
-                            fontSize: '24px',
-                            fontWeight: 'bold',
-                            textAlign: 'left',
-                            marginBottom: '8px',
-                        }}
-                    >
-                        재료
-                    </h2>
-                    <div
-                        style={{
-                            fontSize: '18px',
-                            textAlign: 'left',
-                            marginBottom: '24px',
-                        }}
-                    >
-                        {recipe.ingredients.map((ingredient, index) => (
-                            <div key={index}>
-                                {ingredient.name} {ingredient.quantity}
-                                {ingredient.unit}
-                            </div>
-                        ))}
-                    </div>
-                </TextToSpeechDiv>
                 {/* 조리법 */}
                 <TextToSpeechDiv>
                     <h2
                         style={{
-                            fontSize: '24px',
-                            fontWeight: 'bold',
-                            textAlign: 'left',
-                            marginBottom: '8px',
+                            fontSize: '21px',
+                            fontWeight: '600',
+                            marginBottom: '24px',
+                            color: '#383838',
                         }}
                     >
-                        조리법
+                        ※ 조리법
                     </h2>
                     <div>
                         {recipe.steps.map((step, index) => (
@@ -416,228 +613,79 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    marginBottom: '16px',
+                                    marginBottom: '18px',
                                 }}
                             >
                                 {step.image && (
                                     <Image
-                                        width={150}
-                                        height={150}
+                                        width={200}
+                                        height={200}
                                         src={step.image}
                                         alt={`Step ${index + 1}`}
                                         style={{
-                                            width: '150px',
-                                            height: '150px',
                                             objectFit: 'cover',
-                                            marginRight: '16px',
-                                            borderRadius: '8px',
+                                            marginRight: '18px',
                                         }}
                                     />
                                 )}
 
-                                <p style={{ fontSize: '18px' }}>
+                                <p style={{ fontSize: '16px' }}>
                                     {index + 1}. {step.description}
                                 </p>
                             </div>
                         ))}
                     </div>
                 </TextToSpeechDiv>
-                {/* TTS Reproduction Button */}
-                <div
+            </div>
+            <div
+                style={{
+                    margin: '0 auto', // 중앙 정렬
+                    marginTop: '80px',
+                    marginBottom: '50px',
+                }}
+            >
+                <h2
                     style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        gap: '16px',
-                        marginTop: '56px',
-                        marginBottom: '16px',
+                        fontSize: '21px',
+                        fontWeight: '600',
+                        marginTop: '32px',
+                        marginBottom: '18px',
+                        color: '#383838',
                     }}
                 >
-                    <button
-                        onClick={handleTtsClick}
-                        style={{
-                            color: '#ffffff',
-                            backgroundColor: '#FF8C00', // 기본 주황색
-                            width: 100,
-                            height: 40,
-                            borderRadius: 20,
-                            border: 'none',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            fontSize: '16px',
-                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                            transition:
-                                'background-color 0.3s, box-shadow 0.3s, color 0.3s',
-                        }}
-                        onMouseDown={(e) => {
-                            e.currentTarget.style.backgroundColor = '#FF7F00'; // 클릭 시 색상
-                            e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
-                        }}
-                        onMouseUp={(e) => {
-                            e.currentTarget.style.backgroundColor = '#FF8C00'; // 기본 색상으로 복구
-                            e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
-                        }}
-                    >
-                        TTS 재생
-                    </button>
-                    <select
-                        value={speechRate}
-                        onChange={handleRateChange}
-                        style={{
-                            width: 100,
-                            height: 40,
-                            borderRadius: 20,
-                            border: '1px solid #ddd',
-                            padding: '0 10px',
-                            fontSize: '16px',
-                            cursor: 'pointer',
-                            textAlign: 'center',
-                            boxSizing: 'border-box',
-                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                        }}
-                    >
-                        <option value={0.5}>0.5배속</option>
-                        <option value={1}>1배속</option>
-                        <option value={2}>2배속</option>
-                    </select>
-                    <button
-                        onClick={handlePauseClick}
-                        style={{
-                            color: '#ffffff',
-                            backgroundColor: '#FF8C00', // 기본 주황색
-                            width: 80,
-                            height: 40,
-                            borderRadius: 20,
-                            border: 'none',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            fontSize: '16px',
-                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                            transition:
-                                'background-color 0.3s, box-shadow 0.3s, color 0.3s',
-                        }}
-                        onMouseDown={(e) => {
-                            e.currentTarget.style.backgroundColor = '#FF7F00'; // 클릭 시 색상
-                            e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
-                        }}
-                        onMouseUp={(e) => {
-                            e.currentTarget.style.backgroundColor = '#FF8C00'; // 기본 색상으로 복구
-                            e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
-                        }}
-                    >
-                        <FaPause size={15} />
-                    </button>
-                    <button
-                        onClick={handleResumeClick}
-                        style={{
-                            color: '#ffffff',
-                            backgroundColor: '#FF8C00', // 기본 주황색
-                            width: 80,
-                            height: 40,
-                            borderRadius: 20,
-                            border: 'none',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            fontSize: '16px',
-                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                            transition:
-                                'background-color 0.3s, box-shadow 0.3s, color 0.3s',
-                        }}
-                        onMouseDown={(e) => {
-                            e.currentTarget.style.backgroundColor = '#FF7F00'; // 클릭 시 색상
-                            e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
-                        }}
-                        onMouseUp={(e) => {
-                            e.currentTarget.style.backgroundColor = '#FF8C00'; // 기본 색상으로 복구
-                            e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
-                        }}
-                    >
-                        <FaPlay size={15} />
-                    </button>
-                    <button
-                        onClick={handleStopClick}
-                        style={{
-                            color: '#ffffff',
-                            backgroundColor: '#FF8C00', // 기본 주황색
-                            width: 80,
-                            height: 40,
-                            borderRadius: 20,
-                            border: 'none',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            fontSize: '16px',
-                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                            transition:
-                                'background-color 0.3s, box-shadow 0.3s, color 0.3s',
-                        }}
-                        onMouseDown={(e) => {
-                            e.currentTarget.style.backgroundColor = '#FF7F00'; // 클릭 시 색상
-                            e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
-                        }}
-                        onMouseUp={(e) => {
-                            e.currentTarget.style.backgroundColor = '#FF8C00'; // 기본 색상으로 복구
-                            e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
-                        }}
-                    >
-                        <FaStop size={15} />
-                    </button>
-                </div>
-            </div>
-            <div style={{ marginTop: '16px' }}>
-                <h3>댓글</h3>
-                {comments.map((comment, index) => (
-                    <div
-                        key={index}
-                        style={{
-                            border: '1px solid #ddd',
-                            padding: '8px',
-                            marginBottom: '8px',
-                            borderRadius: '4px',
-                        }}
-                    >
-                        <p>작성자: {comment.userId}</p>
-                        <p>{comment.text}</p>
-                    </div>
-                ))}
-
+                    댓글
+                </h2>
                 <div
                     style={{
                         display: 'flex',
-                        flexDirection: 'column',
-                        gap: '8px',
-                        marginTop: '16px',
+                        gap: '8px', // 입력 필드와 버튼 사이의 간격
+                        marginBottom: '8px',
                     }}
                 >
                     <textarea
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
+                        value={newComment} // 댓글 입력 필드
+                        onChange={
+                            (e) => setNewComment(e.target.value) // 입력된 댓글을 상태로 저장
+                        }
                         rows={3}
-                        placeholder='댓글을 작성하세요...'
+                        placeholder='댓글을 작성하세요.'
                         style={{
-                            width: '100%',
+                            flex: '1', // 가로 공간을 최대한 차지하도록 설정
                             padding: '8px',
                             borderRadius: '4px',
                             border: '1px solid #ddd',
                             fontSize: '16px',
                             boxSizing: 'border-box',
+                            height: 80,
                         }}
                     />
                     <button
-                        onClick={handleAddComment}
+                        onClick={handleAddComment} // 댓글 작성 버튼 클릭 시 handleAddComment 호출
                         style={{
                             color: '#ffffff',
                             backgroundColor: '#FF8C00', // 기본 주황색
-                            width: '100%',
-                            height: 40,
-                            borderRadius: 20,
+                            height: 80,
+                            borderRadius: 4,
                             border: 'none',
                             display: 'flex',
                             alignItems: 'center',
@@ -647,6 +695,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                             boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                             transition:
                                 'background-color 0.3s, box-shadow 0.3s, color 0.3s',
+                            padding: '0 16px', // 버튼 내 여백
                         }}
                         onMouseDown={(e) => {
                             e.currentTarget.style.backgroundColor = '#FF7F00'; // 클릭 시 색상
@@ -659,25 +708,69 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                     >
                         댓글 작성
                     </button>
-                    <div style={{ display: 'flex', gap: '16px' }}>
-                        <button onClick={handleLikeToggle}>
-                            <FaHeart color={liked ? 'red' : 'gray'} />
-                        </button>
-                    </div>
                 </div>
-                {user && user.email === recipe.user && (
-                    <button
-                        onClick={handleDeleteRecipe}
-                        className='flex items-center p-2 border rounded bg-red-500 text-white'
+                {comments.map((comment, index) => (
+                    <div
+                        key={index}
+                        style={{
+                            border: '1px solid #ddd',
+                            padding: '8px',
+                            marginBottom: '8px',
+                            borderRadius: '4px',
+                        }}
                     >
-                        <FaTrash
-                            size={24}
-                            className='mr-2'
-                        />
-                        Delete Recipe
-                    </button>
-                )}
+                        <p
+                            style={{
+                                fontSize: '16px',
+                                color: '#FF8C00',
+                                marginBottom: '4px',
+                            }}
+                        >
+                            {comment.userEmail}
+                        </p>
+                        <p style={{ fontSize: '15px', color: '#5c5c5c' }}>
+                            {comment.text}
+                        </p>
+                    </div>
+                ))}
             </div>
+            {user && user.email === recipe.user && (
+                <button
+                    onClick={handleDeleteRecipe}
+                    className='flex items-center p-2 border rounded bg-red-500 text-white'
+                >
+                    <FaTrash
+                        size={24}
+                        className='mr-2'
+                    />
+                    Delete Recipe
+                </button>
+            )}
+            {/* 페이지 상단으로 이동하는 버튼 */}
+            <button
+                onClick={scrollToTop}
+                style={{
+                    color: '#ffffff',
+                    backgroundColor: '#000000',
+                    position: 'fixed',
+                    bottom: 50,
+                    right: 50,
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                    zIndex: 10,
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                }}
+            >
+                <FaArrowUp
+                    size={24}
+                    color='#ffffff'
+                />
+            </button>
         </main>
     );
 };

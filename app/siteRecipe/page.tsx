@@ -1,11 +1,64 @@
 // siteRecipe 공식레시피 리스트
 'use client';
 
-import { useEffect, useState } from 'react';
+import {
+    CSSProperties,
+    HTMLProps,
+    ReactNode,
+    useEffect,
+    useState,
+} from 'react';
 import Image from 'next/image';
 import xml2js from 'xml2js';
 import { useRouter } from 'next/navigation';
 import { FaArrowUp } from 'react-icons/fa';
+import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+
+////////////// 임시 Box, Text 컴포넌트 //////////////
+interface BoxProps {
+    children: ReactNode;
+    style?: CSSProperties;
+    [key: string]: any;
+}
+
+const Box: React.FC<BoxProps> = ({ children, style, ...props }) => (
+    <div
+        style={style}
+        {...props}
+    >
+        {children}
+    </div>
+);
+
+interface TextProps extends HTMLProps<HTMLParagraphElement> {
+    children: ReactNode;
+    style?: CSSProperties;
+}
+
+const Text: React.FC<TextProps> = ({ children, style, ...props }) => (
+    <p
+        style={style}
+        {...props}
+    >
+        {children}
+    </p>
+);
+
+/////////////////////////////////////////////////////////////////////////////////
+
+// 임시 Grid 컴포넌트 - 그리드 레이아웃을 제공
+interface GridProps extends React.HTMLProps<HTMLDivElement> {
+    children: React.ReactNode; // children의 타입을 React.ReactNode로 명시
+}
+
+const Grid: React.FC<GridProps> = ({ children, style, ...props }) => (
+    <div
+        style={style}
+        {...props}
+    >
+        {children}
+    </div>
+);
 
 // 스크롤을 페이지 상단으로 이동시키는 함수
 const scrollToTop = () => {
@@ -15,39 +68,9 @@ const scrollToTop = () => {
     });
 };
 
-// 임시 Box 컴포넌트 - 스타일을 적용하여 컨테이너 역할
-const Box = ({ children, style, ...props }) => (
-    <div
-        style={style}
-        {...props}
-    >
-        {children}
-    </div>
-);
-
-// 임시 Text 컴포넌트 - 텍스트 요소에 스타일을 적용
-const Text = ({ children, style, ...props }) => (
-    <p
-        style={style}
-        {...props}
-    >
-        {children}
-    </p>
-);
-
-// 임시 Grid 컴포넌트 - 그리드 레이아웃을 제공
-const Grid = ({ children, style, ...props }) => (
-    <div
-        style={style}
-        {...props}
-    >
-        {children}
-    </div>
-);
-
 const SiteRecipe = () => {
     // 레시피 데이터를 저장하는 상태
-    const [recipes, setRecipes] = useState<any[]>([]);
+    const [recipes, setRecipes] = useState([]);
     // 페이지당 아이템 수 상태, 기본값은 8
     const [itemsPerPage, setItemsPerPage] = useState(8);
     // 페이지 이동을 위한 useRouter 훅
@@ -84,7 +107,7 @@ const SiteRecipe = () => {
     }, []);
 
     // 이미지 클릭 시 상세 페이지로 이동하는 함수
-    const handleImageClick = (id: string) => {
+    const handleImageClick = (id: any) => {
         router.push(`/galleryPost?id=${id}`);
     };
 
@@ -115,23 +138,42 @@ const SiteRecipe = () => {
     }, [itemsPerPage, recipes]);
 
     return (
-        <div style={{ padding: '20px' }}>
-            {/* 페이지 상단 제목 */}
-            <Text
-                className='text-2xl font-bold mb-6'
+        <div>
+            {/* 페이지 상단 제목 시작   */}
+            <Box
                 style={{
-                    fontSize: '24px',
-                    textAlign: 'center',
-                    marginTop: '35px',
-                    marginBottom: '35px',
-                    textDecoration: 'underline',
-                    textUnderlineOffset: '10px',
+                    position: 'relative',
+                    width: '100%', // 가로를 화면에 꽉 차게 변경
+                    height: '30vh', // 화면의 30% 높이
+                    overflow: 'hidden',
+                    marginBottom: '30px',
                 }}
             >
-                공식 레시피
-            </Text>
-
-            <hr className='h-px my-4 bg-gray-300 border-0 dark:bg-gray-700'></hr>
+                <Image
+                    src='/png/recipe-title.png' // 이미지 파일 경로
+                    alt='공식 레시피'
+                    layout='fill' // 부모 요소에 맞게 이미지 크기 조절
+                    objectFit='cover' // 이미지 비율 유지 및 컨테이너에 맞게 자르기
+                    style={{}}
+                />
+                <Box
+                    style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        color: 'white',
+                        fontSize: '42px',
+                        fontWeight: '600',
+                        textShadow: '3px 3px 6px rgba(0, 0, 0, 0.8)', // 강한 명암 효과 추가
+                        zIndex: 1,
+                        textAlign: 'center', // 텍스트 중앙 정렬
+                    }}
+                >
+                    공식 레시피
+                </Box>
+            </Box>{' '}
+            {/* 페이지 상단 제목 끝 */}
             {/* 레시피 그리드 컨테이너 */}
             <Box
                 style={{
@@ -153,7 +195,7 @@ const SiteRecipe = () => {
                 >
                     {/* 레시피 목록이 있는 경우 */}
                     {currentRecipes.length > 0 ? (
-                        currentRecipes.map((recipe) => (
+                        currentRecipes.map((recipe: any) => (
                             <Box
                                 key={recipe.id}
                                 style={{
@@ -196,10 +238,10 @@ const SiteRecipe = () => {
                                         onClick={() =>
                                             handleImageClick(recipe.id)
                                         }
-                                        onMouseEnter={(e) => {
+                                        onMouseEnter={(e: any) => {
                                             e.currentTarget.style.opacity = '1';
                                         }}
-                                        onMouseLeave={(e) => {
+                                        onMouseLeave={(e: any) => {
                                             e.currentTarget.style.opacity = '0';
                                         }}
                                     >
@@ -215,10 +257,19 @@ const SiteRecipe = () => {
                                 </Box>
                                 <Text
                                     style={{
-                                        fontSize: '16px',
-                                        fontWeight: '600',
-                                        marginTop: '10px',
-                                        textAlign: 'center',
+                                        fontSize: '12px',
+                                        marginTop: '8px',
+                                        color: '#8C8C8C',
+                                    }}
+                                >
+                                    {recipe.calories} kcal
+                                </Text>
+                                <Text
+                                    style={{
+                                        fontSize: '14px',
+                                        fontWeight: 'bold',
+                                        marginTop: '2px',
+                                        // textAlign: 'center',
                                     }}
                                 >
                                     {recipe.name}

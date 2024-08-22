@@ -1,20 +1,39 @@
 // freeBoard 자유게시판 리스트
 'use client'; // Next.js에서 이 파일이 클라이언트에서 실행된다는 것을 알림
 
-import React, { useEffect, useState } from 'react'; // React와 필요한 훅들을 import
+import React, { ReactNode, useEffect, useState } from 'react'; // React와 필요한 훅들을 import
 import { useRouter } from 'next/navigation'; // Next.js의 라우터 훅을 import
 import { useAuth } from '../context/AuthContext'; // 인증 컨텍스트에서 현재 사용자 정보를 가져오는 훅을 import
 import { fetchPosts } from '../../lib/firestore'; // Firestore에서 게시글을 가져오는 함수 import
 import { EditIcon, Icon } from '@/components/ui/icon';
+import Image from 'next/image'; // 'react-native'의 Image 대신 'next/image'를 사용
+import { Box } from '@/components/ui/box/index.web';
+import { FaArrowUp } from 'react-icons/fa';
+
+// Post 인터페이스 정의
+interface Post {
+    views: number;
+    comments: number;
+    author: string;
+    date: string;
+    title: string;
+    id: string;
+}
+// 스크롤을 페이지 상단으로 이동시키는 함수
+const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth', // 부드러운 스크롤 효과
+    });
+};
 
 const FreeBoard = () => {
-    // 게시글을 저장할 상태 변수와 현재 페이지, 검색어, 필터된 게시글을 위한 상태 변수를 정의
-    const [posts, setPosts] = useState<any[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filteredPosts, setFilteredPosts] = useState<any[]>([]);
+    const [posts, setPosts] = useState<Post[]>([]); // 모든 게시글을 저장하는 상태 변수
+    const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호를 저장하는 상태 변수
+    const [searchTerm, setSearchTerm] = useState(''); // 검색어를 저장하는 상태 변수
+    const [filteredPosts, setFilteredPosts] = useState<Post[]>([]); // 검색어에 기반해 필터링된 게시글을 저장하는 상태 변수
     const postsPerPage = 10; // 페이지당 게시글 수 설정
-    const router = useRouter(); // 라우터 객체 생성
+    const router = useRouter(); // Next.js 라우터 객체를 생성하여 페이지 이동을 처리하는 데 사용
     const { user } = useAuth(); // 현재 사용자 정보를 인증 컨텍스트에서 가져옴
 
     // 컴포넌트가 마운트될 때 Firestore에서 게시글 데이터를 불러옴
@@ -81,292 +100,388 @@ const FreeBoard = () => {
         return `${year}-${month}-${day}`;
     };
 
+    // 페이지 번호를 생성하는 방법을 Array.from()을 사용하여 수정
+    const pageNumbers = Array.from(
+        { length: Math.ceil(filteredPosts.length / postsPerPage) },
+        (_, index) => index + 1
+    );
+
     return (
         <main>
-            <div style={{ padding: '20px' }}>
-                <h1
-                className='text-2xl font-bold mb-6'
-                style={{
-                    textAlign: 'center',
-                    marginBottom: '16px',
-                    // textDecoration: 'underline',
-                    // textUnderlineOffset: '10px',
-                }}>
-                    자유게시판
-                </h1>
-                <hr className='h-px my-4 bg-gray-300 border-0 dark:bg-gray-700'></hr>
-
-                {/* 글 작성하기 버튼을 테이블 바로 위에 위치시키기 */}
-                {user && ( // 사용자가 로그인되어 있을 때만 글 작성하기 버튼을 표시
-                    <div style={{ marginLeft: '1350px', marginBottom: '20px' }}>
-                        <button
-                            type='button'
-                            className='w-16 h-16 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center'
-                            onClick={handleWriteClick}
-                        >
-                        <span className='text-sm font-semibold text-center'><Icon as={EditIcon} size='xl' /></span>
-                        </button>
-                    </div>
-                )}
-
-                <div
+            <div>
+                {/* 페이지 상단 제목 시작 */}
+                <Box
                     style={{
-                        marginTop: '20px',
-                        display: 'flex',
-                        justifyContent: 'center',
+                        position: 'relative',
+                        width: '100%', // 가로를 화면에 꽉 차게 변경
+                        height: '30vh', // 화면의 30% 높이
+                        overflow: 'hidden',
+                        marginBottom: '30px',
                     }}
                 >
-                    {filteredPosts.length > 0 ? (
-                        <>
-                            <table
-                                style={{
-                                    width: '70%', // 테이블 너비 조정
-                                    borderCollapse: 'collapse',
-                                }}
-                            >
-                                <thead>
-                                    <tr>
-                                        <th
-                                            style={{
-                                                borderBottom: '2px solid #ddd',
-                                                padding: '8px',
-                                                textAlign: 'center',
-                                                backgroundColor: '#f9f9f9',
-                                                width: '10%', // 번호 열 너비
-                                            }}
-                                        >
-                                            번호
-                                        </th>
-                                        <th
-                                            style={{
-                                                borderBottom: '2px solid #ddd',
-                                                padding: '8px',
-                                                textAlign: 'center',
-                                                backgroundColor: '#f9f9f9',
-                                                width: '50%', // 글 제목 열 너비 조정
-                                            }}
-                                        >
-                                            글 제목
-                                        </th>
-                                        <th
-                                            style={{
-                                                borderBottom: '2px solid #ddd',
-                                                padding: '8px',
-                                                textAlign: 'center',
-                                                backgroundColor: '#f9f9f9',
-                                                width: '15%', // 작성자 열 너비
-                                            }}
-                                        >
-                                            작성자
-                                        </th>
-                                        <th
-                                            style={{
-                                                borderBottom: '2px solid #ddd',
-                                                padding: '8px',
-                                                textAlign: 'center',
-                                                backgroundColor: '#f9f9f9',
-                                                width: '15%', // 작성일 열 너비
-                                            }}
-                                        >
-                                            작성일
-                                        </th>
-                                        <th
-                                            style={{
-                                                borderBottom: '2px solid #ddd',
-                                                padding: '8px',
-                                                textAlign: 'center',
-                                                backgroundColor: '#f9f9f9',
-                                                width: '5%', // 댓글수 열 너비
-                                            }}
-                                        >
-                                            댓글수
-                                        </th>
-                                        <th
-                                            style={{
-                                                borderBottom: '2px solid #ddd',
-                                                padding: '8px',
-                                                textAlign: 'center',
-                                                backgroundColor: '#f9f9f9',
-                                                width: '5%', // 조회수 열 너비
-                                            }}
-                                        >
-                                            조회수
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {currentPosts.map((post, index) => (
-                                        <tr key={post.id}>
-                                            <td
-                                                style={{
-                                                    borderBottom: '1px solid #ddd',
-                                                    padding: '8px',
-                                                    textAlign: 'center',
-                                                }}
-                                            >
-                                                {filteredPosts.length -
-                                                    (currentPage - 1) *
-                                                        postsPerPage -
-                                                    index}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    borderBottom: '1px solid #ddd',
-                                                    padding: '8px',
-                                                    cursor: 'pointer',
-                                                    color: 'blue',
-                                                    textDecoration: 'underline',
-                                                    textAlign: 'left',
-                                                    whiteSpace: 'nowrap', // 제목이 너무 길면 줄바꿈 없이 표시
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis', // 텍스트가 넘칠 경우 말줄임표로 표시
-                                                }}
-                                                onClick={() =>
-                                                    handlePostClick(post.id)
-                                                }
-                                            >
-                                                {post.title}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    borderBottom: '1px solid #ddd',
-                                                    padding: '8px',
-                                                    textAlign: 'center',
-                                                }}
-                                            >
-                                                {post.author}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    borderBottom: '1px solid #ddd',
-                                                    padding: '8px',
-                                                    textAlign: 'center',
-                                                }}
-                                            >
-                                                {formatDate(post.date)}
-                                            </td>
-                                            <td
-                                                style={{
-
-                                                    borderBottom: '1px solid #ddd',
-                                                    padding: '8px',
-                                                    textAlign: 'center',
-                                                }}
-                                            >
-                                                {post.comments}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    borderBottom: '1px solid #ddd',
-                                                    padding: '8px',
-                                                    textAlign: 'center',
-                                                }}
-                                            >
-                                                {post.views}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </>
-                    ) : (
-                        <p>작성된 글이 없습니다.</p> // 게시글이 없을 때 메시지 표시
-                    )}
-                </div>
-
-                {/* 검색과 페이지네이션을 아래로 이동 */}
+                    <Image
+                        src='/png/freeboard.png' // 이미지 파일 경로
+                        layout='fill' // 부모 요소에 맞게 이미지 크기 조절
+                        objectFit='cover' // 이미지 비율 유지 및 컨테이너에 맞게 자르기
+                        alt={'자유게시판'}
+                        style={{}}
+                    />
+                    <Box
+                        style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            color: 'white',
+                            fontSize: '42px',
+                            fontWeight: '600',
+                            textShadow: '3px 3px 6px rgba(0, 0, 0, 0.8)', // 강한 명암 효과 추가
+                            zIndex: 1,
+                            textAlign: 'center', // 텍스트 중앙 정렬
+                        }}
+                    >
+                        자유게시판
+                    </Box>
+                </Box>
+                {/* 페이지 상단 제목 끝 */}
                 <div
                     style={{
-                        marginTop: '20px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
+                        display: 'flex', // flexbox 사용
+                        justifyContent: 'flex-end', // 오른쪽 정렬
+                        paddingRight: '20rem', // 오른쪽 패딩 추가 (선택 사항)
                     }}
-                >
-                    {/* 검색어 입력과 검색 버튼을 가로로 배치 */}
+                ></div>
+
+                {/* 리스트 영역 */}
+                <div>
                     <div
                         style={{
+                            marginTop: '60px',
                             display: 'flex',
-                            alignItems: 'center',
-                            marginBottom: '20px', // 검색 버튼과 검색어 사이 간격
+                            justifyContent: 'center',
                         }}
                     >
-                        <input
-                            type='text'
-                            value={searchTerm}
-                            onChange={handleSearchChange} // 검색어가 변경되면 상태 업데이트
-                            placeholder='검색어를 입력하세요...'
-                            style={{
-                                padding: '8px',
-                                borderRadius: '4px',
-                                border: '1px solid #ddd',
-                                width: '400px',
-                                marginRight: '10px', // 검색 버튼과의 간격 조정
-                            }}
-                        />
-                        <button
-                            type='button'
-                            className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600'
-                            onClick={handleSearchClick} // 검색 버튼 클릭 시 필터링된 게시글 표시
-                        >
-                            검색
-                        </button>
+                        {filteredPosts.length > 0 ? (
+                            <>
+                                <table
+                                    style={{
+                                        width: '55%', // 테이블 너비 조정
+                                        borderCollapse: 'collapse',
+                                    }}
+                                >
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                style={{
+                                                    borderBottom:
+                                                        '2px solid #ddd',
+                                                    padding: '8px',
+                                                    textAlign: 'center',
+                                                    backgroundColor: '#f9f9f9',
+                                                    width: '3%', // 번호 열 너비
+                                                }}
+                                            >
+                                                번호
+                                            </th>
+                                            <th
+                                                style={{
+                                                    borderBottom:
+                                                        '2px solid #ddd',
+                                                    padding: '8px',
+                                                    textAlign: 'center',
+                                                    backgroundColor: '#f9f9f9',
+                                                    width: '20%', // 글 제목 열 너비 조정
+                                                }}
+                                            >
+                                                글 제목
+                                            </th>
+                                            <th
+                                                style={{
+                                                    borderBottom:
+                                                        '2px solid #ddd',
+                                                    padding: '8px',
+                                                    textAlign: 'center',
+                                                    backgroundColor: '#f9f9f9',
+                                                    width: '5%', // 작성자 열 너비
+                                                }}
+                                            >
+                                                작성자
+                                            </th>
+                                            <th
+                                                style={{
+                                                    borderBottom:
+                                                        '2px solid #ddd',
+                                                    padding: '8px',
+                                                    textAlign: 'center',
+                                                    backgroundColor: '#f9f9f9',
+                                                    width: '5%', // 작성일 열 너비
+                                                }}
+                                            >
+                                                작성일
+                                            </th>
+                                            <th
+                                                style={{
+                                                    borderBottom:
+                                                        '2px solid #ddd',
+                                                    padding: '8px',
+                                                    textAlign: 'center',
+                                                    backgroundColor: '#f9f9f9',
+                                                    width: '3%', // 댓글수 열 너비
+                                                }}
+                                            >
+                                                댓글 수
+                                            </th>
+                                            <th
+                                                style={{
+                                                    borderBottom:
+                                                        '2px solid #ddd',
+                                                    padding: '8px',
+                                                    textAlign: 'center',
+                                                    backgroundColor: '#f9f9f9',
+                                                    width: '3%', // 조회수 열 너비
+                                                }}
+                                            >
+                                                조회 수
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {currentPosts.map((post, index) => (
+                                            <tr key={post.id}>
+                                                <td
+                                                    style={{
+                                                        borderBottom:
+                                                            '1px solid #ddd',
+                                                        padding: '8px',
+                                                        textAlign: 'center',
+                                                    }}
+                                                >
+                                                    {filteredPosts.length -
+                                                        (currentPage - 1) *
+                                                            postsPerPage -
+                                                        index}
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        borderBottom:
+                                                            '1px solid #ddd',
+                                                        padding: '8px',
+                                                        cursor: 'pointer',
+                                                        color: 'blue',
+                                                        textAlign: 'left',
+
+                                                        textDecoration:
+                                                            'underline',
+                                                        whiteSpace: 'nowrap', // 제목이 너무 길면 줄바꿈 없이 표시
+                                                        overflow: 'hidden',
+                                                        textOverflow:
+                                                            'ellipsis', // 텍스트가 넘칠 경우 말줄임표로 표시
+                                                    }}
+                                                    onClick={() =>
+                                                        handlePostClick(post.id)
+                                                    }
+                                                >
+                                                    {post.title}
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        borderBottom:
+                                                            '1px solid #ddd',
+                                                        padding: '8px',
+                                                        textAlign: 'center',
+                                                    }}
+                                                >
+                                                    {post.author}
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        borderBottom:
+                                                            '1px solid #ddd',
+                                                        padding: '8px',
+                                                        textAlign: 'center',
+                                                    }}
+                                                >
+                                                    {formatDate(post.date)}
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        borderBottom:
+                                                            '1px solid #ddd',
+                                                        padding: '8px',
+                                                        textAlign: 'center',
+                                                    }}
+                                                >
+                                                    {post.comments}
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        borderBottom:
+                                                            '1px solid #ddd',
+                                                        padding: '8px',
+                                                        textAlign: 'center',
+                                                    }}
+                                                >
+                                                    {post.views}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </>
+                        ) : (
+                            <p>작성된 글이 없습니다.</p> // 게시글이 없을 때 메시지 표시
+                        )}
                     </div>
 
-                    {/* 페이지네이션 */}
-                    <nav
+                    {/* 검색과 페이지네이션을 아래로 이동 */}
+
+                    <div
                         style={{
-                            textAlign: 'center',
-                            marginTop: '20px',
+                            marginTop: '40px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: '',
                         }}
                     >
-                        <ul
+                        <div
                             style={{
-                                display: 'inline-flex',
-                                listStyleType: 'none',
-                                padding: 0,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center', // 전체를 가운데 정렬
+                                marginBottom: '1rem', // 검색 버튼과 검색어 사이 간격을 rem 단위로 설정
+                                width: '100%', // 부모 요소에 맞게 전체 너비를 사용
                             }}
                         >
-                            {[
-                                ...Array(
-                                    Math.ceil(
-                                        filteredPosts.length /
-                                            postsPerPage
-                                    )
-                                ).keys(), // 페이지 번호 생성
-                            ].map((number) => (
-                                <li
-                                    key={number + 1}
-                                    style={{ margin: '0 5px' }}
+                            {' '}
+                            <div
+                                style={{
+                                    padding: '0.5rem',
+                                    borderRadius: '4px',
+                                    width: '320px', // 고정된 너비
+                                    marginRight: '20px',
+                                }}
+                            ></div>
+                            <input
+                                type='text'
+                                value={searchTerm}
+                                onChange={handleSearchChange} // 검색어가 변경되면 상태 업데이트
+                                placeholder='검색어를 입력하세요.'
+                                style={{
+                                    padding: '0.5rem', // 패딩을 rem 단위로 설정
+                                    borderRadius: '4px',
+                                    border: '1px solid #ddd',
+                                    flex: '1', // 입력 창이 남은 공간을 차지하도록 설정
+                                    marginRight: '1rem', // 검색 버튼과의 간격
+                                    maxWidth: '400px', // 최대 너비를 설정하여 입력창이 너무 길어지지 않도록 함
+                                }}
+                            />
+                            <button
+                                type='button'
+                                className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600'
+                                onClick={handleSearchClick} // 검색 버튼 클릭 시 필터링된 게시글 표시
+                                style={{
+                                    flexShrink: '0', // 버튼 크기가 줄어들지 않도록 설정
+                                    marginRight: '1rem', // 글 작성하기 버튼과의 간격
+                                }}
+                            >
+                                검색
+                            </button>
+                            <div
+                                style={{
+                                    padding: '0.5rem',
+                                    borderRadius: '4px',
+                                    width: '220px', // 고정된 너비
+                                    marginRight: '20px',
+                                }}
+                            ></div>
+                            {/* 글 작성하기 버튼 시작 */}
+                            {
+                                <button
+                                    type='button'
+                                    className='bg-pink-300 text-white hover:bg-pink-400 transition-colors flex items-center justify-center border-2 border-black'
+                                    onClick={handleWriteClick}
+                                    style={{
+                                        padding: '0.5rem',
+                                        borderRadius: '4px',
+                                        border: '1px solid #ddd',
+                                        width: '140px', // 고정된 너비
+                                    }}
                                 >
-                                    <button
-                                        onClick={() =>
-                                            paginate(number + 1) // 페이지 번호 클릭 시 해당 페이지로 이동
-                                        }
-                                        style={{
-                                            background:
-                                                number + 1 ===
-                                                currentPage
-                                                    ? 'orange' // 현재 페이지일 경우 배경색 변경
-                                                    : 'white',
-                                            color:
-                                                number + 1 ===
-                                                currentPage
+                                    글쓰기
+                                </button>
+                            }
+                            {/* 글 작성하기 버튼 끝 */}
+                        </div>
 
-                                                    ? 'white'
-                                                    : 'black',
-                                            border: '1px solid #ddd',
-                                            padding: '5px 10px',
-                                            borderRadius: '5px',
+                        {/* 페이지네이션 */}
+                        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                            <ul
+                                style={{
+                                    listStyleType: 'none', // 리스트 아이템의 기본 스타일을 제거
+                                    padding: 0, // 리스트의 기본 패딩을 제거
+                                    display: 'flex', // 리스트 아이템을 가로로 나열하기 위해 flexbox 사용
+                                    justifyContent: 'center', // 페이지네이션을 가운데 정렬
+                                }}
+                            >
+                                {pageNumbers.map((number) => (
+                                    <li
+                                        key={number}
+                                        style={{
+                                            margin: '0 5px', // 각 페이지 번호 간의 간격 설정
+                                            display: 'inline-block', // 페이지 번호가 가로로 배치되도록 설정
                                         }}
                                     >
-                                        {number + 1}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
+                                        <button
+                                            onClick={() => paginate(number)}
+                                            style={{
+                                                background:
+                                                    number === currentPage
+                                                        ? 'orange'
+                                                        : 'white', // 현재 페이지는 주황색 배경
+                                                color:
+                                                    number === currentPage
+                                                        ? 'white'
+                                                        : 'black', // 현재 페이지는 흰색 텍스트
+                                                border: '1px solid #ddd', // 경계선 스타일 설정
+                                                padding: '5px 10px', // 패딩 설정
+                                                borderRadius: '5px', // 모서리를 둥글게 설정
+                                                minWidth: '40px', // 모든 버튼의 최소 너비를 동일하게 설정하여 크기 통일
+                                                textAlign: 'center', // 텍스트를 버튼 중앙에 배치
+                                            }}
+                                        >
+                                            {number} {/* 페이지 번호 */}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
                 </div>
+                {/* 페이지 상단으로 이동하는 버튼 */}
+                <button
+                    onClick={scrollToTop}
+                    style={{
+                        color: '#ffffff',
+                        backgroundColor: '#000000',
+                        position: 'fixed',
+                        bottom: 50,
+                        right: 50,
+                        width: 80,
+                        height: 80,
+                        borderRadius: 40,
+                        zIndex: 10,
+                        border: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                    }}
+                >
+                    <FaArrowUp
+                        size={24}
+                        color='#ffffff'
+                    />
+                </button>
             </div>
         </main>
     );

@@ -33,7 +33,7 @@ function MyPage() {
         return () => unsubscribe();
     }, []);
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
@@ -41,11 +41,18 @@ function MyPage() {
         }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
-        if (formData.password !== formData.confirmPassword) {
+        const { password, confirmPassword } = formData;
+
+        if (password === '' || confirmPassword === '') {
+            setError('새 비밀번호와 비밀번호 확인을 입력하세요.');
+            return;
+        }
+
+        if (password !== confirmPassword) {
             setError('비밀번호가 일치하지 않습니다.');
             return;
         }
@@ -53,13 +60,13 @@ function MyPage() {
         try {
             const user = auth.currentUser;
             if (user) {
-                await updatePassword(user, formData.password);
+                await updatePassword(user, password);
                 alert('비밀번호가 성공적으로 변경되었습니다.');
                 window.location.reload();
             } else {
                 setError('사용자가 로그인되어 있지 않습니다.');
             }
-        } catch (error) {
+        } catch (error: any) {
             setError('비밀번호 변경 중 오류가 발생했습니다: ' + error.message);
         }
     };
@@ -69,66 +76,100 @@ function MyPage() {
     }
 
     return (
-        <main className='flex flex-col items-center justify-center p-4' style={{ marginTop: '60px' }}>
+        <main
+            className='flex flex-col items-center justify-center p-4'
+            style={{ marginTop: '60px' }}
+        >
             <div className='flex flex-col space-y-4'>
                 <h1
                     className='text-2xl font-bold mb-6'
                     style={{
                         textAlign: 'center',
                         marginBottom: '16px',
-                    }}>
+                    }}
+                >
                     회원정보 확인/수정하기
                 </h1>
 
                 {/* 상단 버튼들 추가 */}
-                <div className='flex justify-center mb-8' style={{ marginTop: '60px', marginBottom: '20px' }}>
+                <div
+                    className='flex justify-center mb-8'
+                    style={{ marginTop: '60px', marginBottom: '20px' }}
+                >
                     <Link href='/myPosts'>
-                        <span className='flex items-center px-16 py-2 text-center font-normal' style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            border: '1px solid #383838',
-                            backgroundColor: '#fff',
-                            color: '#333',
-                            transition: 'background-color 0.3s, color 0.3s',
-                            borderRight: 'none'
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#E5E7EB'}
-                        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fff'}
+                        <span
+                            className='flex items-center px-16 py-2 text-center font-normal'
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                border: '1px solid #383838',
+                                backgroundColor: '#fff',
+                                color: '#333',
+                                transition: 'background-color 0.3s, color 0.3s',
+                                borderRight: 'none',
+                            }}
+                            onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                    '#E5E7EB')
+                            }
+                            onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor = '#fff')
+                            }
                         >
-                            <FaPen style={{ color: '#333', marginRight: '8px' }} />
+                            <FaPen
+                                style={{ color: '#333', marginRight: '8px' }}
+                            />
                             작성글
                         </span>
                     </Link>
                     <Link href='/myComments'>
-                        <span className='flex items-center px-16 py-2 text-center font-normal' style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            border: '1px solid #383838',
-                            backgroundColor: '#fff',
-                            color: '#333',
-                            transition: 'background-color 0.3s, color 0.3s',
-                            borderRight: 'none'
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#E5E7EB'}
-                        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fff'}
+                        <span
+                            className='flex items-center px-16 py-2 text-center font-normal'
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                border: '1px solid #383838',
+                                backgroundColor: '#fff',
+                                color: '#333',
+                                transition: 'background-color 0.3s, color 0.3s',
+                                borderRight: 'none',
+                            }}
+                            onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                    '#E5E7EB')
+                            }
+                            onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor = '#fff')
+                            }
                         >
-                            <FaComment style={{ color: '#333', marginRight: '8px' }} />
+                            <FaComment
+                                style={{ color: '#333', marginRight: '8px' }}
+                            />
                             댓글
                         </span>
                     </Link>
                     <Link href='/myLikes'>
-                        <span className='flex items-center px-16 py-2 text-center font-normal' style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            border: '1px solid #383838',
-                            backgroundColor: '#fff',
-                            color: '#333',
-                            transition: 'background-color 0.3s, color 0.3s'
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#E5E7EB'}
-                        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fff'}
+                        <span
+                            className='flex items-center px-16 py-2 text-center font-normal'
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                border: '1px solid #383838',
+                                backgroundColor: '#fff',
+                                color: '#333',
+                                transition: 'background-color 0.3s, color 0.3s',
+                            }}
+                            onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                    '#E5E7EB')
+                            }
+                            onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor = '#fff')
+                            }
                         >
-                            <FaThumbsUp style={{ color: '#333', marginRight: '8px' }} />
+                            <FaThumbsUp
+                                style={{ color: '#333', marginRight: '8px' }}
+                            />
                             좋아요
                         </span>
                     </Link>
@@ -136,9 +177,7 @@ function MyPage() {
 
                 <hr className='h-px my-8 bg-gray-300 border-0 dark:bg-gray-700'></hr>
 
-                {error && (
-                    <p className='text-red-500 text-center'>{error}</p>
-                )}
+                {error && <p className='text-red-500 text-center'>{error}</p>}
                 <form
                     onSubmit={handleSubmit}
                     className='w-full flex flex-col space-y-4'

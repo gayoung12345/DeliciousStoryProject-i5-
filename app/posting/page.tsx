@@ -1,11 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic'; // dynamic import 사용
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../../lib/firebaseConfig';
-import TextEditor from '@/components/text-editor/text-editor';
+
+// TextEditor 컴포넌트를 동적 로딩으로 변경하여 서버 사이드 렌더링 방지
+const TextEditor = dynamic(
+    () => import('@/components/text-editor/text-editor'),
+    {
+        ssr: false, // 서버 사이드 렌더링 비활성화
+    }
+);
 
 const Posting = () => {
     const [title, setTitle] = useState(''); // 제목을 관리하는 상태
@@ -50,7 +58,13 @@ const Posting = () => {
                     글 작성하기
                 </h1>
                 <form onSubmit={handleSubmit}>
-                    <div style={{ marginBottom: '20px', textAlign: 'left' }}>
+                    <div
+                        style={{
+                            marginTop: '40px',
+                            marginBottom: '20px',
+                            textAlign: 'left',
+                        }}
+                    >
                         <label
                             htmlFor='title'
                             style={{
@@ -59,14 +73,13 @@ const Posting = () => {
                                 textAlign: 'left',
                                 marginLeft: '20%',
                             }}
-                        >
-                            제목
-                        </label>
+                        ></label>
                         <input
                             id='title'
                             type='text'
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
+                            placeholder='제목을 입력하세요'
                             style={{
                                 width: '60%',
                                 padding: '10px',
@@ -88,9 +101,7 @@ const Posting = () => {
                                 textAlign: 'left',
                                 marginLeft: '20%',
                             }}
-                        >
-                            내용
-                        </label>
+                        ></label>
                         <div
                             style={{
                                 width: '60%',
@@ -98,11 +109,11 @@ const Posting = () => {
                                 marginBottom: '60px',
                             }}
                         >
-                            {' '}
                             {/* TextEditor의 아래에 더 넓은 여유 공간 추가 */}
                             <TextEditor
                                 content={content}
                                 setContent={setContent}
+                                placeholder='내용을 입력하세요' // TextEditor에 대한 기본 placeholder 추가
                             />
                         </div>
                     </div>
