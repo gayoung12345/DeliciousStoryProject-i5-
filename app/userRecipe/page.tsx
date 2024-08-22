@@ -8,6 +8,7 @@ import { EditIcon, Icon } from '@/components/ui/icon';
 import { useAuth } from '../context/AuthContext';
 import Image from 'next/image'; // 'react-native'의 Image 대신 'next/image'를 사용
 import { Box } from '@/components/ui/box/index.web';
+import { FaArrowUp } from 'react-icons/fa';
 
 interface Recipe {
     id: string;
@@ -66,6 +67,18 @@ const UserRecipe = () => {
             router.push('/login');
         }
     };
+    // 스크롤을 페이지 상단으로 이동시키는 함수
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth', // 부드러운 스크롤 효과
+        });
+    };
+
+    // '글 작성하기' 버튼을 클릭하면 레시피 작성 페이지로 이동
+    const handleWriteClick = () => {
+        router.push('/recipeWrite');
+    };
 
     return (
         <main>
@@ -104,6 +117,24 @@ const UserRecipe = () => {
                 </Box>
             </Box>{' '}
             {/* 페이지 상단 제목 끝 */}
+            {/* 글 작성하기 버튼 시작 */}
+            {
+                <button
+                    type='button'
+                    className='bg-orange-400 text-white hover:bg-orange-600 transition-colors flex items-center justify-center border-2 border-black'
+                    onClick={handleWriteClick}
+                    style={{
+                        padding: '0.5rem',
+                        borderRadius: '4px',
+                        border: '1px solid #ddd',
+                        width: '150px', // 고정된 너비
+                        marginLeft: '1330px',
+                    }}
+                >
+                    레시피 등록하기
+                </button>
+            }
+            {/* 글 작성하기 버튼 끝 */}
             <div className='relative max-w-6xl mx-auto p-4'>
                 <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
                     {recipes.map((recipe) => (
@@ -192,19 +223,31 @@ const UserRecipe = () => {
                     ))}
                 </div>
             </div>
-            {/* 플로팅 액션 버튼 */}
             <div className='fixed right-8 bottom-80 md:right-12 md:bottom-80 z-10'>
+                {/* 페이지 상단으로 이동하는 버튼 */}
                 <button
-                    onClick={handleWriteRecipeClick}
-                    className='w-16 h-16 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center'
-                    aria-label='레시피 작성'
+                    onClick={scrollToTop}
+                    style={{
+                        color: '#ffffff',
+                        backgroundColor: '#000000',
+                        position: 'fixed',
+                        bottom: 50,
+                        right: 50,
+                        width: 80,
+                        height: 80,
+                        borderRadius: 40,
+                        zIndex: 10,
+                        border: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                    }}
                 >
-                    <span className='text-sm font-semibold text-center'>
-                        <Icon
-                            as={EditIcon}
-                            size='xl'
-                        />
-                    </span>
+                    <FaArrowUp
+                        size={24}
+                        color='#ffffff'
+                    />
                 </button>
             </div>
         </main>

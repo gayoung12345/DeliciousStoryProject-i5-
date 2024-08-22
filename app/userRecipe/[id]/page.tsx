@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '@/lib/firebaseConfig';
+import { FaArrowUp } from 'react-icons/fa';
+
 import {
     FaArrowLeft,
     FaHeart,
@@ -49,6 +51,13 @@ interface Recipe {
     }[];
     user: string;
 }
+// 스크롤을 페이지 상단으로 이동시키는 함수
+const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth', // 부드러운 스크롤 효과
+    });
+};
 
 interface Comment {
     userId: string;
@@ -703,6 +712,44 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                         </div>
                     ))}
                 </div>
+                {user && user.email === recipe.user && (
+                    <button
+                        onClick={handleDeleteRecipe}
+                        className='flex items-center p-2 border rounded bg-red-500 text-white'
+                    >
+                        <FaTrash
+                            size={24}
+                            className='mr-2'
+                        />
+                        Delete Recipe
+                    </button>
+                )}
+                {/* 페이지 상단으로 이동하는 버튼 */}
+                <button
+                    onClick={scrollToTop}
+                    style={{
+                        color: '#ffffff',
+                        backgroundColor: '#000000',
+                        position: 'fixed',
+                        bottom: 50,
+                        right: 50,
+                        width: 80,
+                        height: 80,
+                        borderRadius: 40,
+                        zIndex: 10,
+                        border: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                    }}
+                >
+                    <FaArrowUp
+                        size={24}
+                        color='#ffffff'
+                    />
+                </button>
+            </div>
         </main>
     );
 };

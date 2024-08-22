@@ -1,11 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic'; // dynamic import 사용
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../../lib/firebaseConfig';
-import TextEditor from '@/components/text-editor/text-editor';
+
+// TextEditor 컴포넌트를 동적 로딩으로 변경하여 서버 사이드 렌더링 방지
+const TextEditor = dynamic(
+    () => import('@/components/text-editor/text-editor'),
+    {
+        ssr: false, // 서버 사이드 렌더링 비활성화
+    }
+);
 
 const Posting = () => {
     const [title, setTitle] = useState(''); // 제목을 관리하는 상태
@@ -101,7 +109,6 @@ const Posting = () => {
                                 marginBottom: '60px',
                             }}
                         >
-                            {' '}
                             {/* TextEditor의 아래에 더 넓은 여유 공간 추가 */}
                             <TextEditor
                                 content={content}
