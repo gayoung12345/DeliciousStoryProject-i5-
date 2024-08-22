@@ -37,9 +37,9 @@ const MyPosts = () => {
                     where('author', '==', user.email)
                 );
                 const querySnapshot = await getDocs(q);
-                const fetchedPosts: Post[] = querySnapshot.docs.map(doc => ({
+                const fetchedPosts: Post[] = querySnapshot.docs.map((doc) => ({
                     id: doc.id,
-                    ...(doc.data() as Omit<Post, 'id'>)
+                    ...(doc.data() as Omit<Post, 'id'>),
                 }));
 
                 setPosts(fetchedPosts);
@@ -58,8 +58,12 @@ const MyPosts = () => {
         if (searchTerm) {
             const filteredPosts = posts.filter(
                 (post) =>
-                    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    post.content.toLowerCase().includes(searchTerm.toLowerCase())
+                    post.title
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                    post.content
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase())
             );
             setSearchResults(filteredPosts);
             setCurrentPage(1); // Reset to first page on search
@@ -87,33 +91,57 @@ const MyPosts = () => {
     const totalPages = Math.ceil(sortedResults.length / POSTS_PER_PAGE);
 
     if (loading) {
-        return <div className='text-center p-4'>Loading...</div>;
+        return <div className='spinner'></div>;
     }
 
     return (
         <main className='p-6'>
+            <TopBar />
 
-<TopBar />
-
-            <h1 className='text-3xl font-bold mb-6 text-center' style={{ marginTop: '40px' }}>내 게시글</h1>
+            <h1
+                className='text-3xl font-bold mb-6 text-center'
+                style={{ marginTop: '40px' }}
+            >
+                내 게시글
+            </h1>
 
             {searchResults.length > 0 ? (
-                <div className='overflow-x-auto max-w-4xl mx-auto' style={{ marginTop: '60px', marginBottom: '20px' }}>
+                <div
+                    className='overflow-x-auto max-w-4xl mx-auto'
+                    style={{ marginTop: '60px', marginBottom: '20px' }}
+                >
                     <table className='min-w-full bg-white border border-gray-300 table-auto'>
                         <thead>
                             <tr className='bg-gray-200 border-b border-gray-300'>
-                                <th className='py-2 px-4 text-center text-gray-600 w-1/12 text-base'>번호</th>
-                                <th className='py-2 px-4 text-center text-gray-600 w-2/5 text-base'>글 제목</th>
-                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>작성자</th>
-                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>댓글수</th>
-                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>조회수</th>
-                                <th className='py-2 px-4 text-center text-gray-600 w-2/5 whitespace-nowrap text-base'>작성일</th>
+                                <th className='py-2 px-4 text-center text-gray-600 w-1/12 text-base'>
+                                    번호
+                                </th>
+                                <th className='py-2 px-4 text-center text-gray-600 w-2/5 text-base'>
+                                    글 제목
+                                </th>
+                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>
+                                    작성자
+                                </th>
+                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>
+                                    댓글수
+                                </th>
+                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>
+                                    조회수
+                                </th>
+                                <th className='py-2 px-4 text-center text-gray-600 w-2/5 whitespace-nowrap text-base'>
+                                    작성일
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {currentPosts.map((post, index) => (
-                                <tr key={post.id} className='border-b hover:bg-gray-50'>
-                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>{startIndex + index + 1}</td>
+                                <tr
+                                    key={post.id}
+                                    className='border-b hover:bg-gray-50'
+                                >
+                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>
+                                        {startIndex + index + 1}
+                                    </td>
                                     <td className='py-2 px-4'>
                                         <a
                                             href={`/post/${post.id}`}
@@ -122,16 +150,29 @@ const MyPosts = () => {
                                             {post.title}
                                         </a>
                                     </td>
-                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>{post.author}</td>
-                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>{post.comments}</td>
-                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>{post.views}</td>
-                                    <td className='py-2 px-4 text-center text-gray-500 text-sm whitespace-nowrap'>{new Date(post.date).toLocaleDateString()}</td>
+                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>
+                                        {post.author}
+                                    </td>
+                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>
+                                        {post.comments}
+                                    </td>
+                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>
+                                        {post.views}
+                                    </td>
+                                    <td className='py-2 px-4 text-center text-gray-500 text-sm whitespace-nowrap'>
+                                        {new Date(
+                                            post.date
+                                        ).toLocaleDateString()}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
 
-                    <div className='flex justify-center mb-6 space-x-1' style={{ marginTop: '40px', marginBottom: '30px' }}>
+                    <div
+                        className='flex justify-center mb-6 space-x-1'
+                        style={{ marginTop: '40px', marginBottom: '30px' }}
+                    >
                         <input
                             type='text'
                             value={searchTerm}
@@ -154,16 +195,36 @@ const MyPosts = () => {
                         </button>
                     </div>
 
-                    <div className='flex justify-center mt-6' style={{ marginBottom: '20px' }}>
+                    <div
+                        className='flex justify-center mt-6'
+                        style={{ marginBottom: '20px' }}
+                    >
                         <nav style={{ textAlign: 'center' }}>
-                            <ul style={{ display: 'inline-flex', listStyleType: 'none', padding: 0 }}>
+                            <ul
+                                style={{
+                                    display: 'inline-flex',
+                                    listStyleType: 'none',
+                                    padding: 0,
+                                }}
+                            >
                                 {Array.from({ length: totalPages }, (_, i) => (
-                                    <li key={i + 1} style={{ margin: '0 5px' }}>
+                                    <li
+                                        key={i + 1}
+                                        style={{ margin: '0 5px' }}
+                                    >
                                         <button
-                                            onClick={() => handlePageChange(i + 1)}
+                                            onClick={() =>
+                                                handlePageChange(i + 1)
+                                            }
                                             style={{
-                                                background: i + 1 === currentPage ? 'orange' : 'white',
-                                                color: i + 1 === currentPage ? 'white' : 'black',
+                                                background:
+                                                    i + 1 === currentPage
+                                                        ? 'orange'
+                                                        : 'white',
+                                                color:
+                                                    i + 1 === currentPage
+                                                        ? 'white'
+                                                        : 'black',
                                                 border: '1px solid #ddd',
                                                 padding: '5px 10px',
                                                 borderRadius: '5px',
