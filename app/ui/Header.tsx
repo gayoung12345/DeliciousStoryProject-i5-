@@ -100,7 +100,11 @@ const Header = () => {
 
     return (
         <nav className='bg-white text-black px-6 sm:px-24 flex items-center justify-between w-full'>
-            <div className='flex-shrink-0'>
+            <div
+                className='flex-shrink-0'
+                onMouseEnter={() => speakText('홈')}
+                style={{marginRight:'20px',marginLeft:'40px'}}
+            >
                 <Link href='/'>
                     <Image
                         src={logoSrc}
@@ -110,37 +114,36 @@ const Header = () => {
                     />
                 </Link>
             </div>
-            <div style={{ width: '180px' }}></div>
             <div className='flex-grow flex items-center justify-center space-x-6 ml-12 hidden xl:flex'>
-                <button
+                {/* <button
                     onClick={() => handleMenuClick('/')}
                     onMouseEnter={() => speakText('홈')}
-                    className='button hover:text-orange-400'
-                    style={{ fontSize: '18px' }}
+                    className='block butt'
+                    style={{ fontSize: '18px', width:'max-content' }}
                 >
                     홈
-                </button>
+                </button> */}
                 <button
                     onClick={() => handleMenuClick('/siteRecipe')}
                     onMouseEnter={() => speakText('공식레시피')}
-                    className='button hover:text-orange-400'
-                    style={{ fontSize: '18px' }}
+                    className='block butt'
+                    style={{ fontSize: '18px', width: 'max-content' }}
                 >
                     공식레시피
                 </button>
                 <button
                     onClick={() => handleMenuClick('/userRecipe')}
                     onMouseEnter={() => speakText('모두의레시피')}
-                    className='button hover:text-orange-400'
-                    style={{ fontSize: '18px' }}
+                    className='block butt'
+                    style={{ fontSize: '18px', width: 'max-content' }}
                 >
                     모두의레시피
                 </button>
                 <button
                     onClick={() => handleMenuClick('/freeBoard')}
                     onMouseEnter={() => speakText('자유게시판')}
-                    className='button hover:text-orange-400'
-                    style={{ fontSize: '18px' }}
+                    className='block butt'
+                    style={{ fontSize: '18px', width: 'max-content' }}
                 >
                     자유게시판
                 </button>
@@ -149,16 +152,16 @@ const Header = () => {
                         <button
                             onClick={() => handleMenuClick('/myPage')}
                             onMouseEnter={() => speakText('마이페이지')}
-                            className='button hover:text-orange-400'
-                            style={{ fontSize: '18px' }}
+                            className='block butt'
+                            style={{ fontSize: '18px', width: 'max-content' }}
                         >
                             마이페이지
                         </button>
                         <button
                             onClick={() => handleMenuClick('/logout')}
                             onMouseEnter={() => speakText('로그아웃')}
-                            className='button hover:text-orange-400'
-                            style={{ fontSize: '18px' }}
+                            className='block butt'
+                            style={{ fontSize: '18px', width: 'max-content' }}
                         >
                             로그아웃
                         </button>
@@ -168,16 +171,16 @@ const Header = () => {
                         <button
                             onClick={() => handleMenuClick('/login')}
                             onMouseEnter={() => speakText('로그인')}
-                            className='button hover:text-orange-400'
-                            style={{ fontSize: '18px' }}
+                            className='block butt'
+                            style={{ fontSize: '18px', width: 'max-content' }}
                         >
                             로그인
                         </button>
                         <button
                             onClick={() => handleMenuClick('/signup')}
                             onMouseEnter={() => speakText('회원가입')}
-                            className='button hover:text-orange-400'
-                            style={{ fontSize: '18px' }}
+                            className='block butt'
+                            style={{ fontSize: '18px', width: 'max-content' }}
                         >
                             회원가입
                         </button>
@@ -199,6 +202,7 @@ const Header = () => {
                             fontSize: '16px',
                             width: '100%',
                             maxWidth: '400px',
+                            textAlign: 'center',
                         }}
                     />
                     <button
@@ -246,7 +250,7 @@ const Header = () => {
                     </div>
                 )}
             </div>
-            <div className='xl:hidden'>
+            <div className='relative xl:hidden'>
                 <button
                     onClick={toggleMenu}
                     className='focus:outline-none'
@@ -266,66 +270,101 @@ const Header = () => {
                         />
                     </svg>
                 </button>
+                {menuOpen && (
+                    <div className='absolute top-full right-0 bg-white shadow-md rounded-lg p-4 w-48 max-h-60 overflow-y-auto z-50'>
+                        {/* <button
+                onClick={() => handleMenuClick('/')}
+                className='block butt'
+                style={{margin:'5px'}}
+            >
+                홈
+            </button> */}
+                        <button
+                            onClick={() => handleMenuClick('/siteRecipe')}
+                            className='block butt'
+                            style={{ margin: '5px' }}
+                        >
+                            공식레시피
+                        </button>
+                        <button
+                            onClick={() => handleMenuClick('/userRecipe')}
+                            className='block butt'
+                            style={{ margin: '5px' }}
+                        >
+                            모두의레시피
+                        </button>
+                        <button
+                            onClick={() => handleMenuClick('/freeBoard')}
+                            className='block butt'
+                            style={{ margin: '5px' }}
+                        >
+                            자유게시판
+                        </button>
+                        {user ? (
+                            <>
+                                <button
+                                    onClick={() => handleMenuClick('/myPage')}
+                                    className='block butt'
+                                    style={{ margin: '5px' }}
+                                >
+                                    마이페이지
+                                </button>
+                                <button
+                                    onClick={() => handleMenuClick('/logout')}
+                                    className='block butt'
+                                    style={{ margin: '5px' }}
+                                >
+                                    로그아웃
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={() => handleMenuClick('/login')}
+                                    className='block butt'
+                                    style={{ margin: '5px' }}
+                                >
+                                    로그인
+                                </button>
+                                <button
+                                    onClick={() => handleMenuClick('/signup')}
+                                    className='block butt'
+                                    style={{ margin: '5px' }}
+                                >
+                                    회원가입
+                                </button>
+                            </>
+                        )}
+                    </div>
+                )}
             </div>
-            {menuOpen && (
-                <div className='dropdown-menu absolute top-16 right-0 bg-white shadow-md rounded-lg p-4 lg:hidden z-100'>
-                    <button
-                        onClick={() => handleMenuClick('/')}
-                        className='block hover:text-orange-400'
-                    >
-                        홈
-                    </button>
-                    <button
-                        onClick={() => handleMenuClick('/siteRecipe')}
-                        className='block hover:text-orange-400'
-                    >
-                        공식레시피
-                    </button>
-                    <button
-                        onClick={() => handleMenuClick('/userRecipe')}
-                        className='block hover:text-orange-400'
-                    >
-                        모두의레시피
-                    </button>
-                    <button
-                        onClick={() => handleMenuClick('/freeBoard')}
-                        className='block hover:text-orange-400'
-                    >
-                        자유게시판
-                    </button>
-                    {user ? (
-                        <>
-                            <button
-                                onClick={() => handleMenuClick('/myPage')}
-                                className='block hover:text-orange-400'
-                            >
-                                마이페이지
-                            </button>
-                            <button
-                                onClick={() => handleMenuClick('/logout')}
-                                className='block hover:text-orange-400'
-                            >
-                                로그아웃
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <button
-                                onClick={() => handleMenuClick('/login')}
-                                className='block hover:text-orange-400'
-                            >
-                                로그인
-                            </button>
-                            <button
-                                onClick={() => handleMenuClick('/signup')}
-                                className='block hover:text-orange-400'
-                            >
-                                회원가입
-                            </button>
-                        </>
-                    )}
-                </div>
-            )}
+            <style jsx>{`
+                .butt {
+                    position: relative;
+                    transition: color 0.3s ease;
+                    text-decoration: none;
+                    font-size: 18px; /* 텍스트 크기 고정 */
+                }
+
+                .butt:hover {
+                    color: #f97316; /* 호버 시 텍스트 색상 변경 */
+                }
+
+                .butt::after {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    bottom: -4px; /* 텍스트 아래 4px 위치 */
+                    width: 0;
+                    height: 3px; /* 밑줄 두께 */
+                    background-color: #f97316; /* 밑줄 색상 */
+                    transition: width 0.3s ease; /* 애니메이션 효과 */
+                }
+
+                .butt:hover::after {
+                    width: 100%;
+                }
+            `}</style>
         </nav>
     );
 };
