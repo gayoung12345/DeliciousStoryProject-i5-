@@ -153,7 +153,7 @@ const FreeBoard = () => {
                 ></div>
 
                 {/* 리스트 영역 */}
-                <div>
+                <div style={{justifyContent: 'center'}}>
                     <div
                         style={{
                             marginTop: '60px',
@@ -270,8 +270,7 @@ const FreeBoard = () => {
                                                         color: 'black',
                                                         textAlign: 'left',
 
-                                                        textDecoration:
-                                                            'none',
+                                                        textDecoration: 'none',
                                                         whiteSpace: 'nowrap', // 제목이 너무 길면 줄바꿈 없이 표시
                                                         overflow: 'hidden',
                                                         textOverflow:
@@ -336,6 +335,27 @@ const FreeBoard = () => {
 
                     {/* 검색과 페이지네이션을 아래로 이동 */}
 
+                    {/* 글 작성하기 버튼 시작 */}
+                    <div style={{width:'55%', margin:'auto', display: 'flex', justifyContent: 'flex-end'}}>
+                    <button
+                        type='button'
+                        className='bg-red-600 text-white hover:bg-red-800 transition-colors flex items-center justify-center border-2 border-black'
+                        onClick={handleWriteClick}
+                        style={{
+                            padding: '0.5rem',
+                            borderRadius: '4px',
+                            border: '1px solid #ddd',
+                            width: '140px',
+                            marginTop:'20px',
+                                                        
+                        }}
+                    >
+                        글쓰기
+                    </button>
+                    </div>
+                    {/* 글 작성하기 버튼 끝 */}
+
+
                     <div
                         style={{
                             marginTop: '40px',
@@ -395,23 +415,6 @@ const FreeBoard = () => {
                                     marginRight: '20px',
                                 }}
                             ></div>
-                            {/* 글 작성하기 버튼 시작 */}
-                            {
-                                <button
-                                    type='button'
-                                    className='bg-pink-300 text-white hover:bg-pink-400 transition-colors flex items-center justify-center border-2 border-black'
-                                    onClick={handleWriteClick}
-                                    style={{
-                                        padding: '0.5rem',
-                                        borderRadius: '4px',
-                                        border: '1px solid #ddd',
-                                        width: '140px', // 고정된 너비
-                                    }}
-                                >
-                                    글쓰기
-                                </button>
-                            }
-                            {/* 글 작성하기 버튼 끝 */}
                         </div>
 
                         {/* 페이지네이션 */}
@@ -437,7 +440,7 @@ const FreeBoard = () => {
                                             style={{
                                                 background:
                                                     number === currentPage
-                                                        ? 'orange'
+                                                        ? 'red'
                                                         : 'white', // 현재 페이지는 주황색 배경
                                                 color:
                                                     number === currentPage

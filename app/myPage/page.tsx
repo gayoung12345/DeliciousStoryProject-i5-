@@ -150,7 +150,7 @@ function MyPage() {
                     <hr className='my-8' />
                     <button
                         type='submit'
-                        className='bg-orange-400 text-white px-4 py-2 rounded hover:bg-orange-500 w-1/3 mx-auto'
+                        className='bg-red-600 text-white px-4 py-2 rounded hover:bg-red-800 w-1/3 mx-auto'
                         style={{ marginTop: '60px', marginBottom: '40px' }}
                     >
                         수정하기
