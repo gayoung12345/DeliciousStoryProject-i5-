@@ -117,20 +117,21 @@ const UserRecipe = () => {
                 </Box>
             </Box>
             <Grid>
+                <div style={{width:'70%', margin:'auto', display: 'flex', justifyContent: 'flex-end'}}>
                 <button
                     type='button'
-                    className='bg-orange-400 text-white hover:bg-orange-600 transition-colors flex items-center justify-center border-2 border-black'
+                    className='bg-red-600 text-white hover:bg-red-800 transition-colors border-2 border-black'
                     onClick={handleWriteClick}
                     style={{
                         padding: '0.5rem',
                         borderRadius: '4px',
                         border: '1px solid #ddd',
                         width: '150px',
-                        marginLeft: '1330px',
                     }}
                 >
                     레시피 등록하기
                 </button>
+                </div>
                 {loading ? (
                     <div className='spinner'></div>
                 ) : (

@@ -367,7 +367,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                             onClick={handleTtsClick}
                             style={{
                                 color: '#ffffff',
-                                backgroundColor: '#FF8C00',
+                                backgroundColor: '#DB0000',
                                 width: 80,
                                 height: 40,
                                 borderRadius: 20,
@@ -383,11 +383,11 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                             }}
                             onMouseDown={(e) => {
                                 e.currentTarget.style.backgroundColor =
-                                    '#FF7F00';
+                                    '#A50000';
                             }}
                             onMouseUp={(e) => {
                                 e.currentTarget.style.backgroundColor =
-                                    '#FF8C00';
+                                    '#DB0000';
                             }}
                         >
                             <FaVolumeUp size={20} />
@@ -416,7 +416,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                             onClick={handlePauseClick}
                             style={{
                                 color: '#ffffff',
-                                backgroundColor: '#FF8C00',
+                                backgroundColor: '#DB0000',
                                 width: 80,
                                 height: 40,
                                 borderRadius: 20,
@@ -432,11 +432,11 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                             }}
                             onMouseDown={(e) => {
                                 e.currentTarget.style.backgroundColor =
-                                    '#FF7F00';
+                                    '#A50000';
                             }}
                             onMouseUp={(e) => {
                                 e.currentTarget.style.backgroundColor =
-                                    '#FF8C00';
+                                    '#DB0000';
                             }}
                         >
                             <FaPause size={15} />
@@ -445,7 +445,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                             onClick={handleResumeClick}
                             style={{
                                 color: '#ffffff',
-                                backgroundColor: '#FF8C00',
+                                backgroundColor: '#DB0000',
                                 width: 80,
                                 height: 40,
                                 borderRadius: 20,
@@ -461,11 +461,11 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                             }}
                             onMouseDown={(e) => {
                                 e.currentTarget.style.backgroundColor =
-                                    '#FF7F00';
+                                    '#A50000';
                             }}
                             onMouseUp={(e) => {
                                 e.currentTarget.style.backgroundColor =
-                                    '#FF8C00';
+                                    '#DB0000';
                             }}
                         >
                             <FaPlay size={15} />
@@ -474,7 +474,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                             onClick={handleStopClick}
                             style={{
                                 color: '#ffffff',
-                                backgroundColor: '#FF8C00',
+                                backgroundColor: '#DB0000',
                                 width: 80,
                                 height: 40,
                                 borderRadius: 20,
@@ -490,11 +490,11 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                             }}
                             onMouseDown={(e) => {
                                 e.currentTarget.style.backgroundColor =
-                                    '#FF7F00';
+                                    '#A50000';
                             }}
                             onMouseUp={(e) => {
                                 e.currentTarget.style.backgroundColor =
-                                    '#FF8C00';
+                                    '#DB0000';
                             }}
                         >
                             <FaStop size={15} />
@@ -532,7 +532,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                                         cursor: 'pointer',
                                         display: 'flex', // 가로 정렬
                                         alignItems: 'center', // 세로 정렬
-                                        color: '#FF8C00', // 텍스트 색상 주황색
+                                        color: '#DB0000', // 텍스트 색상 주황색
                                         fontSize: '24px', // 텍스트 크기
                                         fontWeight: '600', // 텍스트 두께
                                         transition:
@@ -683,7 +683,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                         onClick={handleAddComment} // 댓글 작성 버튼 클릭 시 handleAddComment 호출
                         style={{
                             color: '#ffffff',
-                            backgroundColor: '#FF8C00', // 기본 주황색
+                            backgroundColor: '#DB0000', // 기본 주황색
                             height: 80,
                             borderRadius: 4,
                             border: 'none',
@@ -698,11 +698,11 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                             padding: '0 16px', // 버튼 내 여백
                         }}
                         onMouseDown={(e) => {
-                            e.currentTarget.style.backgroundColor = '#FF7F00'; // 클릭 시 색상
+                            e.currentTarget.style.backgroundColor = '#A50000'; // 클릭 시 색상
                             e.currentTarget.style.color = '#ffffff'; // 클릭 시 글씨 색상
                         }}
                         onMouseUp={(e) => {
-                            e.currentTarget.style.backgroundColor = '#FF8C00'; // 기본 색상으로 복구
+                            e.currentTarget.style.backgroundColor = '#DB0000'; // 기본 색상으로 복구
                             e.currentTarget.style.color = '#ffffff'; // 기본 글씨 색상
                         }}
                     >
@@ -722,7 +722,7 @@ const RecipeDetail = ({ params }: { params: { id: string } }) => {
                         <p
                             style={{
                                 fontSize: '16px',
-                                color: '#FF8C00',
+                                color: '#DB0000',
                                 marginBottom: '4px',
                             }}
                         >

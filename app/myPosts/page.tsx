@@ -145,7 +145,7 @@ const MyPosts = () => {
                                     <td className='py-2 px-4'>
                                         <a
                                             href={`/post/${post.id}`}
-                                            className='text-blue-600 hover:underline'
+                                            className='text-black hover:underline'
                                         >
                                             {post.title}
                                         </a>

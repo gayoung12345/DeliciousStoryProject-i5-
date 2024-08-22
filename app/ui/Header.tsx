@@ -245,7 +245,7 @@ const Header = () => {
                                                 `/galleryPost?id=${recipe.id}`
                                             )
                                         }
-                                        className='hover:text-blue-500 w-full text-left'
+                                        className='hover:text-red-600 w-full text-left'
                                     >
                                         {recipe.name}
                                     </button>
@@ -352,7 +352,7 @@ const Header = () => {
                 }
 
                 .butt:hover {
-                    color: #f97316; /* 호버 시 텍스트 색상 변경 */
+                    color: #DB0000; /* 호버 시 텍스트 색상 변경 */
                 }
 
                 .butt::after {
@@ -362,7 +362,7 @@ const Header = () => {
                     bottom: -4px; /* 텍스트 아래 4px 위치 */
                     width: 0;
                     height: 3px; /* 밑줄 두께 */
-                    background-color: #f97316; /* 밑줄 색상 */
+                    background-color: #DB0000; /* 밑줄 색상 */
                     transition: width 0.3s ease; /* 애니메이션 효과 */
                 }
 
