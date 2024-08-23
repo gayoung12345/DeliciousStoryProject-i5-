@@ -14,6 +14,17 @@ const slides = [
     { id: 3, image: '/png/img1.png' },
 ];
 
+// TTS 기능을 구현하는 함수
+const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+        const speech = new SpeechSynthesisUtterance(text);
+        speech.lang = 'ko-KR'; // 한국어 설정 (필요에 따라 변경 가능)
+        window.speechSynthesis.speak(speech);
+    } else {
+        console.error('TTS 기능을 지원하지 않는 브라우저입니다.');
+    }
+};
+
 // 레시피 데이터 타입
 interface Recipe {
     id: string;
@@ -295,20 +306,21 @@ export default function Home() {
                             width: 'max-content',
                         }}
                         onClick={handleMoreClick}
+                        onMouseEnter={() => speakText('공식레시피')}
                     >
                         공식레시피
                     </h1>
-                    
+
                     <hr
-                            style={{
-                                marginTop: '15px',
-                                backgroundColor: '#BDBDBD', 
-                                border: 'none', 
-                                height: '1px', 
-                                width:'80%',
-                                margin:'auto'
-                            }}
-                        />
+                        style={{
+                            marginTop: '15px',
+                            backgroundColor: '#BDBDBD',
+                            border: 'none',
+                            height: '1px',
+                            width: '80%',
+                            margin: 'auto',
+                        }}
+                    />
                     <div
                         style={{
                             marginTop: '20px',
@@ -322,6 +334,7 @@ export default function Home() {
                                 key={recipe.id}
                                 className='box-container'
                                 onClick={() => handleImageClick(recipe.id)}
+                                onMouseEnter={() => speakText(recipe.name)}
                             >
                                 <div className='image-container'>
                                     <Image
@@ -471,15 +484,16 @@ export default function Home() {
                             }}
                             className='butt'
                             onClick={handleUserRecipeClick}
+                            onMouseEnter={() => speakText('모두의레시피')}
                         >
                             모두의레시피
                         </h1>
                         <hr
                             style={{
                                 marginTop: '10px',
-                                backgroundColor: '#BDBDBD', 
-                                border: 'none', 
-                                height: '1px', 
+                                backgroundColor: '#BDBDBD',
+                                border: 'none',
+                                height: '1px',
                             }}
                         />
                         <p style={{ marginTop: '10px', fontSize: '14px' }}>
@@ -516,15 +530,16 @@ export default function Home() {
                             }}
                             className='butt'
                             onClick={handlefreeClick}
+                            onMouseEnter={() => speakText('자유게시판')}
                         >
                             자유게시판
                         </h1>
                         <hr
                             style={{
                                 marginTop: '10px',
-                                backgroundColor: '#BDBDBD', 
-                                border: 'none', 
-                                height: '1px', 
+                                backgroundColor: '#BDBDBD',
+                                border: 'none',
+                                height: '1px',
                             }}
                         />
                         <p style={{ marginTop: '10px', fontSize: '14px' }}>
