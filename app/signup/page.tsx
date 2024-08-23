@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../lib/firebaseConfig'; 
 import { useRouter } from 'next/navigation';  // useRouter 훅을 사용하여 페이지 이동 처리
+import Link from 'next/link';
 
 const Signup = () => {
     // 사용자 입력 데이터를 저장하는 상태
@@ -82,7 +83,7 @@ const Signup = () => {
                             id='email'
                             value={form.email}
                             onChange={handleChange}
-                            className='mt-1 block flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm'
+                            className='mt-1 block flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-600 focus:border-red-600 sm:text-sm'
                         />
                     </div>
                     
@@ -100,7 +101,7 @@ const Signup = () => {
                             id='password'
                             value={form.password}
                             onChange={handleChange}
-                            className='mt-1 block flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm'
+                            className='mt-1 block flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-600 focus:border-red-600 sm:text-sm'
                         />
                     </div>
 
@@ -118,7 +119,7 @@ const Signup = () => {
                             id='confirmPassword'
                             value={form.confirmPassword}
                             onChange={handleChange}
-                            className='mt-1 block flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm'
+                            className='mt-1 block flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-600 focus:border-red-600 sm:text-sm'
                         />
                     </div>
 
@@ -126,16 +127,17 @@ const Signup = () => {
 
                     {/* 버튼들 */}
                     <div className='flex justify-center'>
+                    <Link href='/'>
                         <button
                             type='button'
                             className='px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500'
-                            // 뒤로가기 버튼 클릭 시 동작 정의 (현재는 구현되지 않음)
                         >
-                            뒤로가기
+                            메인으로 가기
                         </button>
+                        </Link>
                         <button
                             type='submit'
-                            className='ml-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500'
+                            className='ml-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600'
                         >
                             회원가입
                         </button>

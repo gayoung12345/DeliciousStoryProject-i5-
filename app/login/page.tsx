@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../lib/firebaseConfig'; // Firebase 설정 파일 경로
+import Link from 'next/link';
 
 export default function LoginPage() {
     // 이메일 입력 상태를 관리하는 useState 훅
@@ -111,7 +112,7 @@ export default function LoginPage() {
                     style={{
                         width: '100%', // 버튼 너비 설정
                         padding: '10px',
-                        backgroundColor: '#FF6B00', // 버튼 배경색
+                        backgroundColor: '#DB0000', // 버튼 배경색
                         color: 'white', // 버튼 글자색
                         border: 'none', // 버튼 테두리 제거
                         borderRadius: '4px',
@@ -124,17 +125,18 @@ export default function LoginPage() {
                 {error && (
                     <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>
                 )}
+                <Link href='/signup'>
                 <div style={{ marginTop: '10px', fontSize: '14px' }}>
-                    {/* 회원가입 페이지로 이동 링크 (동작 추가 필요) */}
                     <span
                         style={{
                             cursor: 'pointer', // 클릭 시 포인터 커서로 변경
-                            color: '#0070f3', // 링크 색상
+                            color: '#A50000', // 링크 색상
                         }}
                     >
                         회원가입
                     </span>
                 </div>
+                </Link>
             </div>
         </div>
     );
