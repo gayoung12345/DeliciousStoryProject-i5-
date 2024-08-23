@@ -15,6 +15,15 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../lib/firebaseConfig';
 import { useAuth } from '../context/AuthContext';
+import { FaArrowUp } from 'react-icons/fa';
+
+// 스크롤을 페이지 상단으로 이동시키는 함수
+const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth', // 부드러운 스크롤 효과
+    });
+};
 
 // 타입 정의
 interface Post {
@@ -224,6 +233,8 @@ const ListPost = () => {
                         fontSize: '16px',
                         width: '100%',
                         boxSizing: 'border-box',
+                        textAlign: 'left',
+                        height: '300px',
                     }}
                 >
                     {/* 게시글 내용 표시 (HTML을 직접 렌더링) */}
@@ -231,6 +242,7 @@ const ListPost = () => {
                         dangerouslySetInnerHTML={{
                             __html: post.content,
                         }}
+                        style={{ textAlign: 'left' }}
                     />
                 </div>
                 {/* // 댓글 폼 */}
@@ -261,7 +273,7 @@ const ListPost = () => {
                                 marginBottom: '10px',
                                 boxSizing: 'border-box',
                             }}
-                            placeholder='좋은 말로 할 때 댓글을 작성하시겠어요?^^'
+                            placeholder='댓글을 작성하세요'
                             required
                         />
                         <button
@@ -340,6 +352,31 @@ const ListPost = () => {
                     </button>
                 </div>
             </div>
+            {/* 페이지 상단으로 이동하는 버튼 */}
+            <button
+                onClick={scrollToTop}
+                style={{
+                    color: '#ffffff',
+                    backgroundColor: '#000000',
+                    position: 'fixed',
+                    bottom: 50,
+                    right: 50,
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                    zIndex: 10,
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                }}
+            >
+                <FaArrowUp
+                    size={24}
+                    color='#ffffff'
+                />
+            </button>
         </main>
     );
 };
