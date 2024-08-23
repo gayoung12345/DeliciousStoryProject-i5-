@@ -1,19 +1,21 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import xml2js from 'xml2js';
 import { useRouter } from 'next/navigation';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 
+// 이미지 예시 데이터
 const slides = [
     { id: 1, image: '/png/img3.png' },
     { id: 2, image: '/png/img2.png' },
     { id: 3, image: '/png/img1.png' },
 ];
 
-interface SiteRecipe {
+// 레시피 데이터 타입
+interface Recipe {
     id: string;
     name: string;
     image: string;
@@ -22,65 +24,36 @@ interface SiteRecipe {
     calories: string;
 }
 
-interface UserRecipe {
-    id: string;
-    title: string;
-    images?: {
-        'main-image'?: string;
-    };
-    'main-image'?: string;
-}
-
 interface BoxProps extends React.HTMLProps<HTMLDivElement> {
     style?: React.CSSProperties;
     onClick?: () => void;
-    onMouseEnter?: () => void; // Mouse enter event handler
 }
 
 interface TextProps extends React.HTMLProps<HTMLParagraphElement> {
     style?: React.CSSProperties;
-    onMouseEnter?: () => void; // Mouse enter event handler
 }
 
-const Box: React.FC<BoxProps> = ({
-    style,
-    onClick,
-    onMouseEnter,
-    children,
-}) => (
+// Box 컴포넌트 정의
+const Box: React.FC<BoxProps> = ({ style, onClick, children }) => (
     <div
         style={style}
         onClick={onClick}
-        onMouseEnter={onMouseEnter}
     >
         {children}
     </div>
 );
 
-const Text: React.FC<TextProps> = ({ style, onMouseEnter, children }) => (
-    <p
-        style={style}
-        onMouseEnter={onMouseEnter}
-    >
-        {' '}
-        {children}
-    </p>
+// Text 컴포넌트 정의
+const Text: React.FC<TextProps> = ({ style, children }) => (
+    <p style={style}>{children}</p>
 );
 
 export default function Home() {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [siteRecipes, setSiteRecipes] = useState<SiteRecipe[]>([]);
-    const [userRecipes, setUserRecipes] = useState<UserRecipe[]>([]);
-    const [randomSiteRecipes, setRandomSiteRecipes] = useState<SiteRecipe[]>(
-        []
-    );
-    const [randomUserRecipes, setRandomUserRecipes] = useState<UserRecipe[]>(
-        []
-    );
+    const [recipes, setRecipes] = useState<Recipe[]>([]);
+    const [firebaseRecipes, setFirebaseRecipes] = useState<Recipe[]>([]);
     const itemsPerPage = 4;
     const router = useRouter();
-
-    const synth = useRef<SpeechSynthesis>(window.speechSynthesis); // Reference to SpeechSynthesis API
 
     const nextSlide = () => {
         setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
@@ -96,20 +69,8 @@ export default function Home() {
         setCurrentSlide(index);
     };
 
-    const getRandomItems = <T,>(items: T[], count: number): T[] => {
-        const shuffled = [...items].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, count);
-    };
-
-    const speakText = (text: string) => {
-        if (synth.current) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            synth.current.speak(utterance);
-        }
-    };
-
     useEffect(() => {
-        const fetchSiteRecipes = async () => {
+        const fetchRecipes = async () => {
             try {
                 const response = await fetch('/data/siterecipe.xml');
                 const xmlData = await response.text();
@@ -125,57 +86,51 @@ export default function Home() {
                     calories: recipe.INFO_ENG[0],
                 }));
 
-                setSiteRecipes(recipeData);
-                setRandomSiteRecipes(getRandomItems(recipeData, itemsPerPage));
+                setRecipes(recipeData);
             } catch (error) {
-                console.error('XML 파싱 에러:', error);
+                console.error('Error parsing XML:', error);
             }
         };
 
-        fetchSiteRecipes();
+        fetchRecipes();
     }, []);
 
     useEffect(() => {
-        const fetchUserRecipes = async () => {
+        const fetchFirebaseRecipes = async () => {
             try {
                 const userRecipeSnapshot = await getDocs(
                     collection(db, 'userRecipe')
                 );
-                const fetchedRecipes: UserRecipe[] = [];
+                const testRecipeSnapshot = await getDocs(
+                    collection(db, 'testRecipe')
+                );
+                const fetchedRecipes: Recipe[] = [];
+
                 userRecipeSnapshot.forEach((doc) => {
                     fetchedRecipes.push({
                         id: doc.id,
                         ...doc.data(),
-                    } as UserRecipe);
+                    } as Recipe);
                 });
-
-                // 테스트 레시피의 경우
-                const testRecipeSnapshot = await getDocs(
-                    collection(db, 'testRecipe')
-                );
                 testRecipeSnapshot.forEach((doc) => {
                     const data = doc.data();
                     fetchedRecipes.push({
                         id: doc.id,
-                        title: data.title,
-                        'main-image': data['main-image'],
-                    } as UserRecipe);
+                        name: data.title,
+                        image: data['main-image'],
+                        ingredients: '', // 데이터가 없으므로 빈 문자열
+                        manual: '', // 데이터가 없으므로 빈 문자열
+                        calories: '', // 데이터가 없으므로 빈 문자열
+                    } as Recipe);
                 });
 
-                // 랜덤으로 섞어서 설정
-                const shuffledRecipes = getRandomItems(
-                    fetchedRecipes,
-                    itemsPerPage
-                );
-
-                setUserRecipes(fetchedRecipes);
-                setRandomUserRecipes(shuffledRecipes);
+                setFirebaseRecipes(fetchedRecipes);
             } catch (error) {
-                console.error('Firebase 레시피 가져오기 에러:', error);
+                console.error('Error fetching recipes from Firebase:', error);
             }
         };
 
-        fetchUserRecipes();
+        fetchFirebaseRecipes();
     }, []);
 
     const handleImageClick = (id: string) => {
@@ -194,13 +149,18 @@ export default function Home() {
         router.push('/freeboard');
     };
 
+    const handleUserRecipeClick = () => {
+        router.push('/userRecipe');
+    };
+
     return (
         <main>
             <div
                 style={{
                     position: 'relative',
                     width: '100%',
-                    height: '100vh',
+                    paddingTop: '56.25%', // 비율 유지
+                    height: 0, // 높이를 0으로 설정
                     overflow: 'hidden',
                 }}
             >
@@ -209,6 +169,10 @@ export default function Home() {
                         display: 'flex',
                         transition: 'transform 0.5s ease',
                         transform: `translateX(-${currentSlide * 100}%)`,
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
                         height: '100%',
                     }}
                 >
@@ -223,9 +187,10 @@ export default function Home() {
                         >
                             <Image
                                 src={slide.image}
-                                alt={`슬라이드 ${slide.id}`}
+                                alt={`Slide ${slide.id}`}
                                 layout='fill'
                                 objectFit='cover'
+                                priority={true} // 이미지 우선 로딩 설정
                             />
                         </div>
                     ))}
@@ -251,7 +216,7 @@ export default function Home() {
                         fontSize: '36px',
                     }}
                 >
-                    &#10094; {/* 왼쪽 화살표 */}
+                    &#10094; {/* Left arrow */}
                 </button>
 
                 <button
@@ -274,7 +239,7 @@ export default function Home() {
                         fontSize: '36px',
                     }}
                 >
-                    &#10095; {/* 오른쪽 화살표 */}
+                    &#10095; {/* Right arrow */}
                 </button>
 
                 <div
@@ -309,6 +274,7 @@ export default function Home() {
                 </div>
             </div>
 
+            {/* 공식레시피 */}
             <div
                 style={{
                     width: '100%',
@@ -320,40 +286,44 @@ export default function Home() {
                     <h1
                         className='butt'
                         style={{
+                            fontWeight: 'bold',
+                            marginTop: '20px',
                             textAlign: 'center',
-                            margin: '30px auto',
+                            margin: 'auto',
                             fontSize: '22px',
                             cursor: 'pointer',
                             width: 'max-content',
                         }}
                         onClick={handleMoreClick}
                     >
-                        공식 레시피
+                        공식레시피
                     </h1>
+                    
+                    <hr
+                            style={{
+                                marginTop: '15px',
+                                backgroundColor: '#BDBDBD', 
+                                border: 'none', 
+                                height: '1px', 
+                                width:'80%',
+                                margin:'auto'
+                            }}
+                        />
                     <div
                         style={{
+                            marginTop: '20px',
                             display: 'flex',
                             flexWrap: 'wrap',
                             justifyContent: 'center',
                         }}
                     >
-                        {randomSiteRecipes.map((recipe) => (
-                            <Box
+                        {recipes.slice(0, itemsPerPage).map((recipe) => (
+                            <div
                                 key={recipe.id}
-                                style={{
-                                    position: 'relative',
-                                    padding: 16,
-                                    backgroundColor: 'white',
-                                    margin: '10px',
-                                    borderRadius: '8px',
-                                    boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-                                    cursor: 'pointer',
-                                    width: '250px',
-                                }}
+                                className='box-container'
                                 onClick={() => handleImageClick(recipe.id)}
-                                onMouseEnter={() => speakText(recipe.name)} // TTS on mouse enter
                             >
-                                <Box style={{ position: 'relative' }}>
+                                <div className='image-container'>
                                     <Image
                                         src={recipe.image}
                                         alt={recipe.name}
@@ -361,30 +331,7 @@ export default function Home() {
                                         height={250}
                                         style={{ borderRadius: '4px' }}
                                     />
-                                    <Box
-                                        style={{
-                                            position: 'absolute',
-                                            top: 0,
-                                            left: 0,
-                                            right: 0,
-                                            bottom: 0,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            backgroundColor:
-                                                'rgba(0, 0, 0, 0.6)',
-                                            color: 'white',
-                                            opacity: 0,
-                                            transition: 'opacity 0.3s',
-                                            borderRadius: '8px',
-                                        }}
-                                        onMouseEnter={(e:any) => {
-                                            e.currentTarget.style.opacity = '1';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.opacity = '0';
-                                        }}
-                                    >
+                                    <div className='image-overlay'>
                                         <Text
                                             style={{
                                                 fontSize: '18px',
@@ -393,8 +340,17 @@ export default function Home() {
                                         >
                                             상세 보기
                                         </Text>
-                                    </Box>
-                                </Box>
+                                    </div>
+                                </div>
+                                <Text
+                                    style={{
+                                        fontSize: '12px',
+                                        marginTop: '8px',
+                                        color: '#8C8C8C',
+                                    }}
+                                >
+                                    {recipe.calories} kcal
+                                </Text>
                                 <Text
                                     style={{
                                         fontSize: '14px',
@@ -404,70 +360,314 @@ export default function Home() {
                                 >
                                     {recipe.name}
                                 </Text>
-                            </Box>
+                            </div>
                         ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* 텍스트 영역 */}
+            <div
+                style={{
+                    position: 'relative',
+                    zIndex: 1,
+                    padding: '20px 0',
+                    textAlign: 'center',
+                    color: 'black',
+                    marginTop: '50px',
+                    marginBottom: '50px',
+                }}
+            >
+                <h1 style={{ fontSize: '40px', fontWeight: 'bold' }}>
+                    눈으로 보고 귀로 듣는 요리
+                </h1>
+                <p style={{ fontSize: '18px' }}>
+                    <i style={{ fontSize: '14px' }}>TTS로 들으면서 편하게</i>
+                    <br />
+                    <br />
+                    다른 사람들과 함께 맛있는 이야기를 나눠요
+                </p>
+                <br />
+                <br />
+                <button
+                    style={{
+                        border: '1px solid gray',
+                        borderRadius: '5px',
+                        backgroundColor: 'rgba(255,255,255,0.3)',
+                        color: 'black',
+                        padding: '10px 20px',
+                        fontSize: '16px',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.1s',
+                    }}
+                    onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor =
+                            'rgba(170,170,170,0.3)')
+                    }
+                    onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor =
+                            'rgba(255,255,255,0.3)')
+                    }
+                    onClick={handlejoinClick}
+                >
+                    Join Us
+                </button>
+            </div>
+
+            {/* 사용자레시피 및 자유게시판 */}
+            <div
+                style={{
+                    width: '100%',
+                    backgroundColor: 'white',
+                    padding: '20px 0',
+                }}
+            >
+                {/* 텍스트 및 버튼 영역2 */}
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '10%',
+                        zIndex: 1,
+                        marginTop: '50px',
+                        marginBottom: '50px',
+                    }}
+                >
+                    {/* 왼쪽 이미지 */}
+                    <div
+                        style={{
+                            width: '300px',
+                            height: '300px',
+                            position: 'relative',
+                        }}
+                    >
+                        <Image
+                            src='/png/mainC.png' // 이미지 경로
+                            alt='Description'
+                            layout='fill'
+                            objectFit='cover'
+                            style={{ borderRadius: '10px' }}
+                        />
+                    </div>
+
+                    {/* 오른쪽 텍스트 및 버튼 영역 */}
+                    <div
+                        style={{
+                            textAlign: 'left',
+                            color: 'black',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                            height: '100%',
+                            width: '400px',
+                        }}
+                    >
+                        <h1
+                            style={{
+                                fontSize: '22px',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                            }}
+                            className='butt'
+                            onClick={handleUserRecipeClick}
+                        >
+                            모두의레시피
+                        </h1>
+                        <hr
+                            style={{
+                                marginTop: '10px',
+                                backgroundColor: '#BDBDBD', 
+                                border: 'none', 
+                                height: '1px', 
+                            }}
+                        />
+                        <p style={{ marginTop: '10px', fontSize: '14px' }}>
+                            서로의 이야기를 공유하며 요리하는 공간
+                        </p>
+                        <div
+                            style={{
+                                marginTop: '5px',
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                            }}
+                        >
+                            <button
+                                className='bg-red-600 text-white hover:bg-red-800'
+                                style={{
+                                    borderRadius: '5px',
+                                    padding: '8px 15px',
+                                    fontSize: '16px',
+                                    cursor: 'pointer',
+                                    transition: 'background-color 0.1s',
+                                }}
+                                onClick={handleUserRecipeClick}
+                            >
+                                GO
+                            </button>
+                        </div>
+
+                        <h1
+                            style={{
+                                marginTop: '30px',
+                                fontSize: '22px',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                            }}
+                            className='butt'
+                            onClick={handlefreeClick}
+                        >
+                            자유게시판
+                        </h1>
+                        <hr
+                            style={{
+                                marginTop: '10px',
+                                backgroundColor: '#BDBDBD', 
+                                border: 'none', 
+                                height: '1px', 
+                            }}
+                        />
+                        <p style={{ marginTop: '10px', fontSize: '14px' }}>
+                            궁금한 것이 있다면? 질문해도 좋아요!
+                        </p>
+                        <div
+                            style={{
+                                marginTop: '5px',
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                            }}
+                        >
+                            <button
+                                className='bg-red-600 text-white hover:bg-red-800'
+                                style={{
+                                    borderRadius: '5px',
+                                    padding: '8px 15px',
+                                    fontSize: '16px',
+                                    cursor: 'pointer',
+                                    transition: 'background-color 0.1s',
+                                }}
+                                onClick={handlefreeClick}
+                            >
+                                GO
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div
                 style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    justifyContent: 'center',
+                    backgroundColor: 'white',
+                    width: '100%',
+                    height: '20px',
+                }}
+            ></div>
+            <div
+                style={{
+                    width: '100%',
+                    height: '200px',
+                    backgroundImage: 'url(/png/mainA.png)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                }}
+            ></div>
+            <div
+                style={{
+                    backgroundColor: 'white',
+                    width: '100%',
+                    height: '50px',
+                }}
+            ></div>
+            <div
+                style={{
+                    position: 'relative',
+                    width: '100%',
+                    overflow: 'hidden',
                 }}
             >
-                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-                    <h1
-                        className='butt'
-                        style={{
-                            textAlign: 'center',
-                            margin: '30px auto',
-                            fontSize: '22px',
-                            cursor: 'pointer',
-                            width: 'max-content',
-                        }}
-                        onClick={handlejoinClick}
-                    >
-                        사용자 레시피
-                    </h1>
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        {randomUserRecipes.map((recipe) => (
-                            <Box
-                                key={recipe.id}
-                                style={{
-                                    width: '200px',
-                                    margin: '10px',
-                                    cursor: 'pointer',
-                                }}
-                                onClick={() => handleImageClick(recipe.id)}
-                                onMouseEnter={() => speakText(recipe.title)} // TTS on mouse enter
-                            >
-                                <Image
-                                    src={
-                                        recipe['main-image'] || '/svg/logo.svg'
-                                    }
-                                    alt={recipe.title}
-                                    width={200}
-                                    height={200}
-                                    objectFit='cover'
-                                />
-                                <Text
-                                    onMouseEnter={() => speakText(recipe.title)} // TTS on mouse enter
-                                >
-                                    {recipe.title}
-                                </Text>
-                            </Box>
-                        ))}
-                    </div>
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        zIndex: -1,
+                        opacity: 0.6,
+                    }}
+                >
+                    <Image
+                        src='/png/mainE.png'
+                        alt='Background'
+                        layout='fill'
+                        objectFit='cover'
+                    />
                 </div>
             </div>
+            <style jsx>{`
+                .butt {
+                    position: relative;
+                    transition: color 0.3s ease;
+                    text-decoration: none;
+                    font-size: 18px; /* 텍스트 크기 고정 */
+                }
+
+                .butt:hover {
+                    color: #db0000; /* 호버 시 텍스트 색상 변경 */
+                }
+
+                .butt::after {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    bottom: -4px; /* 텍스트 아래 4px 위치 */
+                    width: 0;
+                    height: 3px; /* 밑줄 두께 */
+                    background-color: #db0000; /* 밑줄 색상 */
+                    transition: width 0.3s ease; /* 애니메이션 효과 */
+                }
+
+                .butt:hover::after {
+                    width: 100%;
+                }
+
+                .box-container {
+                    position: relative;
+                    padding: 16px;
+                    background-color: white;
+                    margin: 10px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                    cursor: pointer;
+                    width: 250px;
+                    overflow: hidden;
+                }
+
+                .image-container {
+                    position: relative;
+                }
+
+                .image-overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: rgba(0, 0, 0, 0.6);
+                    color: white;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                    border-radius: 8px;
+                    z-index: 10;
+                }
+
+                .image-container:hover .image-overlay {
+                    opacity: 1;
+                }
+            `}</style>
         </main>
     );
 }
