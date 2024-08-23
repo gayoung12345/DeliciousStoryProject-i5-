@@ -1,4 +1,4 @@
-// listPost 자유게시판 상세보기
+// 자유게시판 상세보기 페이지
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -12,6 +12,7 @@ import {
     where,
     getDocs,
     updateDoc,
+    deleteDoc,
 } from 'firebase/firestore';
 import { db } from '../../lib/firebaseConfig';
 import { useAuth } from '../context/AuthContext';
@@ -35,6 +36,7 @@ interface Post {
     title: string;
     views: number;
 }
+
 interface Comment {
     author: string;
     content: string;
@@ -53,6 +55,22 @@ const ListPost = () => {
     const searchParams = useSearchParams(); // URL 쿼리 파라미터
     const postId = searchParams.get('id'); // URL에서 게시글 ID 추출
 
+    // 글 삭제 버튼 클릭 시 호출되는 함수
+    const handleDelete = async () => {
+        if (confirm('정말로 삭제하시겠습니까?')) {
+            // 삭제 확인 창 표시
+            try {
+                const postRef = doc(db, 'posts', postId as string); // 게시글 참조 생성
+                await deleteDoc(postRef); // 해당 게시글 삭제
+
+                alert('삭제되었습니다.'); // 삭제 완료 알림
+                router.push('/freeBoard'); // 삭제 후 게시판 목록으로 이동
+            } catch (error) {
+                console.error('Error deleting document: ', error); // 오류 발생 시 콘솔에 출력
+            }
+        }
+    };
+
     // 게시글 데이터를 가져오는 함수
     useEffect(() => {
         const fetchPost = async () => {
@@ -64,7 +82,7 @@ const ListPost = () => {
 
                     if (postSnapshot.exists()) {
                         // 데이터 가져오기 및 타입 단언
-                        const postData = postSnapshot.data() as Post; // 타입 단언 사용
+                        const postData = postSnapshot.data() as Post;
                         setPost(postData); // 게시글 데이터 상태 업데이트
 
                         // 게시글 조회 수 업데이트
@@ -117,7 +135,6 @@ const ListPost = () => {
         event.preventDefault(); // 폼 제출 기본 동작 방지
 
         if (user && postId) {
-            // postId가 null이 아닌지 확인
             try {
                 // 댓글 추가
                 await addDoc(collection(db, 'comments'), {
@@ -147,7 +164,7 @@ const ListPost = () => {
                 const q = query(commentsRef, where('postId', '==', postId));
                 const querySnapshot = await getDocs(q);
                 const updatedComments = querySnapshot.docs.map(
-                    (doc) => doc.data() as Comment // DocumentData를 Comment 타입으로 단언
+                    (doc) => doc.data() as Comment
                 );
                 setComments(updatedComments);
 
@@ -198,7 +215,7 @@ const ListPost = () => {
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                 }}
             >
-                {/* // 글 제목 */}
+                {/* 글 제목 */}
                 <h1
                     style={{
                         textAlign: 'center',
@@ -222,7 +239,7 @@ const ListPost = () => {
                         댓글 수 {post.comments || 0} | 조회 수 {post.views || 0}
                     </p>
                 </div>
-                {/* // 게시물 내용 */}
+                {/* 게시물 내용 */}
                 <div
                     style={{
                         padding: '20px',
@@ -245,7 +262,7 @@ const ListPost = () => {
                         style={{ textAlign: 'left' }}
                     />
                 </div>
-                {/* // 댓글 폼 */}
+                {/* 댓글 폼 */}
                 <div
                     style={{
                         padding: '20px',
@@ -269,7 +286,7 @@ const ListPost = () => {
                                 border: '1px solid #ddd',
                                 borderRadius: '4px',
                                 resize: 'none',
-                                height: '100px',
+                                height: '80px',
                                 marginBottom: '10px',
                                 boxSizing: 'border-box',
                             }}
@@ -278,13 +295,13 @@ const ListPost = () => {
                         />
                         <button
                             type='submit'
-                            className='bg-red-600 text-white px-4 py-2 rounded hover:bg-red-800'
+                            className='bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600'
                         >
                             등록
                         </button>
                     </form>
                 </div>
-                {/* // 댓글 리스트 */}
+                {/* 댓글 리스트 */}
                 <div
                     style={{
                         padding: '20px',
@@ -296,7 +313,7 @@ const ListPost = () => {
                     }}
                 >
                     <h2 style={{ fontSize: '16px', marginBottom: '20px' }}>
-                        댓글 목록
+                        댓글
                     </h2>
                     {/* 댓글이 없는 경우 메시지 표시 */}
                     {comments.length === 0 ? (
@@ -334,7 +351,7 @@ const ListPost = () => {
                         </ul>
                     )}
                 </div>
-                {/* // 뒤로가기 */}
+                {/* 뒤로가기 */}
                 <div
                     style={{
                         display: 'flex',
@@ -347,8 +364,16 @@ const ListPost = () => {
                         type='button'
                         onClick={handleGoBack}
                         className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600'
+                        style={{ marginRight: '10px' }} // 작성 버튼과 삭제 버튼 사이 간격
                     >
                         뒤로가기
+                    </button>
+                    <button
+                        type='button'
+                        onClick={handleDelete}
+                        className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600'
+                    >
+                        삭제하기
                     </button>
                 </div>
             </div>
