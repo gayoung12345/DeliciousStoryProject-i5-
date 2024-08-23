@@ -35,10 +35,12 @@ const MyComments = () => {
                     where('author', '==', user.email) // Use user.email or user.uid based on your schema
                 );
                 const querySnapshot = await getDocs(q);
-                const fetchedComments: Comment[] = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...(doc.data() as Omit<Comment, 'id'>)
-                }));
+                const fetchedComments: Comment[] = querySnapshot.docs.map(
+                    (doc) => ({
+                        id: doc.id,
+                        ...(doc.data() as Omit<Comment, 'id'>),
+                    })
+                );
 
                 setComments(fetchedComments);
                 setSearchResults(fetchedComments); // Initialize search results with all comments
@@ -54,9 +56,8 @@ const MyComments = () => {
 
     const handleSearch = () => {
         if (searchTerm) {
-            const filteredComments = comments.filter(
-                (comment) =>
-                    comment.content.toLowerCase().includes(searchTerm.toLowerCase())
+            const filteredComments = comments.filter((comment) =>
+                comment.content.toLowerCase().includes(searchTerm.toLowerCase())
             );
             setSearchResults(filteredComments);
         } else {
@@ -75,42 +76,82 @@ const MyComments = () => {
     const totalPages = Math.ceil(searchResults.length / COMMENTS_PER_PAGE);
 
     if (loading) {
-        return <div className='text-center p-4'>Loading...</div>;
+        return <div className='spinner'></div>;
     }
 
     return (
         <main className='p-6'>
             <TopBar />
-            <h1 className='text-3xl font-bold mb-6 text-center' style={{ marginTop: '40px' }}>내 댓글</h1>
+            <h1
+                className='text-3xl font-bold mb-6 text-center'
+                style={{ marginTop: '40px' }}
+            >
+                내 댓글
+            </h1>
 
             {searchResults.length > 0 ? (
-                <div className='overflow-x-auto max-w-4xl mx-auto' style={{ marginTop: '60px', marginBottom: '20px' }}>
+                <div
+                    className='overflow-x-auto max-w-4xl mx-auto'
+                    style={{ marginTop: '60px', marginBottom: '20px' }}
+                >
                     <table className='min-w-full bg-white border border-gray-300 table-auto'>
                         <thead>
                             <tr className='bg-gray-200 border-b border-gray-300'>
-                                <th className='py-2 px-4 text-center text-gray-600 w-1/12 text-base'>번호</th>
-                                <th className='py-2 px-4 text-center text-gray-600 w-2/5 text-base'>내용</th>
-                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>작성자</th>
-                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>작성일</th>
-                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>Post ID</th>
-                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>Recipe ID</th>
+                                <th className='py-2 px-4 text-center text-gray-600 w-1/12 text-base'>
+                                    번호
+                                </th>
+                                <th className='py-2 px-4 text-center text-gray-600 w-2/5 text-base'>
+                                    내용
+                                </th>
+                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>
+                                    작성자
+                                </th>
+                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>
+                                    작성일
+                                </th>
+                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>
+                                    Post ID
+                                </th>
+                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>
+                                    Recipe ID
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {currentComments.map((comment, index) => (
-                                <tr key={comment.id} className='border-b hover:bg-gray-50'>
-                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>{startIndex + index + 1}</td>
-                                    <td className='py-2 px-4'>{comment.content}</td>
-                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>{comment.author}</td>
-                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>{new Date(comment.date).toLocaleDateString()}</td>
-                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>{comment.postId || '-'}</td>
-                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>{comment.recipeId || '-'}</td>
+                                <tr
+                                    key={comment.id}
+                                    className='border-b hover:bg-gray-50'
+                                >
+                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>
+                                        {startIndex + index + 1}
+                                    </td>
+                                    <td className='py-2 px-4'>
+                                        {comment.content}
+                                    </td>
+                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>
+                                        {comment.author}
+                                    </td>
+                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>
+                                        {new Date(
+                                            comment.date
+                                        ).toLocaleDateString()}
+                                    </td>
+                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>
+                                        {comment.postId || '-'}
+                                    </td>
+                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>
+                                        {comment.recipeId || '-'}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
 
-                    <div className='flex justify-center mb-6 space-x-1' style={{ marginTop: '40px', marginBottom: '30px' }}>
+                    <div
+                        className='flex justify-center mb-6 space-x-1'
+                        style={{ marginTop: '40px', marginBottom: '30px' }}
+                    >
                         <input
                             type='text'
                             value={searchTerm}
@@ -133,16 +174,36 @@ const MyComments = () => {
                         </button>
                     </div>
 
-                    <div className='flex justify-center mt-6' style={{ marginBottom: '20px' }}>
+                    <div
+                        className='flex justify-center mt-6'
+                        style={{ marginBottom: '20px' }}
+                    >
                         <nav style={{ textAlign: 'center' }}>
-                            <ul style={{ display: 'inline-flex', listStyleType: 'none', padding: 0 }}>
+                            <ul
+                                style={{
+                                    display: 'inline-flex',
+                                    listStyleType: 'none',
+                                    padding: 0,
+                                }}
+                            >
                                 {Array.from({ length: totalPages }, (_, i) => (
-                                    <li key={i + 1} style={{ margin: '0 5px' }}>
+                                    <li
+                                        key={i + 1}
+                                        style={{ margin: '0 5px' }}
+                                    >
                                         <button
-                                            onClick={() => handlePageChange(i + 1)}
+                                            onClick={() =>
+                                                handlePageChange(i + 1)
+                                            }
                                             style={{
-                                                background: i + 1 === currentPage ? 'orange' : 'white',
-                                                color: i + 1 === currentPage ? 'white' : 'black',
+                                                background:
+                                                    i + 1 === currentPage
+                                                        ? 'orange'
+                                                        : 'white',
+                                                color:
+                                                    i + 1 === currentPage
+                                                        ? 'white'
+                                                        : 'black',
                                                 border: '1px solid #ddd',
                                                 padding: '5px 10px',
                                                 borderRadius: '5px',
