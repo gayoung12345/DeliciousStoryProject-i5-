@@ -1,21 +1,19 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import xml2js from 'xml2js';
 import { useRouter } from 'next/navigation';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 
-// 이미지 예시 데이터
 const slides = [
     { id: 1, image: '/png/img3.png' },
     { id: 2, image: '/png/img2.png' },
     { id: 3, image: '/png/img1.png' },
 ];
 
-// 레시피 데이터 타입
-interface Recipe {
+interface SiteRecipe {
     id: string;
     name: string;
     image: string;
@@ -24,36 +22,65 @@ interface Recipe {
     calories: string;
 }
 
+interface UserRecipe {
+    id: string;
+    title: string;
+    images?: {
+        'main-image'?: string;
+    };
+    'main-image'?: string;
+}
+
 interface BoxProps extends React.HTMLProps<HTMLDivElement> {
     style?: React.CSSProperties;
     onClick?: () => void;
+    onMouseEnter?: () => void; // Mouse enter event handler
 }
 
 interface TextProps extends React.HTMLProps<HTMLParagraphElement> {
     style?: React.CSSProperties;
+    onMouseEnter?: () => void; // Mouse enter event handler
 }
 
-// Box 컴포넌트 정의
-const Box: React.FC<BoxProps> = ({ style, onClick, children }) => (
+const Box: React.FC<BoxProps> = ({
+    style,
+    onClick,
+    onMouseEnter,
+    children,
+}) => (
     <div
         style={style}
         onClick={onClick}
+        onMouseEnter={onMouseEnter}
     >
         {children}
     </div>
 );
 
-// Text 컴포넌트 정의
-const Text: React.FC<TextProps> = ({ style, children }) => (
-    <p style={style}>{children}</p>
+const Text: React.FC<TextProps> = ({ style, onMouseEnter, children }) => (
+    <p
+        style={style}
+        onMouseEnter={onMouseEnter}
+    >
+        {' '}
+        {children}
+    </p>
 );
 
 export default function Home() {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [recipes, setRecipes] = useState<Recipe[]>([]);
-    const [firebaseRecipes, setFirebaseRecipes] = useState<Recipe[]>([]);
+    const [siteRecipes, setSiteRecipes] = useState<SiteRecipe[]>([]);
+    const [userRecipes, setUserRecipes] = useState<UserRecipe[]>([]);
+    const [randomSiteRecipes, setRandomSiteRecipes] = useState<SiteRecipe[]>(
+        []
+    );
+    const [randomUserRecipes, setRandomUserRecipes] = useState<UserRecipe[]>(
+        []
+    );
     const itemsPerPage = 4;
     const router = useRouter();
+
+    const synth = useRef<SpeechSynthesis>(window.speechSynthesis); // Reference to SpeechSynthesis API
 
     const nextSlide = () => {
         setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
@@ -69,8 +96,20 @@ export default function Home() {
         setCurrentSlide(index);
     };
 
+    const getRandomItems = <T,>(items: T[], count: number): T[] => {
+        const shuffled = [...items].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+    };
+
+    const speakText = (text: string) => {
+        if (synth.current) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            synth.current.speak(utterance);
+        }
+    };
+
     useEffect(() => {
-        const fetchRecipes = async () => {
+        const fetchSiteRecipes = async () => {
             try {
                 const response = await fetch('/data/siterecipe.xml');
                 const xmlData = await response.text();
@@ -86,44 +125,57 @@ export default function Home() {
                     calories: recipe.INFO_ENG[0],
                 }));
 
-                setRecipes(recipeData);
+                setSiteRecipes(recipeData);
+                setRandomSiteRecipes(getRandomItems(recipeData, itemsPerPage));
             } catch (error) {
-                console.error('Error parsing XML:', error);
+                console.error('XML 파싱 에러:', error);
             }
         };
 
-        fetchRecipes();
+        fetchSiteRecipes();
     }, []);
 
     useEffect(() => {
-        const fetchFirebaseRecipes = async () => {
+        const fetchUserRecipes = async () => {
             try {
-                const userRecipeSnapshot = await getDocs(collection(db, 'userRecipe'));
-                const testRecipeSnapshot = await getDocs(collection(db, 'testRecipe'));
-                const fetchedRecipes: Recipe[] = [];
-
+                const userRecipeSnapshot = await getDocs(
+                    collection(db, 'userRecipe')
+                );
+                const fetchedRecipes: UserRecipe[] = [];
                 userRecipeSnapshot.forEach((doc) => {
-                    fetchedRecipes.push({ id: doc.id, ...doc.data() } as Recipe);
+                    fetchedRecipes.push({
+                        id: doc.id,
+                        ...doc.data(),
+                    } as UserRecipe);
                 });
+
+                // 테스트 레시피의 경우
+                const testRecipeSnapshot = await getDocs(
+                    collection(db, 'testRecipe')
+                );
                 testRecipeSnapshot.forEach((doc) => {
                     const data = doc.data();
                     fetchedRecipes.push({
                         id: doc.id,
-                        name: data.title,
-                        image: data['main-image'],
-                        ingredients: '', // 데이터가 없으므로 빈 문자열
-                        manual: '', // 데이터가 없으므로 빈 문자열
-                        calories: '', // 데이터가 없으므로 빈 문자열
-                    } as Recipe);
+                        title: data.title,
+                        'main-image': data['main-image'],
+                    } as UserRecipe);
                 });
 
-                setFirebaseRecipes(fetchedRecipes);
+                // 랜덤으로 섞어서 설정
+                const shuffledRecipes = getRandomItems(
+                    fetchedRecipes,
+                    itemsPerPage
+                );
+
+                setUserRecipes(fetchedRecipes);
+                setRandomUserRecipes(shuffledRecipes);
             } catch (error) {
-                console.error('Error fetching recipes from Firebase:', error);
+                console.error('Firebase 레시피 가져오기 에러:', error);
             }
         };
 
-        fetchFirebaseRecipes();
+        fetchUserRecipes();
     }, []);
 
     const handleImageClick = (id: string) => {
@@ -171,7 +223,7 @@ export default function Home() {
                         >
                             <Image
                                 src={slide.image}
-                                alt={`Slide ${slide.id}`}
+                                alt={`슬라이드 ${slide.id}`}
                                 layout='fill'
                                 objectFit='cover'
                             />
@@ -199,7 +251,7 @@ export default function Home() {
                         fontSize: '36px',
                     }}
                 >
-                    &#10094; {/* Left arrow */}
+                    &#10094; {/* 왼쪽 화살표 */}
                 </button>
 
                 <button
@@ -222,7 +274,7 @@ export default function Home() {
                         fontSize: '36px',
                     }}
                 >
-                    &#10095; {/* Right arrow */}
+                    &#10095; {/* 오른쪽 화살표 */}
                 </button>
 
                 <div
@@ -272,11 +324,11 @@ export default function Home() {
                             margin: '30px auto',
                             fontSize: '22px',
                             cursor: 'pointer',
-                            width: 'max-content'
+                            width: 'max-content',
                         }}
                         onClick={handleMoreClick}
                     >
-                        공식레시피
+                        공식 레시피
                     </h1>
                     <div
                         style={{
@@ -285,7 +337,7 @@ export default function Home() {
                             justifyContent: 'center',
                         }}
                     >
-                        {recipes.slice(0, itemsPerPage).map((recipe) => (
+                        {randomSiteRecipes.map((recipe) => (
                             <Box
                                 key={recipe.id}
                                 style={{
@@ -299,6 +351,7 @@ export default function Home() {
                                     width: '250px',
                                 }}
                                 onClick={() => handleImageClick(recipe.id)}
+                                onMouseEnter={() => speakText(recipe.name)} // TTS on mouse enter
                             >
                                 <Box style={{ position: 'relative' }}>
                                     <Image
@@ -325,7 +378,7 @@ export default function Home() {
                                             transition: 'opacity 0.3s',
                                             borderRadius: '8px',
                                         }}
-                                        onMouseEnter={(e) => {
+                                        onMouseEnter={(e:any) => {
                                             e.currentTarget.style.opacity = '1';
                                         }}
                                         onMouseLeave={(e) => {
@@ -344,15 +397,6 @@ export default function Home() {
                                 </Box>
                                 <Text
                                     style={{
-                                        fontSize: '12px',
-                                        marginTop: '8px',
-                                        color: '#8C8C8C',
-                                    }}
-                                >
-                                    {recipe.calories} kcal
-                                </Text>
-                                <Text
-                                    style={{
                                         fontSize: '14px',
                                         fontWeight: 'bold',
                                         marginTop: '2px',
@@ -368,217 +412,62 @@ export default function Home() {
 
             <div
                 style={{
-                    position: 'relative',
-                    zIndex: 1,
-                    padding: '20px 0',
-                    textAlign: 'center',
-                    color: 'black',
-                    marginTop: '50px',
-                    marginBottom: '50px',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
                 }}
             >
-                <h1 style={{ fontSize: '40px', fontWeight: 'bold' }}>
-                    눈으로 보고 귀로 듣는 요리
-                </h1>
-                <p style={{ fontSize: '18px' }}>
-                    <i style={{ fontSize: '14px' }}>TTS로 들으면서 편하게</i>
-                    <br />
-                    <br />
-                    다른 사람들과 함께 맛있는 이야기를 나눠요
-                </p>
-                <br />
-                <br />
-                <button
-                    style={{
-                        border: '1px solid gray',
-                        borderRadius: '5px',
-                        backgroundColor: 'rgba(255,255,255,0.3)',
-                        color: 'black',
-                        padding: '10px 20px',
-                        fontSize: '16px',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.1s',
-                    }}
-                    onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor =
-                            'rgba(170,170,170,0.3)')
-                    }
-                    onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor =
-                            'rgba(255,255,255,0.3)')
-                    }
-                    onClick={handlejoinClick}
-                >
-                    Join Us
-                </button>
-            </div>
-
-
-
-
-            {/* Firebase 레시피 데이터를 렌더링하는 부분 추가 */}
-            <div
-    style={{
-        width: '100%',
-        backgroundColor: 'white',
-        padding: '40px 0',
-    }}
->
-    <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        <h1
-            className='butt'
-            style={{
-                textAlign: 'center',
-                margin: '30px auto',
-                fontSize: '22px',
-                cursor: 'pointer',
-                width: 'max-content'
-            }}
-        >
-            모두의레시피
-        </h1>
-        <div
-            style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-            }}
-        >
-            {firebaseRecipes.slice(0, 4).map((recipe) => (
-                <div
-                    key={recipe.id}
-                    style={{
-                        textAlign: 'center',
-                        margin: '10px',
-                    }}
-                >
+                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                    <h1
+                        className='butt'
+                        style={{
+                            textAlign: 'center',
+                            margin: '30px auto',
+                            fontSize: '22px',
+                            cursor: 'pointer',
+                            width: 'max-content',
+                        }}
+                        onClick={handlejoinClick}
+                    >
+                        사용자 레시피
+                    </h1>
                     <div
                         style={{
-                            position: 'relative',
-                            padding: '16px',
-                            backgroundColor: 'white',
-                            margin: '10px',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-                            cursor: 'pointer',
-                            width: '250px',
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            justifyContent: 'center',
                         }}
                     >
-                        <div
-                            style={{
-                                position: 'relative',
-                                width: '100%',
-                                height: '250px',
-                                overflow: 'hidden',
-                            }}
-                        >
-                            <Image
-                                src={recipe.image || '/default-image.png'} // 기본 이미지 URL로 대체
-                                alt={`Recipe ${recipe.id}`}
-                                layout='fill'
-                                objectFit='cover'
-                                style={{ borderRadius: '4px' }}
-                            />
-                        </div>
-                        <p
-                            style={{
-                                fontSize: '14px',
-                                fontWeight: 'bold',
-                                marginTop: '8px',
-                                textAlign: 'left',
-                            }}
-                        >
-                            {recipe.name}
-                        </p>
+                        {randomUserRecipes.map((recipe) => (
+                            <Box
+                                key={recipe.id}
+                                style={{
+                                    width: '200px',
+                                    margin: '10px',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => handleImageClick(recipe.id)}
+                                onMouseEnter={() => speakText(recipe.title)} // TTS on mouse enter
+                            >
+                                <Image
+                                    src={
+                                        recipe['main-image'] || '/svg/logo.svg'
+                                    }
+                                    alt={recipe.title}
+                                    width={200}
+                                    height={200}
+                                    objectFit='cover'
+                                />
+                                <Text
+                                    onMouseEnter={() => speakText(recipe.title)} // TTS on mouse enter
+                                >
+                                    {recipe.title}
+                                </Text>
+                            </Box>
+                        ))}
                     </div>
                 </div>
-            ))}
-        </div>
-    </div>
-</div>
-
-
-
-
-            <div
-                style={{
-                    backgroundColor: 'white',
-                    width: '100%',
-                    height: '20px',
-                }}
-            ></div>
-
-            <div
-                style={{
-                    width: '100%',
-                    height: '200px',
-                    backgroundImage: 'url(/png/mainA.png)',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                }}
-            ></div>
-
-            <div
-                style={{
-                    backgroundColor: 'white',
-                    width: '100%',
-                    height: '50px',
-                }}
-            ></div>
-
-            <div
-                style={{
-                    position: 'relative',
-                    width: '100%',
-                    overflow: 'hidden',
-                }}
-            >
-                <div
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        zIndex: -1,
-                        opacity: 0.6,
-                    }}
-                >
-                    <Image
-                        src='/png/mainE.png'
-                        alt='Background'
-                        layout='fill'
-                        objectFit='cover'
-                    />
-                </div>
             </div>
-            <style jsx>{`
-                .butt {
-                    position: relative;
-                    transition: color 0.3s ease;
-                    text-decoration: none;
-                    font-size: 18px; /* 텍스트 크기 고정 */
-                }
-
-                .butt:hover {
-                    color: #DB0000; /* 호버 시 텍스트 색상 변경 */
-                }
-
-                .butt::after {
-                    content: '';
-                    position: absolute;
-                    left: 0;
-                    bottom: -4px; /* 텍스트 아래 4px 위치 */
-                    width: 0;
-                    height: 3px; /* 밑줄 두께 */
-                    background-color: #DB0000; /* 밑줄 색상 */
-                    transition: width 0.3s ease; /* 애니메이션 효과 */
-                }
-
-                .butt:hover::after {
-                    width: 100%;
-                }
-            `}</style>
         </main>
     );
 }
