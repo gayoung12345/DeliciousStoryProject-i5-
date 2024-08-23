@@ -4,19 +4,14 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import xml2js from 'xml2js';
 import { useRouter } from 'next/navigation';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebaseConfig';
 
 // 이미지 예시 데이터
 const slides = [
     { id: 1, image: '/png/img3.png' },
     { id: 2, image: '/png/img2.png' },
     { id: 3, image: '/png/img1.png' },
-];
-
-const recipeImg1 = [
-    { id: '연어구이', name: '작성자1', image: '/png/recipeImg1-1.png' },
-    { id: '새우볶음밥', name: '작성자2', image: '/png/recipeImg1-2.png' },
-    { id: '라자냐', name: '작성자3', image: '/png/recipeImg1-3.png' },
-    { id: '스테이크', name: '작성자4', image: '/png/recipeImg1-4.png' },
 ];
 
 // 레시피 데이터 타입
@@ -56,6 +51,7 @@ const Text: React.FC<TextProps> = ({ style, children }) => (
 export default function Home() {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [recipes, setRecipes] = useState<Recipe[]>([]);
+    const [firebaseRecipes, setFirebaseRecipes] = useState<Recipe[]>([]);
     const itemsPerPage = 4;
     const router = useRouter();
 
@@ -97,6 +93,37 @@ export default function Home() {
         };
 
         fetchRecipes();
+    }, []);
+
+    useEffect(() => {
+        const fetchFirebaseRecipes = async () => {
+            try {
+                const userRecipeSnapshot = await getDocs(collection(db, 'userRecipe'));
+                const testRecipeSnapshot = await getDocs(collection(db, 'testRecipe'));
+                const fetchedRecipes: Recipe[] = [];
+
+                userRecipeSnapshot.forEach((doc) => {
+                    fetchedRecipes.push({ id: doc.id, ...doc.data() } as Recipe);
+                });
+                testRecipeSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    fetchedRecipes.push({
+                        id: doc.id,
+                        name: data.title,
+                        image: data['main-image'],
+                        ingredients: '', // 데이터가 없으므로 빈 문자열
+                        manual: '', // 데이터가 없으므로 빈 문자열
+                        calories: '', // 데이터가 없으므로 빈 문자열
+                    } as Recipe);
+                });
+
+                setFirebaseRecipes(fetchedRecipes);
+            } catch (error) {
+                console.error('Error fetching recipes from Firebase:', error);
+            }
+        };
+
+        fetchFirebaseRecipes();
     }, []);
 
     const handleImageClick = (id: string) => {
@@ -386,95 +413,92 @@ export default function Home() {
                 </button>
             </div>
 
+
+
+
+            {/* Firebase 레시피 데이터를 렌더링하는 부분 추가 */}
             <div
-                style={{
-                    width: '100%',
-                    backgroundColor: 'white',
-                    padding: '40px 0',
-                }}
-            >
-                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-                    <h1
-                        className='butt'
-                        style={{
-                            textAlign: 'center',
-                            margin: '30px auto',
-                            fontSize: '22px',
-                            cursor: 'pointer',
-                            width: 'max-content'
-                        }}
-                    >
-                        인기레시피
-                    </h1>
+    style={{
+        width: '100%',
+        backgroundColor: 'white',
+        padding: '40px 0',
+    }}
+>
+    <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        <h1
+            className='butt'
+            style={{
+                textAlign: 'center',
+                margin: '30px auto',
+                fontSize: '22px',
+                cursor: 'pointer',
+                width: 'max-content'
+            }}
+        >
+            모두의레시피
+        </h1>
+        <div
+            style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+            }}
+        >
+            {firebaseRecipes.slice(0, 4).map((recipe) => (
+                <div
+                    key={recipe.id}
+                    style={{
+                        textAlign: 'center',
+                        margin: '10px',
+                    }}
+                >
                     <div
                         style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            justifyContent: 'center',
+                            position: 'relative',
+                            padding: '16px',
+                            backgroundColor: 'white',
+                            margin: '10px',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                            cursor: 'pointer',
+                            width: '250px',
                         }}
                     >
-                        {recipeImg1.map((photo) => (
-                            <div
-                                key={photo.id}
-                                style={{
-                                    textAlign: 'center',
-                                    margin: '10px',
-                                }}
-                            >
-                                <div
-                                    style={{
-                                        position: 'relative',
-                                        padding: '16px',
-                                        backgroundColor: 'white',
-                                        margin: '10px',
-                                        borderRadius: '8px',
-                                        boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-                                        cursor: 'pointer',
-                                        width: '250px',
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            position: 'relative',
-                                            width: '100%',
-                                            height: '250px',
-                                            overflow: 'hidden',
-                                        }}
-                                    >
-                                        <Image
-                                            src={photo.image}
-                                            alt={`Image ${photo.id}`}
-                                            layout='fill'
-                                            objectFit='cover'
-                                            style={{ borderRadius: '4px' }}
-                                        />
-                                    </div>
-                                    <p
-                                        style={{
-                                            fontSize: '12px',
-                                            marginTop: '8px',
-                                            color: '#8C8C8C',
-                                            textAlign: 'left',
-                                        }}
-                                    >
-                                        {photo.name}
-                                    </p>
-                                    <p
-                                        style={{
-                                            fontSize: '14px',
-                                            fontWeight: 'bold',
-                                            marginTop: '2px',
-                                            textAlign: 'left',
-                                        }}
-                                    >
-                                        {photo.id}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+                        <div
+                            style={{
+                                position: 'relative',
+                                width: '100%',
+                                height: '250px',
+                                overflow: 'hidden',
+                            }}
+                        >
+                            <Image
+                                src={recipe.image || '/default-image.png'} // 기본 이미지 URL로 대체
+                                alt={`Recipe ${recipe.id}`}
+                                layout='fill'
+                                objectFit='cover'
+                                style={{ borderRadius: '4px' }}
+                            />
+                        </div>
+                        <p
+                            style={{
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                marginTop: '8px',
+                                textAlign: 'left',
+                            }}
+                        >
+                            {recipe.name}
+                        </p>
                     </div>
                 </div>
-            </div>
+            ))}
+        </div>
+    </div>
+</div>
+
+
+
 
             <div
                 style={{
