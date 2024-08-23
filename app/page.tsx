@@ -239,19 +239,17 @@ export default function Home() {
             >
                 <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
                     <h1
-                        className='hover:text-red-600'
+                        className='butt'
                         style={{
                             textAlign: 'center',
-                            fontSize: '22px',
-                            textDecoration: 'underline',
-                            textUnderlineOffset: '10px',
-                            cursor: 'pointer',
-                            width: 'max-content',
                             margin: '30px auto',
+                            fontSize: '22px',
+                            cursor: 'pointer',
+                            width: 'max-content'
                         }}
                         onClick={handleMoreClick}
                     >
-                        공식 레시피
+                        공식레시피
                     </h1>
                     <div
                         style={{
@@ -397,17 +395,16 @@ export default function Home() {
             >
                 <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
                     <h1
-                        className='hover:text-red-600'
+                        className='butt'
                         style={{
                             textAlign: 'center',
                             margin: '30px auto',
                             fontSize: '22px',
-                            textDecoration: 'underline',
-                            textUnderlineOffset: '10px',
                             cursor: 'pointer',
+                            width: 'max-content'
                         }}
                     >
-                        인기 레시피
+                        인기레시피
                     </h1>
                     <div
                         style={{
@@ -531,6 +528,33 @@ export default function Home() {
                     />
                 </div>
             </div>
+            <style jsx>{`
+                .butt {
+                    position: relative;
+                    transition: color 0.3s ease;
+                    text-decoration: none;
+                    font-size: 18px; /* 텍스트 크기 고정 */
+                }
+
+                .butt:hover {
+                    color: #DB0000; /* 호버 시 텍스트 색상 변경 */
+                }
+
+                .butt::after {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    bottom: -4px; /* 텍스트 아래 4px 위치 */
+                    width: 0;
+                    height: 3px; /* 밑줄 두께 */
+                    background-color: #DB0000; /* 밑줄 색상 */
+                    transition: width 0.3s ease; /* 애니메이션 효과 */
+                }
+
+                .butt:hover::after {
+                    width: 100%;
+                }
+            `}</style>
         </main>
     );
 }
