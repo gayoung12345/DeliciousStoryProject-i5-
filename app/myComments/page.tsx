@@ -83,8 +83,8 @@ const MyComments = () => {
         <main className='p-6'>
             <TopBar />
             <h1
-                className='text-3xl font-bold mb-6 text-center'
-                style={{ marginTop: '40px' }}
+                className='text-2xl font-bold mb-6 text-center'
+                style={{ marginTop: '80px' }}
             >
                 내 댓글
             </h1>
@@ -92,7 +92,7 @@ const MyComments = () => {
             {searchResults.length > 0 ? (
                 <div
                     className='overflow-x-auto max-w-4xl mx-auto'
-                    style={{ marginTop: '60px', marginBottom: '20px' }}
+                    style={{ marginTop: '40px', marginBottom: '20px' }}
                 >
                     <table className='min-w-full bg-white border border-gray-300 table-auto'>
                         <thead>
@@ -108,12 +108,6 @@ const MyComments = () => {
                                 </th>
                                 <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>
                                     작성일
-                                </th>
-                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>
-                                    Post ID
-                                </th>
-                                <th className='py-2 px-4 text-center text-gray-600 w-1/6 text-base'>
-                                    Recipe ID
                                 </th>
                             </tr>
                         </thead>
@@ -136,12 +130,6 @@ const MyComments = () => {
                                         {new Date(
                                             comment.date
                                         ).toLocaleDateString()}
-                                    </td>
-                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>
-                                        {comment.postId || '-'}
-                                    </td>
-                                    <td className='py-2 px-4 text-center text-gray-500 text-sm'>
-                                        {comment.recipeId || '-'}
                                     </td>
                                 </tr>
                             ))}
@@ -198,7 +186,7 @@ const MyComments = () => {
                                             style={{
                                                 background:
                                                     i + 1 === currentPage
-                                                        ? 'orange'
+                                                        ? 'red'
                                                         : 'white',
                                                 color:
                                                     i + 1 === currentPage

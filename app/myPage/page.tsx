@@ -81,16 +81,13 @@ function MyPage() {
 
             <div className='flex flex-col space-y-4'>
                 <h1
-                    className='text-2xl font-bold mb-6'
-                    style={{
-                        textAlign: 'center',
-                        marginBottom: '16px',
-                    }}
+                    className='text-2xl font-bold mb-6 text-center'
+                    style={{ marginTop: '80px' }}
                 >
                     회원정보 확인/수정하기
                 </h1>
                 <div className='mx-auto' style={{ width:'45%', marginTop: '60px', marginBottom: '20px' }}>
-                <hr className='h-px my-8 bg-gray-300 border-0 dark:bg-gray-700'></hr>
+                <hr className='h-px my-4 bg-gray-300 border-0 dark:bg-gray-700'></hr>
 
                 {error && <p className='text-red-500 text-center'>{error}</p>}
                 <form
