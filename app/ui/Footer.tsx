@@ -5,25 +5,21 @@ const logoSrc = '/svg/logo.svg';
 
 const Footer: React.FC = () => {
     return (
-        <footer className='bg-white text-gray-600 py-6 w-full'>
+        <footer className='bg-white text-gray-600 px-6 sm:px-24 flex items-center justify-between w-full'>
             <hr />
             <div className='container mx-auto px-4 flex justify-between items-start'>
+            <div className='relative flex-grow flex justify-center'>
                 <div className='flex flex-col items-start'>
-                    <div className='text-center mb-4 flex flex-wrap justify-center items-center space-x-2'>
+                    <div className='text-center flex justify-center items-center space-x-2'>
                         <Image
                             src={logoSrc}
                             alt='logo'
                             width={317}
                             height={138}
                         />
-                        <div className='flex'>
-                            <span> Team i5 |</span>
-                            <span>| 김가영 |</span>
-                            <span>| 김유미 |</span>
-                            <span>| 전보람 |</span>
-                            <span>| 추호연 |</span>
-                            <span>| 이다은 </span>
-                        </div>
+                    </div>
+                    <div className='text-left text-sm'>
+                            <p> Team i5 | 김가영 | 김유미 | 전보람 | 추호연 | 이다은 </p>
                     </div>
                     <div className='text-left text-sm'>
                         <p>
@@ -35,6 +31,15 @@ const Footer: React.FC = () => {
                         <p>COPYRIGHT © 맛있는이야기 ALL RIGHT RESERVED.</p>
                     </div>
                 </div>
+                </div>
+
+
+                <div className='flex-grow flex items-center justify-center space-x-6 hidden xl:flex'>
+                    <div style={{width:'450px'}}></div>
+                </div>
+
+
+                <div className='relative flex-grow flex justify-center'>
                 <div>
                     <div className='flex justify-center mt-4 pt-11'>
                         <div className='space-x-4'>
@@ -75,6 +80,7 @@ const Footer: React.FC = () => {
                             />
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </footer>

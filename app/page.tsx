@@ -14,6 +14,12 @@ const slides = [
     { id: 3, image: '/png/img1.png' },
 ];
 
+const slides2 = [
+    { id: 1, image: '/png/recipeImg1-1.png' },
+    { id: 2, image: '/png/recipeImg1-2.png' },
+    { id: 3, image: '/png/recipeImg1-3.png' },
+];
+
 // TTS 기능을 구현하는 함수
 const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -450,18 +456,141 @@ export default function Home() {
                     {/* 왼쪽 이미지 */}
                     <div
                         style={{
-                            width: '300px',
+                            width: '500px',
                             height: '300px',
                             position: 'relative',
                         }}
                     >
-                        <Image
-                            src='/png/mainC.png' // 이미지 경로
+                        {/* <Image
+                            src='/png/recipeImg1-3.png' // 이미지 경로
                             alt='Description'
                             layout='fill'
                             objectFit='cover'
                             style={{ borderRadius: '10px' }}
-                        />
+                        /> */}
+
+
+<div
+    style={{
+        position: 'relative',
+        width: '100%', // 가로폭은 전체 창에 맞게 조정
+        height: '300px', // 세로 높이를 고정값으로 설정
+        overflow: 'hidden',
+        borderRadius:'10px'
+    }}
+>
+    <div
+        style={{
+            display: 'flex',
+            transition: 'transform 0.5s ease',
+            transform: `translateX(-${currentSlide * 100}%)`,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+        }}
+    >
+        {slides2.map((slide2) => (
+            <div
+                key={slide2.id}
+                style={{
+                    minWidth: '100%', // 각 슬라이드가 전체 컨테이너를 차지하도록 설정
+                    height: '100%', // 슬라이드의 높이를 컨테이너에 맞게 조정
+                    position: 'relative',
+                }}
+            >
+                <Image
+                    src={slide2.image}
+                    alt={`Slide ${slide2.id}`}
+                    layout='fill'
+                    objectFit='cover' // 이미지가 슬라이드 컨테이너에 맞게 조정
+                    priority={true} // 이미지 우선 로딩 설정
+                />
+            </div>
+        ))}
+    </div>
+
+    <button
+        onClick={prevSlide}
+        style={{
+            position: 'absolute',
+            top: '50%',
+            left: '10px',
+            transform: 'translateY(-50%)',
+            zIndex: 1,
+            width: '40px',
+            height: '40px',
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            border: 'none',
+            borderRadius: '50%',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '20px',
+        }}
+    >
+        &#10094; {/* Left arrow */}
+    </button>
+
+    <button
+        onClick={nextSlide}
+        style={{
+            position: 'absolute',
+            top: '50%',
+            right: '10px',
+            transform: 'translateY(-50%)',
+            zIndex: 1,
+            width: '40px',
+            height: '40px',
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            border: 'none',
+            borderRadius: '50%',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '20px',
+        }}
+    >
+        &#10095; {/* Right arrow */}
+    </button>
+
+    <div
+        style={{
+            position: 'absolute',
+            bottom: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            justifyContent: 'center',
+            zIndex: 1,
+        }}
+    >
+        {slides2.map((_, index) => (
+            <div
+                key={index}
+                onClick={() => goToSlide(index)}
+                style={{
+                    width: '15px',
+                    height: '15px',
+                    margin: '0 5px',
+                    borderRadius: '50%',
+                    backgroundColor:
+                        currentSlide === index
+                            ? 'black'
+                            : 'lightgray',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s',
+                }}
+            />
+        ))}
+    </div>
+</div>
+
+
+
                     </div>
 
                     {/* 오른쪽 텍스트 및 버튼 영역 */}
