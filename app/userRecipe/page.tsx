@@ -1,5 +1,5 @@
 'use client';
-import React, { CSSProperties, HTMLProps, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import { useRouter } from 'next/navigation';

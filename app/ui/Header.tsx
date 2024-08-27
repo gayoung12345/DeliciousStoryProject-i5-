@@ -105,12 +105,10 @@ const Header = () => {
 
     return (
         <nav className='bg-white text-black px-6 sm:px-24 flex items-center justify-between w-full'>
-            
-            {/* 로고 */}
-            <div className='relative flex-grow flex justify-center'>
             <div
                 className='flex-shrink-0'
                 // onMouseEnter={() => speakText('홈')}
+                style={{ marginRight: '20px', marginLeft: '40px' }}
             >
                 <Link href='/'>
                     <Image
@@ -121,11 +119,15 @@ const Header = () => {
                     />
                 </Link>
             </div>
-            </div>
-
-            {/* 메뉴 */}
-            <div className='flex-grow flex items-center justify-center space-x-6 hidden xl:flex'>
-
+            <div className='flex-grow flex items-center justify-center space-x-6 ml-12 hidden xl:flex'>
+                {/* <button
+                    onClick={() => handleMenuClick('/')}
+                    onMouseEnter={() => speakText('홈')}
+                    className='block butt'
+                    style={{ fontSize: '18px', width:'max-content' }}
+                >
+                    홈
+                </button> */}
                 <button
                     onClick={() => handleMenuClick('/siteRecipe')}
                     onMouseEnter={() => speakText('공식레시피')}
@@ -190,8 +192,6 @@ const Header = () => {
                     </>
                 )}
             </div>
-
-            {/* 검색 */}
             <div className='relative flex-grow flex justify-center'>
                 <div className='relative'>
                     <input

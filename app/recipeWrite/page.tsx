@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Next.js의 라우터 사용
 import IngredientInput from '@/components/recipe/IngredientInput';
 import RecipeStepInput from '@/components/recipe/RecipeStepInput';
-import { Button, ButtonText } from '@/components/ui/button';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import { useAuth } from '../context/AuthContext';
