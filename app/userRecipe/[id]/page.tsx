@@ -5,9 +5,7 @@ import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '@/lib/firebaseConfig';
 import { FaArrowUp } from 'react-icons/fa';
-
 import {
-    FaArrowLeft,
     FaHeart,
     FaPause,
     FaPlay,
@@ -25,9 +23,7 @@ import {
     getDoc,
     getDocs,
     deleteDoc,
-    DocumentSnapshot,
 } from 'firebase/firestore';
-import { useAuth } from '@/app/context/AuthContext';
 import Image from 'next/image';
 
 interface Recipe {

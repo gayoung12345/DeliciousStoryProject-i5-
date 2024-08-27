@@ -99,8 +99,8 @@ const MyPosts = () => {
             <TopBar />
 
             <h1
-                className='text-2xl font-bold mb-6 text-center'
-                style={{ marginTop: '80px' }}
+                className='text-3xl font-bold mb-6 text-center'
+                style={{ marginTop: '40px' }}
             >
                 내 게시글
             </h1>
@@ -108,7 +108,7 @@ const MyPosts = () => {
             {searchResults.length > 0 ? (
                 <div
                     className='overflow-x-auto max-w-4xl mx-auto'
-                    style={{ marginTop: '40px', marginBottom: '20px' }}
+                    style={{ marginTop: '60px', marginBottom: '20px' }}
                 >
                     <table className='min-w-full bg-white border border-gray-300 table-auto'>
                         <thead>
@@ -219,7 +219,7 @@ const MyPosts = () => {
                                             style={{
                                                 background:
                                                     i + 1 === currentPage
-                                                        ? 'red'
+                                                        ? 'orange'
                                                         : 'white',
                                                 color:
                                                     i + 1 === currentPage

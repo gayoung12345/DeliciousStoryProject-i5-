@@ -1,11 +1,10 @@
 // freeBoard 자유게시판 리스트
 'use client'; // Next.js에서 이 파일이 클라이언트에서 실행된다는 것을 알림
 
-import React, { ReactNode, useEffect, useState } from 'react'; // React와 필요한 훅들을 import
+import React, { useEffect, useState } from 'react'; // React와 필요한 훅들을 import
 import { useRouter } from 'next/navigation'; // Next.js의 라우터 훅을 import
 import { useAuth } from '../context/AuthContext'; // 인증 컨텍스트에서 현재 사용자 정보를 가져오는 훅을 import
 import { fetchPosts } from '../../lib/firestore'; // Firestore에서 게시글을 가져오는 함수 import
-import { EditIcon, Icon } from '@/components/ui/icon';
 import Image from 'next/image'; // 'react-native'의 Image 대신 'next/image'를 사용
 import { Box } from '@/components/ui/box/index.web';
 import { FaArrowUp } from 'react-icons/fa';

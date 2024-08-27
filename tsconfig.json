@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+        "target": "esnext",
+        "downlevelIteration": true,
         "typeRoots": ["./node_modules/@types"],
         "types": ["node", "react", "react-dom"], // "react-native" 제거
         "lib": ["dom", "dom.iterable", "esnext"],
@@ -29,7 +31,10 @@
         "**/*.ts",
         "**/*.tsx",
         ".next/types/**/*.ts",
-        "out/types/**/*.ts"
-, "app/userRecipe/[id]/page.tsx", "app/listPost/page.tsx", "app/page.jsx"    ],
+        "out/types/**/*.ts",
+        "app/userRecipe/[id]/page.tsx",
+        "app/listPost/page.tsx",
+        "app/page.jsx"
+    ],
     "exclude": ["node_modules"]
 }
